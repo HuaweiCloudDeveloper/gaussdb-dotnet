@@ -143,7 +143,7 @@ public sealed class NpgsqlParameterCollection : DbParameterCollection, IList<Npg
         var oldTrimmedName = parameter.TrimmedName;
         parameter.ChangeParameterName(value);
 
-        if (_caseInsensitiveLookup is null || _caseInsensitiveLookup.Count == 0)
+        if (_caseInsensitiveLookup is null)
             return;
 
         var index = IndexOf(parameter);
@@ -653,7 +653,7 @@ public sealed class NpgsqlParameterCollection : DbParameterCollection, IList<Npg
         foreach (var param in InternalList)
         {
             var newParam = param.Clone();
-            newParam.Collection = this;
+            newParam.Collection = other;
             other.InternalList.Add(newParam);
         }
 

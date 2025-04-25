@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Npgsql.Tests;
 
@@ -68,6 +69,34 @@ public class NpgsqlParameterCollectionTests
         // If the bug exists, the hash lookups will be out of sync with the list, and be unable
         // to find the parameter by its new name.
         Assert.That(command.Parameters.IndexOf("a_new_name"), Is.GreaterThanOrEqualTo(0));
+    }
+
+    [Test]
+    [IssueLink("https://github.com/npgsql/npgsql/issues/6067")]
+    public void Hash_lookup_unnamed_parameter_rename_bug()
+    {
+        if (_compatMode == CompatMode.TwoPass)
+            return;
+
+        using var command = new NpgsqlCommand();
+
+        for (var i = 0; i < 3; i++)
+        {
+            // Put plenty of parameters in the collection to turn on hash lookup functionality.
+            for (var j = 0; j < LookupThreshold; j++)
+            {
+                // Create and add an unnamed parameter before renaming it
+                var parameter = command.CreateParameter();
+                command.Parameters.Add(parameter);
+                parameter.ParameterName = $"{j}";
+            }
+
+            // Make sure hash lookup is generated.
+            Assert.AreEqual(command.Parameters["3"].ParameterName, "3");
+
+            // Remove all parameters to clear hash lookup
+            command.Parameters.Clear();
+        }
     }
 
     [Test]
@@ -319,6 +348,18 @@ public class NpgsqlParameterCollectionTests
         Assert.AreEqual(0, command.Parameters.IndexOf(param.ParameterName));
         Assert.AreEqual(NpgsqlParameter.PositionalName, param.ParameterName);
     }
+
+    [Test]
+    public void Clone_sets_correct_collection()
+    {
+        var cmd = new NpgsqlCommand();
+        cmd.Parameters.Add(new NpgsqlParameter<int> { TypedValue = 42 });
+        Assert.AreSame(cmd.Parameters, cmd.Parameters.Single().Collection);
+
+        cmd = cmd.Clone();
+        Assert.AreSame(cmd.Parameters, cmd.Parameters.Single().Collection);
+    }
+
 
     public NpgsqlParameterCollectionTests(CompatMode compatMode)
     {

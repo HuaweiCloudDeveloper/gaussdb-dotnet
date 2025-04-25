@@ -87,9 +87,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-22.04 ]
+        os: [ ubuntu-24.04 ]
         pg_major: [ 15 ]
-        tfm: [ net8.0 ]
+        tfm: [ net9.0 ]
 
     steps:
       - name: Checkout
@@ -107,7 +107,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Write script
         run: echo "$AOT_Compat" > test-aot-compatibility.ps1
@@ -121,9 +121,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-24.04]
         pg_major: [15]
-        tfm: [ net8.0 ]
+        tfm: [ net9.0 ]
 
     steps:
       - name: Checkout
@@ -141,7 +141,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Start PostgreSQL
         run: |
@@ -163,11 +163,11 @@ jobs:
 
       - name: Write binary size to summary
         run: |
-          size="$(ls -l test/Npgsql.NativeAotTests/bin/Release/net8.0/linux-x64/native/Npgsql.NativeAotTests | cut -d ' ' -f 5)"
+          size="$(ls -l test/Npgsql.NativeAotTests/bin/Release/net9.0/linux-x64/native/Npgsql.NativeAotTests | cut -d ' ' -f 5)"
           echo "Binary size is $size bytes ($((size / (1024 * 1024))) mb)" >> $GITHUB_STEP_SUMMARY
 
       - name: Dump mstat
-        run: dotnet run --project test/MStatDumper/MStatDumper.csproj -c release -f ${{ matrix.tfm }} -- "test/Npgsql.NativeAotTests/obj/Release/net8.0/linux-x64/native/Npgsql.NativeAotTests.mstat" md >> $GITHUB_STEP_SUMMARY
+        run: dotnet run --project test/MStatDumper/MStatDumper.csproj -c release -f ${{ matrix.tfm }} -- "test/Npgsql.NativeAotTests/obj/Release/net9.0/linux-x64/native/Npgsql.NativeAotTests.mstat" md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload mstat
         uses: actions/upload-artifact@v4

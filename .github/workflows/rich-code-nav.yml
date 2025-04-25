@@ -23,10 +23,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Build
-        run: dotnet build Npgsql.sln --configuration Debug
+        run: dotnet build --configuration Debug
         shell: bash
 
       - name: Rich Navigation Indexing

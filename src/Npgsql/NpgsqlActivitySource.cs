@@ -9,7 +9,7 @@ namespace Npgsql;
 
 static class NpgsqlActivitySource
 {
-    static readonly ActivitySource Source = new("Npgsql", "0.1.0");
+    static readonly ActivitySource Source = new("Npgsql", "0.2.0");
 
     internal static bool IsEnabled => Source.HasListeners();
 
@@ -61,6 +61,22 @@ static class NpgsqlActivitySource
         return activity;
     }
 
+    internal static Activity? ConnectionOpen(NpgsqlConnector connector)
+    {
+        if (!connector.DataSource.Configuration.TracingOptions.EnablePhysicalOpenTracing)
+            return null;
+
+        var dbName = connector.Settings.Database ?? connector.InferredUserName;
+        var activity = Source.StartActivity(dbName, ActivityKind.Client);
+        if (activity is not { IsAllDataRequested: true })
+            return activity;
+
+        activity.SetTag("db.system", "postgresql");
+        activity.SetTag("db.connection_string", connector.UserFacingConnectionString);
+
+        return activity;
+    }
+
     internal static void Enrich(Activity activity, NpgsqlConnector connector)
     {
         if (!activity.IsAllDataRequested)
@@ -107,12 +123,13 @@ static class NpgsqlActivitySource
 
     internal static void CommandStop(Activity activity)
     {
-        activity.SetTag("otel.status_code", "OK");
+        activity.SetStatus(ActivityStatusCode.Ok);
         activity.Dispose();
     }
 
     internal static void SetException(Activity activity, Exception ex, bool escaped = true)
     {
+        // TODO: We can instead use Activity.AddException whenever we start using .NET 9
         var tags = new ActivityTagsCollection
         {
             { "exception.type", ex.GetType().FullName },
@@ -122,8 +139,8 @@ static class NpgsqlActivitySource
         };
         var activityEvent = new ActivityEvent("exception", tags: tags);
         activity.AddEvent(activityEvent);
-        activity.SetTag("otel.status_code", "ERROR");
-        activity.SetTag("otel.status_description", ex is PostgresException pgEx ? pgEx.SqlState : ex.Message);
+        var statusDescription = ex is PostgresException pgEx ? pgEx.SqlState : ex.Message;
+        activity.SetStatus(ActivityStatusCode.Error, statusDescription);
         activity.Dispose();
     }
 }

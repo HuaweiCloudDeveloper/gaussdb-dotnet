@@ -28,24 +28,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-24.04]
         pg_major: [17, 16, 15, 14, 13]
         config: [Release]
-        test_tfm: [net8.0]
+        test_tfm: [net9.0]
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             pg_major: 17
             config: Debug
-            test_tfm: net8.0
+            test_tfm: net9.0
           - os: macos-15
             pg_major: 16
             config: Release
-            test_tfm: net8.0
+            test_tfm: net9.0
           - os: windows-2022
             pg_major: 17
             config: Release
+            test_tfm: net9.0
+          - os: ubuntu-24.04
+            pg_major: 17
+            config: Release
             test_tfm: net8.0
-#          - os: ubuntu-22.04
+#          - os: ubuntu-24.04
 #            pg_major: 17
 #            config: Release
 #            test_tfm: net8.0
@@ -68,7 +72,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Build
         run: dotnet build -c ${{ matrix.config }}
@@ -80,10 +84,9 @@ jobs:
           # First uninstall any PostgreSQL installed on the image
           dpkg-query -W --showformat='${Package}\n' 'postgresql-*' | xargs sudo dpkg -P postgresql
 
-          # Import the repository signing key
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main ${{ matrix.pg_major }}" >> /etc/apt/sources.list.d/pgdg.list'
+          # Automated repository configuration
+          sudo apt install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get update -qq
           sudo apt-get install -qq postgresql-${{ matrix.pg_major }}
           export PGDATA=/etc/postgresql/${{ matrix.pg_major }}/main
@@ -233,6 +236,7 @@ jobs:
       - name: Start PostgreSQL ${{ matrix.pg_major }} (MacOS)
         if: startsWith(matrix.os, 'macos')
         run: |
+            brew update
             brew install postgresql@${{ matrix.pg_major }}
           
             PGDATA=/opt/homebrew/var/postgresql@${{ matrix.pg_major }}
@@ -333,7 +337,7 @@ jobs:
 
   publish-ci:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.repository == 'npgsql/npgsql'
     environment: myget
 
@@ -350,10 +354,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Pack
-        run: dotnet pack Npgsql.sln --configuration Release --property:PackageOutputPath="$PWD/nupkgs" --version-suffix "ci.$(date -u +%Y%m%dT%H%M%S)+sha.${GITHUB_SHA:0:9}" -p:ContinuousIntegrationBuild=true
+        run: dotnet pack --configuration Release --property:PackageOutputPath="$PWD/nupkgs" --version-suffix "ci.$(date -u +%Y%m%dT%H%M%S)+sha.${GITHUB_SHA:0:9}" -p:ContinuousIntegrationBuild=true
 
       - name: Upload artifacts (nupkg)
         uses: actions/upload-artifact@v4
@@ -373,7 +377,7 @@ jobs:
 
   release:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' && startsWith(github.repository, 'npgsql/') && needs.build.outputs.is_release == 'true'
     environment: nuget.org
 
@@ -382,10 +386,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.0
+        uses: actions/setup-dotnet@v4.3.1
 
       - name: Pack
-        run: dotnet pack Npgsql.sln --configuration Release --property:PackageOutputPath="$PWD/nupkgs" -p:ContinuousIntegrationBuild=true      
+        run: dotnet pack --configuration Release --property:PackageOutputPath="$PWD/nupkgs" -p:ContinuousIntegrationBuild=true      
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
