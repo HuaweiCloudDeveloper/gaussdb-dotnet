@@ -44,6 +44,23 @@ sealed class AuthenticationMD5PasswordMessage  : AuthenticationRequestMessage
         => Salt = salt;
 }
 
+sealed class AuthenticationSHA256PasswordMessage : AuthenticationRequestMessage
+{
+    internal override AuthenticationRequestType AuthRequestType => AuthenticationRequestType.SHA256Password;
+
+    internal byte[] Salt { get; }
+
+    internal static AuthenticationSHA256PasswordMessage Load(NpgsqlReadBuffer buf)
+    {
+        var salt = new byte[32]; // SHA-256盐值通常为32字节
+        buf.ReadBytes(salt, 0, 32);
+        return new AuthenticationSHA256PasswordMessage(salt);
+    }
+
+    AuthenticationSHA256PasswordMessage(byte[] salt)
+        => Salt = salt;
+}
+
 sealed class AuthenticationGSSMessage : AuthenticationRequestMessage
 {
     internal override AuthenticationRequestType AuthRequestType => AuthenticationRequestType.GSS;
@@ -200,5 +217,6 @@ enum AuthenticationRequestType
     SSPI = 9,
     SASL = 10,
     SASLContinue = 11,
-    SASLFinal = 12
+    SASLFinal = 12,
+    SHA256Password = 13
 }

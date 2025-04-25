@@ -46,6 +46,11 @@ partial class NpgsqlConnector
                 await AuthenticateMD5(username, ((AuthenticationMD5PasswordMessage)msg).Salt, async, cancellationToken).ConfigureAwait(false);
                 break;
 
+            case AuthenticationRequestType.SHA256Password:
+                ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
+                await AuthenticateSHA256(username, ((AuthenticationSHA256PasswordMessage)msg).Salt, async, cancellationToken).ConfigureAwait(false);
+                break;
+
             case AuthenticationRequestType.SASL:
                 ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
                 await AuthenticateSASL(((AuthenticationSASLMessage)msg).Mechanisms, username, async,
@@ -315,6 +320,48 @@ partial class NpgsqlConnector
             result = new byte[Encoding.UTF8.GetByteCount(resultString) + 1];
             Encoding.UTF8.GetBytes(resultString, 0, resultString.Length, result, 0);
             result[^1] = 0;
+        }
+
+        await WritePassword(result, async, cancellationToken).ConfigureAwait(false);
+        await Flush(async, cancellationToken).ConfigureAwait(false);
+    }
+
+    async Task AuthenticateSHA256(string username, byte[] salt, bool async, CancellationToken cancellationToken = default)
+    {
+        var passwd = await GetPassword(username, async, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(passwd))
+            throw new NpgsqlException("No password has been provided but the backend requires one (in SHA256)");
+
+        byte[] result;
+        {
+            // 1. 计算 password + username 的 SHA256 哈希
+            var passwordBytes = Encoding.UTF8.GetBytes(passwd);
+            var usernameBytes = Encoding.UTF8.GetBytes(username);
+            var combined = new byte[passwordBytes.Length + usernameBytes.Length];
+            passwordBytes.CopyTo(combined, 0);
+            usernameBytes.CopyTo(combined, passwordBytes.Length);
+
+            var firstHash = SHA256.HashData(combined);
+
+            // 2. 合并第一次哈希结果与盐，计算第二次 SHA256 哈希
+            var secondInput = new byte[firstHash.Length + salt.Length];
+            firstHash.CopyTo(secondInput, 0);
+            salt.CopyTo(secondInput, firstHash.Length);
+
+            var finalHash = SHA256.HashData(secondInput);
+
+            // 3. 构建 "sha256" 前缀的十六进制字符串
+            var hexBuilder = new StringBuilder("sha256");
+            foreach (var b in finalHash)
+            {
+                hexBuilder.Append(b.ToString("x2")); // 小写十六进制，两位补零
+            }
+            var resultStr = hexBuilder.ToString();
+
+            // 4. 转换为字节数组（包含末尾 null 终止符）
+            result = new byte[Encoding.UTF8.GetByteCount(resultStr) + 1];
+            Encoding.UTF8.GetBytes(resultStr, 0, resultStr.Length, result, 0);
+            result[^1] = 0; // 添加 null 终止符（PostgreSQL 协议要求）
         }
 
         await WritePassword(result, async, cancellationToken).ConfigureAwait(false);
