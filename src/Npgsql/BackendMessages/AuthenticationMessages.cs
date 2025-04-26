@@ -81,6 +81,19 @@ sealed class AuthenticationSHA256PasswordMessage : AuthenticationRequestMessage
     }
 }
 
+sealed class AuthenticationMD5SHA256PasswordMessage : AuthenticationRequestMessage
+{
+    internal override AuthenticationRequestType AuthRequestType => AuthenticationRequestType.MD5SHA256Password;
+
+    internal ReadOnlyMemory<byte> Salt { get; }
+    internal string RandomCode { get; }
+    public AuthenticationMD5SHA256PasswordMessage(NpgsqlReadBuffer buf)
+    {
+        RandomCode = buf.ReadString(64);
+        Salt = buf.ReadMemory(4);
+    }
+}
+
 #endregion SHA256Password
 
 
@@ -126,7 +139,8 @@ enum AuthenticationRequestType
     GSS = 7,
     GSSContinue = 8,
     SSPI = 9,
-    SHA256Password = 10
+    SHA256Password = 10,
+    MD5SHA256Password = 11
 }
 
 enum PasswordStoreType

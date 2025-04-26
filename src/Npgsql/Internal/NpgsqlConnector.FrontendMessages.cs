@@ -451,8 +451,6 @@ partial class NpgsqlConnector
         await WriteBuffer.DirectWrite(new ReadOnlyMemory<byte>(payload, offset, count), async, cancellationToken).ConfigureAwait(false);
     }
 
-    internal Task WriteSHA256Response(byte[] payload, bool async, CancellationToken cancellationToken = default) => WritePassword(payload, async, cancellationToken);
-
     #endregion Authentication
 
     internal Task WritePregenerated(byte[] data, bool async = false, CancellationToken cancellationToken = default)

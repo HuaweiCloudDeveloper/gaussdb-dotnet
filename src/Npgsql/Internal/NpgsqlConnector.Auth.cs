@@ -51,6 +51,12 @@ partial class NpgsqlConnector
                 await AuthenticateSHA256(username, (AuthenticationSHA256PasswordMessage)msg, async, cancellationToken).ConfigureAwait(false);
                 break;
 
+            case AuthenticationRequestType.MD5SHA256Password:
+                ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
+                await AuthenticateMD5SHA256(username, (AuthenticationMD5SHA256PasswordMessage)msg, async, cancellationToken)
+                    .ConfigureAwait(false);
+                break;
+
             case AuthenticationRequestType.GSS:
             case AuthenticationRequestType.SSPI:
                 ThrowIfNotAllowed(requiredAuthModes, msg.AuthRequestType == AuthenticationRequestType.GSS ? RequireAuthMode.GSS : RequireAuthMode.SSPI);
@@ -237,22 +243,62 @@ partial class NpgsqlConnector
 
         var result = new byte[hValue.Length  * 2 + 1];
         BytesToHex(hValue, result, 0, hValue.Length);
-        await WriteSHA256Response(result, async, cancellationToken).ConfigureAwait(false);
+        await WritePassword(result, async, cancellationToken).ConfigureAwait(false);
         await Flush(async, cancellationToken).ConfigureAwait(false);
+    }
 
-        static void BytesToHex(byte[] bytes, byte[] hex, int offset, int length)
+    async Task AuthenticateMD5SHA256(string username, AuthenticationMD5SHA256PasswordMessage message, bool async, CancellationToken cancellationToken = default)
+    {
+        var password = await GetPassword(username, async, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(password))
+            throw new NpgsqlException("No password has been provided but the backend requires one (in SHA256)");
+
+        var passwordBytes = NpgsqlWriteBuffer.UTF8Encoding.GetBytes(password);
+
+        // https://github.com/HuaweiCloudDeveloper/gaussdb-r2dbc/blob/54783aa7ba09731300b31d9cf366185d0bf50447/src/main/java/io/r2dbc/gaussdb/util/MD5Digest.java#L227
+        var randomCodeBytes = Convert.FromHexString(message.RandomCode);
+
+        var passwordKeyBytes = Rfc2898DeriveBytes.Pbkdf2(passwordBytes, randomCodeBytes,
+            2048, HashAlgorithmName.SHA1, 32
+        );
+
+        var serverKey = HMACSHA256.HashData(passwordKeyBytes, "Sever Key"u8);
+        var clientKey = HMACSHA256.HashData(passwordKeyBytes, "Client Key"u8);
+        var storedKey = SHA256.HashData(clientKey);
+
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(message.RandomCode);
+        stringBuilder.Append(Convert.ToHexString(serverKey).ToLowerInvariant());
+        stringBuilder.Append(Convert.ToHexString(storedKey).ToLowerInvariant());
+        var encryptedString = stringBuilder.ToString();
+
+        byte[] passDigest;
+        using (var md5 = MD5.Create())
         {
-            var lookup = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-            var pos = offset;
-            for (var i = 0; i < length; ++i)
-            {
-                var c = bytes[i] & 255;
-                var j = c >> 4;
-                hex[pos++] = (byte)lookup[j];
-                j = c & 15;
-                hex[pos++] = (byte)lookup[j];
-            }
+            // Convert the string to bytes using UTF-8 encoding
+            var stringBytes = NpgsqlWriteBuffer.UTF8Encoding.GetBytes(encryptedString);
+
+            // Update the hash state with the string bytes
+            // The 'null, 0' arguments are for the output buffer, which isn't needed here
+            md5.TransformBlock(stringBytes, 0, stringBytes.Length, null, 0);
+
+            // Update the hash state with the salt bytes and finalize the hash calculation
+            // This is the final block of data being added.
+            var saltBytes = message.Salt.ToArray();
+            md5.TransformFinalBlock(saltBytes, 0, saltBytes.Length);
+
+            // Retrieve the computed hash digest
+            ArgumentNullException.ThrowIfNull(md5.Hash);
+            passDigest = md5.Hash;
         }
+
+        var result = new byte[MD5.HashSizeInBytes * 2 + 3];
+        result[0] = (byte)'m';
+        result[1] = (byte)'d';
+        result[2] = (byte)'5';
+        BytesToHex(passDigest, result, 3, MD5.HashSizeInBytes);
+        await WritePassword(result, async, cancellationToken).ConfigureAwait(false);
+        await Flush(async, cancellationToken).ConfigureAwait(false);
     }
 
     internal async Task AuthenticateGSS(bool async)
@@ -324,5 +370,19 @@ partial class NpgsqlConnector
         }
 
         return password;
+    }
+
+    static void BytesToHex(byte[] bytes, byte[] hex, int offset, int length)
+    {
+        var lookup = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+        var pos = offset;
+        for (var i = 0; i < length; ++i)
+        {
+            var c = bytes[i] & 255;
+            var j = c >> 4;
+            hex[pos++] = (byte)lookup[j];
+            j = c & 15;
+            hex[pos++] = (byte)lookup[j];
+        }
     }
 }
