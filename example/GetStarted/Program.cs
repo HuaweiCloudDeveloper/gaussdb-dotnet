@@ -15,6 +15,22 @@ if (conn.State is ConnectionState.Closed)
 Console.WriteLine($@"Connection state: {conn.State}");
 
 {
+    await TestScalar();
+    await TestReader();
+}
+
+Console.WriteLine(@"Completed!");
+
+
+async Task TestScalar()
+{
+    await using var cmd = new NpgsqlCommand("SELECT 1", conn);
+    var result = await cmd.ExecuteScalarAsync();
+    Console.WriteLine(result);
+}
+
+async Task TestReader()
+{
     await using (var cmd = new NpgsqlCommand("SELECT * FROM employees", conn))
     {
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -29,5 +45,3 @@ Console.WriteLine($@"Connection state: {conn.State}");
         }
     }
 }
-
-Console.WriteLine(@"Completed!");
