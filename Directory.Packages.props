@@ -43,5 +43,8 @@
 
     <!-- NativeAOT -->
     <PackageVersion Include="Mono.Cecil" Version="0.11.5" />
+
+    <!-- Examples -->
+    <PackageVersion Include="dotenv.net" Version="3.2.1" />
   </ItemGroup>
 </Project>

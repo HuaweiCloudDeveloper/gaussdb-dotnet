@@ -48,13 +48,7 @@ partial class NpgsqlConnector
 
             case AuthenticationRequestType.SHA256Password:
                 ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
-                await AuthenticateSHA256(username, ((AuthenticationSHA256PasswordMessage)msg).Salt, async, cancellationToken).ConfigureAwait(false);
-                break;
-
-            case AuthenticationRequestType.SASL:
-                ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
-                await AuthenticateSASL(((AuthenticationSASLMessage)msg).Mechanisms, username, async,
-                    cancellationToken).ConfigureAwait(false);
+                await AuthenticateSHA256(username, (AuthenticationSHA256PasswordMessage)msg, async, cancellationToken).ConfigureAwait(false);
                 break;
 
             case AuthenticationRequestType.GSS:
@@ -91,112 +85,6 @@ partial class NpgsqlConnector
 
         await WritePassword(encoded, async, cancellationToken).ConfigureAwait(false);
         await Flush(async, cancellationToken).ConfigureAwait(false);
-    }
-
-    async Task AuthenticateSASL(List<string> mechanisms, string username, bool async, CancellationToken cancellationToken)
-    {
-        // At the time of writing PostgreSQL only supports SCRAM-SHA-256 and SCRAM-SHA-256-PLUS
-        var serverSupportsSha256 = mechanisms.Contains("SCRAM-SHA-256");
-        var allowSha256 = serverSupportsSha256 && Settings.ChannelBinding != ChannelBinding.Require;
-        var serverSupportsSha256Plus = mechanisms.Contains("SCRAM-SHA-256-PLUS");
-        var allowSha256Plus = serverSupportsSha256Plus && Settings.ChannelBinding != ChannelBinding.Disable;
-        if (!allowSha256 && !allowSha256Plus)
-        {
-            if (serverSupportsSha256 && Settings.ChannelBinding == ChannelBinding.Require)
-                throw new NpgsqlException($"Couldn't connect because {nameof(ChannelBinding)} is set to {nameof(ChannelBinding.Require)} " +
-                                          "but the server doesn't support SCRAM-SHA-256-PLUS");
-            if (serverSupportsSha256Plus && Settings.ChannelBinding == ChannelBinding.Disable)
-                throw new NpgsqlException($"Couldn't connect because {nameof(ChannelBinding)} is set to {nameof(ChannelBinding.Disable)} " +
-                                          "but the server doesn't support SCRAM-SHA-256");
-
-            throw new NpgsqlException("No supported SASL mechanism found (only SCRAM-SHA-256 and SCRAM-SHA-256-PLUS are supported for now). " +
-                                      "Mechanisms received from server: " + string.Join(", ", mechanisms));
-        }
-
-        var mechanism = string.Empty;
-        var cbindFlag = string.Empty;
-        var cbind = string.Empty;
-        var successfulBind = false;
-
-        if (allowSha256Plus)
-            DataSource.TransportSecurityHandler.AuthenticateSASLSha256Plus(this, ref mechanism, ref cbindFlag, ref cbind, ref successfulBind);
-
-        if (!successfulBind && allowSha256)
-        {
-            mechanism = "SCRAM-SHA-256";
-            // We can get here if PostgreSQL supports only SCRAM-SHA-256 or there was an error while binding to SCRAM-SHA-256-PLUS
-            // Or the user specifically requested to not use bindings
-            // So, we set 'n' (client does not support binding) if there was an error while binding
-            // or 'y' (client supports but server doesn't) in other case
-            cbindFlag = serverSupportsSha256Plus ? "n" : "y";
-            cbind = serverSupportsSha256Plus ? "biws" : "eSws";
-            successfulBind = true;
-            IsScram = true;
-        }
-
-        if (!successfulBind)
-        {
-            // We can get here if PostgreSQL supports only SCRAM-SHA-256-PLUS but there was an error while binding to it
-            throw new NpgsqlException("Unable to bind to SCRAM-SHA-256-PLUS, check logs for more information");
-        }
-
-        var passwd = await GetPassword(username, async, cancellationToken).ConfigureAwait(false);
-        if (string.IsNullOrEmpty(passwd))
-            throw new NpgsqlException($"No password has been provided but the backend requires one (in SASL/{mechanism})");
-
-        // Assumption: the write buffer is big enough to contain all our outgoing messages
-        var clientNonce = GetNonce();
-
-        await WriteSASLInitialResponse(mechanism, NpgsqlWriteBuffer.UTF8Encoding.GetBytes($"{cbindFlag},,n=*,r={clientNonce}"), async, cancellationToken).ConfigureAwait(false);
-        await Flush(async, cancellationToken).ConfigureAwait(false);
-
-        var saslContinueMsg = Expect<AuthenticationSASLContinueMessage>(await ReadMessage(async).ConfigureAwait(false), this);
-        if (saslContinueMsg.AuthRequestType != AuthenticationRequestType.SASLContinue)
-            throw new NpgsqlException("[SASL] AuthenticationSASLContinue message expected");
-        var firstServerMsg = AuthenticationSCRAMServerFirstMessage.Load(saslContinueMsg.Payload, ConnectionLogger);
-        if (!firstServerMsg.Nonce.StartsWith(clientNonce, StringComparison.Ordinal))
-            throw new NpgsqlException("[SCRAM] Malformed SCRAMServerFirst message: server nonce doesn't start with client nonce");
-
-        var saltBytes = Convert.FromBase64String(firstServerMsg.Salt);
-        var saltedPassword = Hi(passwd.Normalize(NormalizationForm.FormKC), saltBytes, firstServerMsg.Iteration);
-
-        var clientKey = HMAC(saltedPassword, "Client Key");
-        var storedKey = SHA256.HashData(clientKey);
-        var clientFirstMessageBare = $"n=*,r={clientNonce}";
-        var serverFirstMessage = $"r={firstServerMsg.Nonce},s={firstServerMsg.Salt},i={firstServerMsg.Iteration}";
-        var clientFinalMessageWithoutProof = $"c={cbind},r={firstServerMsg.Nonce}";
-
-        var authMessage = $"{clientFirstMessageBare},{serverFirstMessage},{clientFinalMessageWithoutProof}";
-
-        var clientSignature = HMAC(storedKey, authMessage);
-        var clientProofBytes = Xor(clientKey, clientSignature);
-        var clientProof = Convert.ToBase64String(clientProofBytes);
-
-        var serverKey = HMAC(saltedPassword, "Server Key");
-        var serverSignature = HMAC(serverKey, authMessage);
-
-        var messageStr = $"{clientFinalMessageWithoutProof},p={clientProof}";
-
-        await WriteSASLResponse(Encoding.UTF8.GetBytes(messageStr), async, cancellationToken).ConfigureAwait(false);
-        await Flush(async, cancellationToken).ConfigureAwait(false);
-
-        var saslFinalServerMsg = Expect<AuthenticationSASLFinalMessage>(await ReadMessage(async).ConfigureAwait(false), this);
-        if (saslFinalServerMsg.AuthRequestType != AuthenticationRequestType.SASLFinal)
-            throw new NpgsqlException("[SASL] AuthenticationSASLFinal message expected");
-
-        var scramFinalServerMsg = AuthenticationSCRAMServerFinalMessage.Load(saslFinalServerMsg.Payload, ConnectionLogger);
-        if (scramFinalServerMsg.ServerSignature != Convert.ToBase64String(serverSignature))
-            throw new NpgsqlException("[SCRAM] Unable to verify server signature");
-
-
-        static string GetNonce()
-        {
-            using var rncProvider = RandomNumberGenerator.Create();
-            var nonceBytes = new byte[18];
-
-            rncProvider.GetBytes(nonceBytes);
-            return Convert.ToBase64String(nonceBytes);
-        }
     }
 
     internal void AuthenticateSASLSha256Plus(ref string mechanism, ref string cbindFlag, ref string cbind,
@@ -326,46 +214,45 @@ partial class NpgsqlConnector
         await Flush(async, cancellationToken).ConfigureAwait(false);
     }
 
-    async Task AuthenticateSHA256(string username, byte[] salt, bool async, CancellationToken cancellationToken = default)
+    async Task AuthenticateSHA256(string username, AuthenticationSHA256PasswordMessage message, bool async, CancellationToken cancellationToken = default)
     {
-        var passwd = await GetPassword(username, async, cancellationToken).ConfigureAwait(false);
-        if (string.IsNullOrEmpty(passwd))
+        var password = await GetPassword(username, async, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(password))
             throw new NpgsqlException("No password has been provided but the backend requires one (in SHA256)");
 
-        byte[] result;
-        {
-            // 1. 计算 password + username 的 SHA256 哈希
-            var passwordBytes = Encoding.UTF8.GetBytes(passwd);
-            var usernameBytes = Encoding.UTF8.GetBytes(username);
-            var combined = new byte[passwordBytes.Length + usernameBytes.Length];
-            passwordBytes.CopyTo(combined, 0);
-            usernameBytes.CopyTo(combined, passwordBytes.Length);
+        var normalizedPassword = password.Normalize(NormalizationForm.FormKC);
+        var passwordBytes = NpgsqlWriteBuffer.UTF8Encoding.GetBytes(normalizedPassword);
 
-            var firstHash = SHA256.HashData(combined);
+        var saltBytes = Convert.FromHexString(message.RandomCode);
+        var tokenBytes = Convert.FromHexString(message.Token);
 
-            // 2. 合并第一次哈希结果与盐，计算第二次 SHA256 哈希
-            var secondInput = new byte[firstHash.Length + salt.Length];
-            firstHash.CopyTo(secondInput, 0);
-            salt.CopyTo(secondInput, firstHash.Length);
+        var passwordKeyBytes = Rfc2898DeriveBytes.Pbkdf2(passwordBytes, saltBytes,
+                message.Iteration, HashAlgorithmName.SHA1, 32
+            );
 
-            var finalHash = SHA256.HashData(secondInput);
+        var clientKey = HMACSHA256.HashData(passwordKeyBytes, "Client Key"u8);
+        var storedKey = SHA256.HashData(clientKey);
+        var tokenKey = HMACSHA256.HashData(storedKey, tokenBytes);
+        var hValue = Xor(tokenKey, clientKey);
 
-            // 3. 构建 "sha256" 前缀的十六进制字符串
-            var hexBuilder = new StringBuilder("sha256");
-            foreach (var b in finalHash)
-            {
-                hexBuilder.Append(b.ToString("x2")); // 小写十六进制，两位补零
-            }
-            var resultStr = hexBuilder.ToString();
-
-            // 4. 转换为字节数组（包含末尾 null 终止符）
-            result = new byte[Encoding.UTF8.GetByteCount(resultStr) + 1];
-            Encoding.UTF8.GetBytes(resultStr, 0, resultStr.Length, result, 0);
-            result[^1] = 0; // 添加 null 终止符（PostgreSQL 协议要求）
-        }
-
-        await WritePassword(result, async, cancellationToken).ConfigureAwait(false);
+        var result = new byte[hValue.Length  * 2 + 1];
+        BytesToHex(hValue, result, 0, hValue.Length);
+        await WriteSHA256Response(result, async, cancellationToken).ConfigureAwait(false);
         await Flush(async, cancellationToken).ConfigureAwait(false);
+
+        static void BytesToHex(byte[] bytes, byte[] hex, int offset, int length)
+        {
+            var lookup = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+            var pos = offset;
+            for (var i = 0; i < length; ++i)
+            {
+                var c = bytes[i] & 255;
+                var j = c >> 4;
+                hex[pos++] = (byte)lookup[j];
+                j = c & 15;
+                hex[pos++] = (byte)lookup[j];
+            }
+        }
     }
 
     internal async Task AuthenticateGSS(bool async)

@@ -398,8 +398,6 @@ partial class NpgsqlConnector
 
     internal void WriteStartup(Dictionary<string, string> parameters)
     {
-        const int protocolVersion3 = 3 << 16; // 196608
-
         var len = sizeof(int) +  // Length
                   sizeof(int) +  // Protocol version
                   sizeof(byte);  // Trailing zero byte
@@ -414,7 +412,9 @@ partial class NpgsqlConnector
             throw new Exception("Startup message bigger than buffer");
 
         WriteBuffer.WriteInt32(len);
-        WriteBuffer.WriteInt32(protocolVersion3);
+        // GaussDB protocol version
+        WriteBuffer.WriteInt16(3);
+        WriteBuffer.WriteInt16(51);
 
         foreach (var kv in parameters)
         {
@@ -451,33 +451,7 @@ partial class NpgsqlConnector
         await WriteBuffer.DirectWrite(new ReadOnlyMemory<byte>(payload, offset, count), async, cancellationToken).ConfigureAwait(false);
     }
 
-    internal async Task WriteSASLInitialResponse(string mechanism, byte[] initialResponse, bool async, CancellationToken cancellationToken = default)
-    {
-        var len = sizeof(byte)                                               +  // Message code
-                  sizeof(int)                                                +  // Length
-                  NpgsqlWriteBuffer.UTF8Encoding.GetByteCount(mechanism) + sizeof(byte) +  // Mechanism plus null terminator
-                  sizeof(int)                                                +  // Initial response length
-                  (initialResponse?.Length ?? 0);                               // Initial response payload
-
-        WriteBuffer.StartMessage(len);
-        if (WriteBuffer.WriteSpaceLeft < len)
-            await WriteBuffer.Flush(async, cancellationToken).ConfigureAwait(false);
-
-        WriteBuffer.WriteByte(FrontendMessageCode.Password);
-        WriteBuffer.WriteInt32(len - 1);
-
-        WriteBuffer.WriteString(mechanism);
-        WriteBuffer.WriteByte(0);   // null terminator
-        if (initialResponse == null)
-            WriteBuffer.WriteInt32(-1);
-        else
-        {
-            WriteBuffer.WriteInt32(initialResponse.Length);
-            WriteBuffer.WriteBytes(initialResponse);
-        }
-    }
-
-    internal Task WriteSASLResponse(byte[] payload, bool async, CancellationToken cancellationToken = default) => WritePassword(payload, async, cancellationToken);
+    internal Task WriteSHA256Response(byte[] payload, bool async, CancellationToken cancellationToken = default) => WritePassword(payload, async, cancellationToken);
 
     #endregion Authentication
 

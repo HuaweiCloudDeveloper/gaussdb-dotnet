@@ -1543,9 +1543,7 @@ public sealed partial class NpgsqlConnector
                 AuthenticationRequestType.GSS               => AuthenticationGSSMessage.Instance,
                 AuthenticationRequestType.SSPI              => AuthenticationSSPIMessage.Instance,
                 AuthenticationRequestType.GSSContinue       => AuthenticationGSSContinueMessage.Load(buf, len),
-                AuthenticationRequestType.SASL              => new AuthenticationSASLMessage(buf),
-                AuthenticationRequestType.SASLContinue      => new AuthenticationSASLContinueMessage(buf, len - 4),
-                AuthenticationRequestType.SASLFinal         => new AuthenticationSASLFinalMessage(buf, len - 4),
+                AuthenticationRequestType.SHA256Password    => AuthenticationSHA256PasswordMessage.Load(buf),
                 _ => throw new NotSupportedException($"Authentication method not supported (Received: {authType})")
             };
 
