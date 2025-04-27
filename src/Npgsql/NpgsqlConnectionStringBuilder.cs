@@ -1836,7 +1836,7 @@ enum RequireAuthMode
     /// <summary>
     /// All authentication methods. For internal use.
     /// </summary>
-    All = Password | MD5 | GSS | SSPI | ScramSHA256 | None
+    All = Password | MD5 | GSS | SSPI | ScramSHA256 | None | MD5SHA256
 }
 
 #endregion
