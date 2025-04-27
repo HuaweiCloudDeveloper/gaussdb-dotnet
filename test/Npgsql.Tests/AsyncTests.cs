@@ -11,11 +11,28 @@ public class AsyncTests : TestBase
     public async Task NonQuery()
     {
         await using var conn = await OpenConnectionAsync();
+
+        // 创建临时表（使用正确的临时表语法）
         var tableName = await CreateTempTable(conn, "int INTEGER");
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"INSERT INTO {tableName} (int) VALUES (4)";
-        await cmd.ExecuteNonQueryAsync();
-        Assert.That(await conn.ExecuteScalarAsync($"SELECT int FROM {tableName}"), Is.EqualTo(4));
+        await using (var createTableCmd = conn.CreateCommand())
+        {
+            createTableCmd.CommandText = $"CREATE TEMP TABLE {tableName} (int INTEGER)";
+            await createTableCmd.ExecuteNonQueryAsync();
+        }
+
+        // 插入数据
+        await using (var insertCmd = conn.CreateCommand())
+        {
+            insertCmd.CommandText = $"INSERT INTO {tableName} (int) VALUES (4)";
+            await insertCmd.ExecuteNonQueryAsync();
+        }
+
+        // 验证结果
+        await using (var selectCmd = conn.CreateCommand())
+        {
+            selectCmd.CommandText = $"SELECT int FROM {tableName}";
+            Assert.That(await selectCmd.ExecuteScalarAsync(), Is.EqualTo(4));
+        }
     }
 
     [Test]

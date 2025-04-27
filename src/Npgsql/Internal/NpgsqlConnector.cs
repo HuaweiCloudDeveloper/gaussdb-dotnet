@@ -1544,6 +1544,7 @@ public sealed partial class NpgsqlConnector
                 AuthenticationRequestType.SSPI              => AuthenticationSSPIMessage.Instance,
                 AuthenticationRequestType.GSSContinue       => AuthenticationGSSContinueMessage.Load(buf, len),
                 AuthenticationRequestType.SHA256Password    => AuthenticationSHA256PasswordMessage.Load(buf),
+                AuthenticationRequestType.MD5SHA256Password => new AuthenticationMD5SHA256PasswordMessage(buf),
                 _ => throw new NotSupportedException($"Authentication method not supported (Received: {authType})")
             };
 
@@ -2315,13 +2316,13 @@ public sealed partial class NpgsqlConnector
         }
         if (DatabaseInfo.SupportsDiscardSequences)
         {
-            sb.Append("DISCARD SEQUENCES;");
-            _resetWithoutDeallocateResponseCount++;
+            //sb.Append("DISCARD SEQUENCES;");
+            //_resetWithoutDeallocateResponseCount++;
         }
         if (DatabaseInfo.SupportsDiscardTemp)
         {
-            sb.Append("DISCARD TEMP");
-            _resetWithoutDeallocateResponseCount++;
+            //sb.Append("DISCARD TEMP");
+            //_resetWithoutDeallocateResponseCount++;
         }
 
         _resetWithoutDeallocateResponseCount++;  // One ReadyForQuery at the end

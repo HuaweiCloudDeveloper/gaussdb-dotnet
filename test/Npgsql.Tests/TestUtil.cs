@@ -202,10 +202,9 @@ public static class TestUtil
         await conn.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName} CASCADE;
+DROP TABLE IF EXISTS {tableName};
 COMMIT;
 CREATE TABLE {tableName} ({columns});");
-
         return tableName;
     }
 
@@ -219,7 +218,7 @@ CREATE TABLE {tableName} ({columns});");
         await conn.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName} CASCADE;
+DROP TABLE IF EXISTS {tableName} ;
 COMMIT");
         return tableName;
     }
@@ -234,7 +233,7 @@ COMMIT");
         await dataSource.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName} CASCADE;
+DROP TABLE IF EXISTS {tableName};
 COMMIT;
 CREATE TABLE {tableName} ({columns});");
         return tableName;
@@ -246,7 +245,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> CreateTempSchema(NpgsqlConnection conn)
     {
         var schemaName = "temp_schema" + Interlocked.Increment(ref _tempSchemaCounter);
-        await conn.ExecuteNonQueryAsync($"DROP SCHEMA IF EXISTS {schemaName} CASCADE; CREATE SCHEMA {schemaName}");
+        await conn.ExecuteNonQueryAsync($"DROP SCHEMA IF EXISTS {schemaName} ; CREATE SCHEMA {schemaName}");
         return schemaName;
     }
 
@@ -257,7 +256,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempViewName(NpgsqlConnection conn)
     {
         var viewName = "temp_view" + Interlocked.Increment(ref _tempViewCounter);
-        await conn.ExecuteNonQueryAsync($"DROP VIEW IF EXISTS {viewName} CASCADE");
+        await conn.ExecuteNonQueryAsync($"DROP VIEW IF EXISTS {viewName} ");
         return viewName;
     }
 
@@ -268,7 +267,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempMaterializedViewName(NpgsqlConnection conn)
     {
         var viewName = "temp_materialized_view" + Interlocked.Increment(ref _tempViewCounter);
-        await conn.ExecuteNonQueryAsync($"DROP MATERIALIZED VIEW IF EXISTS {viewName} CASCADE");
+        await conn.ExecuteNonQueryAsync($"DROP MATERIALIZED VIEW IF EXISTS {viewName} ");
         return viewName;
     }
 
@@ -279,7 +278,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempFunctionName(NpgsqlConnection conn)
     {
         var functionName = "temp_func" + Interlocked.Increment(ref _tempFunctionCounter);
-        await conn.ExecuteNonQueryAsync($"DROP FUNCTION IF EXISTS {functionName} CASCADE");
+        await conn.ExecuteNonQueryAsync($"DROP FUNCTION IF EXISTS {functionName}");
         return functionName;
     }
 
@@ -293,7 +292,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempProcedureName(NpgsqlDataSource dataSource)
     {
         var procedureName = "temp_procedure" + Interlocked.Increment(ref _tempProcedureCounter);
-        await dataSource.ExecuteNonQueryAsync($"DROP PROCEDURE IF EXISTS {procedureName} CASCADE");
+        await dataSource.ExecuteNonQueryAsync($"DROP PROCEDURE IF EXISTS {procedureName} ");
         return procedureName;
     }
 
@@ -307,7 +306,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempProcedureName(NpgsqlConnection connection)
     {
         var procedureName = "temp_procedure" + Interlocked.Increment(ref _tempProcedureCounter);
-        await connection.ExecuteNonQueryAsync($"DROP PROCEDURE IF EXISTS {procedureName} CASCADE");
+        await connection.ExecuteNonQueryAsync($"DROP PROCEDURE IF EXISTS {procedureName} ");
         return procedureName;
     }
 
@@ -318,7 +317,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempTypeName(NpgsqlConnection conn)
     {
         var typeName = "temp_type" + Interlocked.Increment(ref _tempTypeCounter);
-        await conn.ExecuteNonQueryAsync($"DROP TYPE IF EXISTS {typeName} CASCADE");
+        await conn.ExecuteNonQueryAsync($"DROP TYPE IF EXISTS {typeName}");
         return typeName;
     }
 

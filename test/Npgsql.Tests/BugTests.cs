@@ -396,7 +396,7 @@ CREATE TYPE {compositeType} AS (value {domainType})");
     {
         await using var conn = await OpenConnectionAsync();
         // Note that the type has to be named boolean
-        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" CASCADE");
+        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");//CASCADE
         await conn.ExecuteNonQueryAsync("CREATE DOMAIN pg_temp.\"boolean\" AS bool");
         conn.ReloadTypes();
         var tableName = await CreateTempTable(conn, $"mybool \"boolean\"");

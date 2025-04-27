@@ -69,15 +69,9 @@ sealed class AuthenticationSHA256PasswordMessage : AuthenticationRequestMessage
         var passwordStoreTypeValue = buf.ReadInt32();
         var passwordStoreType = (PasswordStoreType)passwordStoreTypeValue;
 
-        return passwordStoreType switch
-        {
-            PasswordStoreType.PlainText => AuthenticationCleartextPasswordMessage.Instance,
-            PasswordStoreType.MD5 => AuthenticationMD5PasswordMessage.Load(buf),
-            PasswordStoreType.SHA256 => new AuthenticationSHA256PasswordMessage(
-                passwordStoreType, buf
-            ),
-            _ => throw new InvalidOperationException($"Not supported password store type({passwordStoreTypeValue})")
-        };
+        return new AuthenticationSHA256PasswordMessage(
+            passwordStoreType, buf
+        );
     }
 }
 
@@ -87,6 +81,7 @@ sealed class AuthenticationMD5SHA256PasswordMessage : AuthenticationRequestMessa
 
     internal ReadOnlyMemory<byte> Salt { get; }
     internal string RandomCode { get; }
+
     public AuthenticationMD5SHA256PasswordMessage(NpgsqlReadBuffer buf)
     {
         RandomCode = buf.ReadString(64);
@@ -95,7 +90,6 @@ sealed class AuthenticationMD5SHA256PasswordMessage : AuthenticationRequestMessa
 }
 
 #endregion SHA256Password
-
 
 sealed class AuthenticationGSSMessage : AuthenticationRequestMessage
 {
@@ -147,5 +141,6 @@ enum PasswordStoreType
 {
     PlainText = 0,
     MD5 = 1,
-    SHA256 = 2
+    SHA256 = 2,
+    MD5SHA256 = 3
 }

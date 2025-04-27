@@ -1830,6 +1830,10 @@ enum RequireAuthMode
     /// </summary>
     None = 32,
     /// <summary>
+    /// MD5 SHA256.
+    /// </summary>
+    MD5SHA256 = 64,
+    /// <summary>
     /// All authentication methods. For internal use.
     /// </summary>
     All = Password | MD5 | GSS | SSPI | ScramSHA256 | None

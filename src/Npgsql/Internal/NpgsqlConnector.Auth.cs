@@ -52,7 +52,7 @@ partial class NpgsqlConnector
                 break;
 
             case AuthenticationRequestType.MD5SHA256Password:
-                ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.ScramSHA256);
+                ThrowIfNotAllowed(requiredAuthModes, RequireAuthMode.MD5SHA256);
                 await AuthenticateMD5SHA256(username, (AuthenticationMD5SHA256PasswordMessage)msg, async, cancellationToken)
                     .ConfigureAwait(false);
                 break;
