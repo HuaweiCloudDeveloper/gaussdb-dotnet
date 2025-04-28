@@ -8,8 +8,8 @@ using NUnit.Framework;
 using Npgsql.NodaTime.Internal;
 
 namespace Npgsql.PluginTests;
-
-[NonParallelizable] // Since this test suite manipulates an AppContext switch
+//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
+/*[NonParallelizable] // Since this test suite manipulates an AppContext switch
 public class LegacyNodaTimeTests : TestBase, IDisposable
 {
     const string TimeZone = "Europe/Berlin";
@@ -102,3 +102,4 @@ public class LegacyNodaTimeTests : TestBase, IDisposable
 
     #endregion Support
 }
+*/

@@ -6,7 +6,8 @@ using NUnit.Framework;
 
 namespace Npgsql.Tests.Types;
 
-public class HstoreTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
+//todo: 该扩展功能不安全，可能会引发意外情况。
+/*public class HstoreTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {
     [Test]
     public Task Hstore()
@@ -63,4 +64,4 @@ public class HstoreTests(MultiplexingMode multiplexingMode) : MultiplexingTestBa
         TestUtil.MinimumPgVersion(conn, "9.1", "Hstore introduced in PostgreSQL 9.1");
         await TestUtil.EnsureExtensionAsync(conn, "hstore", "9.1");
     }
-}
+}*/

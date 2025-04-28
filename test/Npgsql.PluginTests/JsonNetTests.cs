@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable AccessToDisposedClosure
-
-namespace Npgsql.PluginTests;
+//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
+/*namespace Npgsql.PluginTests;
 
 /// <summary>
 /// Tests for the Npgsql.Json.NET mapping plugin
@@ -279,3 +279,4 @@ public class JsonNetTests(NpgsqlDbType npgsqlDbType) : TestBase
 
     NpgsqlDataSource JsonDataSource = default!;
 }
+*/

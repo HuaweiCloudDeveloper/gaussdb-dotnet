@@ -29,18 +29,18 @@ sealed class DbColumnSchemaGenerator
 
     #region Columns queries
 
+    //todo: 因为pg_column_is_updatable函数不存在，简化验证逻辑仅允许普通表或分区表。
     static string GenerateColumnsQuery(Version pgVersion, string columnFieldFilter) =>
         $@"SELECT
      typ.oid AS typoid, nspname, relname, attname, attrelid, attnum, attnotnull,
      {(pgVersion.IsGreaterOrEqual(10) ? "attidentity != ''" : "FALSE")} AS isidentity,
      CASE WHEN typ.typtype = 'd' THEN typ.typtypmod ELSE atttypmod END AS typmod,
      CASE WHEN atthasdef THEN (SELECT pg_get_expr(adbin, cls.oid) FROM pg_attrdef WHERE adrelid = cls.oid AND adnum = attr.attnum) ELSE NULL END AS default,
-     CASE WHEN ((cls.relkind = ANY (ARRAY['r'::""char"", 'p'::""char""]))
-               OR ((cls.relkind = ANY (ARRAY['v'::""char"", 'f'::""char""]))
-               AND pg_column_is_updatable((cls.oid)::regclass, attr.attnum, false)))
-  	           AND attr.attidentity NOT IN ('a') THEN 'true'::boolean
-               ELSE 'false'::boolean
-               END AS is_updatable,
+     CASE WHEN ((cls.relkind IN ('r', 'p'))  -- 仅允许普通表或分区表
+          AND attr.attidentity NOT IN ('a'))
+          THEN true
+          ELSE false
+          END AS is_updatable,
      EXISTS (
        SELECT * FROM pg_index
        WHERE pg_index.indrelid = cls.oid AND
@@ -207,7 +207,7 @@ ORDER BY attnum";
             BaseColumnName = reader.GetString(reader.GetOrdinal("attname")),
             ColumnAttributeNumber = reader.GetInt16(reader.GetOrdinal("attnum")),
             IsKey = reader.GetBoolean(reader.GetOrdinal("isprimarykey")),
-            IsReadOnly = !reader.GetBoolean(reader.GetOrdinal("is_updatable")),
+            //IsReadOnly = !reader.GetBoolean(reader.GetOrdinal("is_updatable")),
             IsUnique = reader.GetBoolean(reader.GetOrdinal("isunique")),
 
             TableOID = reader.GetFieldValue<uint>(reader.GetOrdinal("attrelid")),

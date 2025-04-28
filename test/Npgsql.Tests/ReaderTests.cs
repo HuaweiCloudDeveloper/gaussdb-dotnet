@@ -180,7 +180,8 @@ public class ReaderTests : MultiplexingTestBase
     }
 
 #pragma warning disable CS0618
-    [Test]
+    //todo:已过时
+    /*[Test]
     public async Task StatementOID_legacy_batching()
     {
         using var conn = await OpenConnectionAsync();
@@ -212,7 +213,7 @@ UPDATE {table} SET name='b' WHERE name='doesnt_exist';";
             Assert.That(reader.Statements[0].OID, Is.EqualTo(0));
             Assert.That(reader.Statements[1].OID, Is.EqualTo(0));
         }
-    }
+    }*/
 #pragma warning restore CS0618
 
     [Test]
@@ -400,7 +401,8 @@ INSERT INTO {table} (name) VALUES ('Text with '' single quote');");
         await using var dataSource = CreateDataSource(csb => csb.MaxPoolSize = 1);
         await using var conn = await dataSource.OpenConnectionAsync();
         var typeName = await GetTempTypeName(conn);
-        await conn.ExecuteNonQueryAsync($"CREATE DOMAIN {typeName} AS VARCHAR(10)");
+        //todo:不支持DOMAIN关键字
+        //await conn.ExecuteNonQueryAsync($"CREATE DOMAIN {typeName} AS VARCHAR(10)");
         await Task.Yield(); // TODO: fix multiplexing deadlock bug
         conn.ReloadTypes();
         await using var cmd = new NpgsqlCommand($"SELECT 'one'::{typeName}", conn);

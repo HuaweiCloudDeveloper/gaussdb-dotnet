@@ -135,10 +135,11 @@ public class SchemaTests(SyncOrAsync syncOrAsync) : SyncOrAsyncTestBase(syncOrAs
         var enumType = await GetTempTypeName(adminConnection);
         var compositeType = await GetTempTypeName(adminConnection);
         var domainType = await GetTempTypeName(adminConnection);
+        //CREATE DOMAIN {domainType} AS TEXT
         await adminConnection.ExecuteNonQueryAsync($@"
 CREATE TYPE {enumType} AS ENUM ('a', 'b');
 CREATE TYPE {compositeType} AS (a INTEGER);
-CREATE DOMAIN {domainType} AS TEXT");
+");
 
         var dataSourceBuilder = CreateDataSourceBuilder();
         dataSourceBuilder.MapEnum<TestEnum>(enumType);
@@ -198,10 +199,10 @@ CREATE DOMAIN {domainType} AS TEXT");
         Assert.That(compositeRow["DataType"], Is.EqualTo("Npgsql.Tests.SchemaTests+TestComposite"));
         Assert.That(compositeRow["ProviderDbType"], Is.SameAs(DBNull.Value));
 
-        var domainRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("." + domainType));
-        Assert.That(domainRow["DataType"], Is.EqualTo("System.String"));
-        Assert.That(domainRow["ProviderDbType"], Is.EqualTo((int)NpgsqlDbType.Text));
-        Assert.That(domainRow["IsBestMatch"], Is.False);
+        //var domainRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("." + domainType));
+        //Assert.That(domainRow["DataType"], Is.EqualTo("System.String"));
+        //Assert.That(domainRow["ProviderDbType"], Is.EqualTo((int)NpgsqlDbType.Text));
+        //Assert.That(domainRow["IsBestMatch"], Is.False);
     }
 
     enum TestEnum { A, B };
@@ -482,6 +483,7 @@ CREATE TABLE {table} (
     {
         await using var conn = await OpenConnectionAsync();
 
+        //todo: 不支持line line,不存在 maccaddr8 macaddr8,
         var columnDefinition = @"
 p0 integer PRIMARY KEY NOT NULL,
 achar char,
@@ -511,7 +513,6 @@ lseg lseg,
 path path,
 polygon polygon,
 circle circle,
-line line,
 inet inet,
 macaddr macaddr,
 uuid uuid,
@@ -522,7 +523,6 @@ numrange numrange,
 oidvector oidvector,
 ""bigint[]"" bigint[],
 cidr cidr,
-maccaddr8 macaddr8,
 jsonb jsonb,
 json json,
 xml xml,

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using static Npgsql.Tests.TestUtil;
 
 namespace Npgsql.Tests;
-
-public class NotificationTests : TestBase
+//todo: 不支持LISTEN、NOTIFY
+/*public class NotificationTests : TestBase
 {
     [Test, Description("Simple LISTEN/NOTIFY scenario")]
     public void Notification()
@@ -227,4 +227,4 @@ public class NotificationTests : TestBase
 
         await conn.ReloadTypesAsync();
     }
-}
+}*/

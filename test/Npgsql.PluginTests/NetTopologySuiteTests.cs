@@ -10,8 +10,8 @@ using NUnit.Framework;
 using static Npgsql.Tests.TestUtil;
 
 namespace Npgsql.PluginTests;
-
-public class NetTopologySuiteTests : TestBase
+//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
+/*public class NetTopologySuiteTests : TestBase
 {
     static readonly TestCaseData[] TestCases =
     [
@@ -324,3 +324,4 @@ public class NetTopologySuiteTests : TestBase
 
     ConcurrentDictionary<Ordinates, NpgsqlDataSource> NtsDataSources = new();
 }
+*/

@@ -5,8 +5,8 @@ using NUnit.Framework;
 using static Npgsql.Tests.TestUtil;
 
 namespace Npgsql.Tests.Types;
-
-public class DomainTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
+//todo:均因为不支持DOMAIN关键字
+/*public class DomainTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {
     [Test, Description("Resolves a domain type handler via the different pathways")]
     public async Task Domain_resolution()
@@ -98,4 +98,4 @@ CREATE TYPE {compositeType} AS (value {domainType});");
             npgsqlDbType: null,
             isDefaultForWriting: false);
     }
-}
+}*/

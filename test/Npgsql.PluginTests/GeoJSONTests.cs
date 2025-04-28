@@ -13,8 +13,8 @@ using NUnit.Framework;
 using static Npgsql.Tests.TestUtil;
 
 namespace Npgsql.PluginTests;
-
-public class GeoJSONTests : TestBase
+//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
+/*public class GeoJSONTests : TestBase
 {
     public struct TestData
     {
@@ -432,3 +432,4 @@ public class GeoJSONTests : TestBase
 
     ConcurrentDictionary<GeoJSONOptions, NpgsqlDataSource> GeoJsonDataSources = new();
 }
+*/

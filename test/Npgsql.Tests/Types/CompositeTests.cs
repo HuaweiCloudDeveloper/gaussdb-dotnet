@@ -288,7 +288,8 @@ CREATE TYPE {type} AS (simple int, two_words int, some_database_name int)");
             npgsqlDbType: null);
     }
 
-    [Test, IssueLink("https://github.com/npgsql/npgsql/issues/856")]
+    //todo:不支持DOMAIN关键字
+    /*[Test, IssueLink("https://github.com/npgsql/npgsql/issues/856")]
     public async Task Composite_containing_domain_type()
     {
         await using var adminConnection = await OpenConnectionAsync();
@@ -310,7 +311,7 @@ CREATE TYPE {compositeType} AS (street TEXT, postal_code {domainType})");
             @"(""Main St."",12345)",
             compositeType,
             npgsqlDbType: null);
-    }
+    }*/
 
     [Test]
     public async Task Composite_containing_array_type()

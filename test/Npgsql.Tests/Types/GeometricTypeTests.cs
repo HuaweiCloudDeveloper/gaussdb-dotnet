@@ -12,13 +12,15 @@ namespace Npgsql.Tests.Types;
 /// </remarks>
 class GeometricTypeTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {
-    [Test]
+    //todo: 不支持point,运行时报错
+    /*[Test]
     public Task Point()
-        => AssertType(new NpgsqlPoint(1.2, 3.4), "(1.2,3.4)", "point", NpgsqlDbType.Point);
+        => AssertType(new NpgsqlPoint(1.2, 3.4), "(1.2,3.4)", "point", NpgsqlDbType.Point);*/
 
-    [Test]
+    //todo: 不支持line
+    /*[Test]
     public Task Line()
-        => AssertType(new NpgsqlLine(1, 2, 3), "{1,2,3}", "line", NpgsqlDbType.Line);
+        => AssertType(new NpgsqlLine(1, 2, 3), "{1,2,3}", "line", NpgsqlDbType.Line);*/
 
     [Test]
     public Task LineSegment()

@@ -5,8 +5,8 @@ using NUnit.Framework;
 namespace Npgsql.Tests;
 
 #pragma warning disable CS0618 // Large object support is obsolete
-
-public class LargeObjectTests : TestBase
+//todo: GaussDB 不支持Large object ，参考：https://bbs.huaweicloud.com/forum/thread-0211178941356334146-1-1.html
+/*public class LargeObjectTests : TestBase
 {
     [Test]
     public void Test()
@@ -47,4 +47,4 @@ public class LargeObjectTests : TestBase
 
         transaction.Rollback();
     }
-}
+}*/

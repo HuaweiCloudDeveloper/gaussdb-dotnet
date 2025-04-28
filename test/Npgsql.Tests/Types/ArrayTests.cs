@@ -323,7 +323,8 @@ SELECT onedim, twodim FROM (VALUES
 
         await using var conn = await OpenConnectionAsync();
         MinimumPgVersion(conn, "11.0", "Arrays of domains were introduced in PostgreSQL 11");
-        await conn.ExecuteNonQueryAsync("CREATE DOMAIN pg_temp.posint AS integer CHECK (VALUE > 0);");
+        //todo:不支持DOMAIN
+        //await conn.ExecuteNonQueryAsync("CREATE DOMAIN pg_temp.posint AS integer CHECK (VALUE > 0);");
         await conn.ReloadTypesAsync();
         await using var cmd = new NpgsqlCommand("SELECT @p1::posint[], @p2::posint[][]", conn);
         var oneDim = new[] { 1, 3, 5, 9 };

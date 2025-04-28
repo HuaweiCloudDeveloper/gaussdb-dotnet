@@ -95,12 +95,12 @@ public abstract class NpgsqlDatabaseInfo
     /// <summary>
     /// Whether the backend supports the DISCARD TEMP statement.
     /// </summary>
-    public virtual bool SupportsDiscardTemp => Version.IsGreaterOrEqual(8, 3);
+    public virtual bool SupportsDiscardTemp => false; //Version.IsGreaterOrEqual(8, 3);
 
     /// <summary>
     /// Whether the backend supports the DISCARD statement.
     /// </summary>
-    public virtual bool SupportsDiscard => Version.IsGreaterOrEqual(8, 3);
+    public virtual bool SupportsDiscard => false; //Version.IsGreaterOrEqual(8, 3);
 
     /// <summary>
     /// Reports whether the backend uses the newer integer timestamp representation.

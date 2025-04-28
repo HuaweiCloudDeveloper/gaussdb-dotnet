@@ -334,9 +334,10 @@ public class BugTests : TestBase
         var enumType = await GetTempTypeName(adminConnection);
         var domainType = await GetTempTypeName(adminConnection);
         var compositeType = await GetTempTypeName(adminConnection);
+        //todo: 不支持CREATE DOMAIN {domainType} AS {enumType} NOT NULL;
         await adminConnection.ExecuteNonQueryAsync($@"
 CREATE TYPE {enumType} AS ENUM ('left', 'right');
-CREATE DOMAIN {domainType} AS {enumType} NOT NULL;
+CREATE TYPE {domainType} AS {enumType} NOT NULL;
 CREATE TYPE {compositeType} AS (value {domainType})");
         var table = await CreateTempTable(adminConnection, $"value {compositeType}");
 
@@ -396,8 +397,8 @@ CREATE TYPE {compositeType} AS (value {domainType})");
     {
         await using var conn = await OpenConnectionAsync();
         // Note that the type has to be named boolean
-        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");//CASCADE
-        await conn.ExecuteNonQueryAsync("CREATE DOMAIN pg_temp.\"boolean\" AS bool");
+        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");//todo:不支持CASCADE
+        await conn.ExecuteNonQueryAsync("CREATE pg_temp.\"boolean\" AS bool");//todo:不支持DOMAIN
         conn.ReloadTypes();
         var tableName = await CreateTempTable(conn, $"mybool \"boolean\"");
         await conn.ExecuteNonQueryAsync($"INSERT INTO {tableName} (mybool) VALUES (TRUE)");
