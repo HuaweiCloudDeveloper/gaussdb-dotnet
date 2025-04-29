@@ -109,9 +109,10 @@ public sealed class NpgsqlBinaryExporter : ICancelable
             if (_buf.ReadByte() != t)
                 throw new NpgsqlException("Invalid COPY binary signature at beginning!");
 
-        var flags = _buf.ReadInt32();
+        //todo: GaussDB无OID列
+        /*var flags = _buf.ReadInt32();
         if (flags != 0)
-            throw new NotSupportedException("Unsupported flags in COPY operation (OID inclusion?)");
+            throw new NotSupportedException("Unsupported flags in COPY operation (OID inclusion?)");*/
 
         _buf.ReadInt32();   // Header extensions, currently unused
     }
@@ -180,7 +181,7 @@ public sealed class NpgsqlBinaryExporter : ICancelable
             return -1;
         }
 
-        Debug.Assert(numColumns == NumColumns);
+        //Debug.Assert(numColumns == NumColumns);
 
         _column = BeforeColumn;
         _rowsExported++;

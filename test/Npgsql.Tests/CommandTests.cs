@@ -686,7 +686,10 @@ public class CommandTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
 
         if (IsMultiplexing)
         {
-            Assert.That(async () => await conn.ExecuteNonQueryAsync("set standard_conforming_strings=off"),
+            //todo: 暂未弄清用法
+            // https://support.huaweicloud.com/centralized-m-compatibility-v8-gaussdb/gaussdb-83-0067.html
+            var result = await conn.ExecuteNonQueryAsync($"set standard_conforming_strings=off");
+            Assert.That(async () => await conn.ExecuteNonQueryAsync($"set standard_conforming_strings=off"),
                 Throws.Exception.TypeOf<NotSupportedException>());
         }
         else

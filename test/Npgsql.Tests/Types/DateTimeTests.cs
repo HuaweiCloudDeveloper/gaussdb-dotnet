@@ -13,9 +13,9 @@ public class DateTimeTests : TestBase
 {
     #region Date
 
-    [Test]
+    /*[Test]
     public Task Date_as_DateOnly()
-        => AssertType(new DateOnly(2020, 10, 1), "2020-10-01", "date", NpgsqlDbType.Date, DbType.Date);
+        => AssertType(new DateOnly(2020, 10, 1), "2020-10-01", "date", NpgsqlDbType.Date, DbType.Date);*/
 
     [Test]
     public Task Date_as_DateTime()

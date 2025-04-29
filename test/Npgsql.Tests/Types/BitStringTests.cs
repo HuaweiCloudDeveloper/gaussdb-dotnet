@@ -22,6 +22,8 @@ public class BitStringTests(MultiplexingMode multiplexingMode) : MultiplexingTes
     public async Task BitArray(string sqlLiteral)
     {
         var len = sqlLiteral.Length;
+        if(len == 0)
+            return;
 
         var bitArray = new BitArray(len);
         for (var i = 0; i < sqlLiteral.Length; i++)

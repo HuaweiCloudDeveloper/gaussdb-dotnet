@@ -36,7 +36,7 @@ static class NpgsqlSchema
             "TABLES"                => GetTables(conn, restrictions, async, cancellationToken),
             "COLUMNS"               => GetColumns(conn, restrictions, async, cancellationToken),
             "VIEWS"                 => GetViews(conn, restrictions, async, cancellationToken),
-            "MATERIALIZEDVIEWS"     => GetMaterializedViews(conn, restrictions, async, cancellationToken),
+            //"MATERIALIZEDVIEWS"     => GetMaterializedViews(conn, restrictions, async, cancellationToken),
             "USERS"                 => GetUsers(conn, restrictions, async, cancellationToken),
             "INDEXES"               => GetIndexes(conn, restrictions, async, cancellationToken),
             "INDEXCOLUMNS"          => GetIndexColumns(conn, restrictions, async, cancellationToken),
@@ -378,7 +378,7 @@ WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
             }, cancellationToken);
     }
 
-    static Task<DataTable> GetMaterializedViews(NpgsqlConnection conn, string?[]? restrictions, bool async, CancellationToken cancellationToken = default)
+    /*static Task<DataTable> GetMaterializedViews(NpgsqlConnection conn, string?[]? restrictions, bool async, CancellationToken cancellationToken = default)
     {
         var dataTable = new DataTable("MaterializedViews")
         {
@@ -396,6 +396,7 @@ WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
 
         var sql = new StringBuilder();
 
+        //todo: 未在GaussDB在线文档中找到pg_matviews相关概念
         sql.Append("""SELECT current_database(), schemaname, matviewname, matviewowner, hasindexes, ispopulated FROM pg_catalog.pg_matviews""");
 
         return ParseResults(
@@ -412,6 +413,7 @@ WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
                 row["is_populated"] = GetFieldValueOrDBNull<bool>(reader, 5);
             }, cancellationToken);
     }
+    */
 
     static Task<DataTable> GetUsers(NpgsqlConnection conn, string?[]? restrictions, bool async, CancellationToken cancellationToken = default)
     {

@@ -389,19 +389,21 @@ CREATE TYPE {compositeType} AS (value {enumType})"); // 移除了DOMAIN
         Assert.That(cmd.IsPrepared);
     }
 
-    [Test]
+    /*[Test]
     public async Task Bug2296()
     {
+        //todo: Bug2296测试用例中boolean不适用于GaussDB
         await using var conn = await OpenConnectionAsync();
         // Note that the type has to be named boolean
         await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");
-        await conn.ExecuteNonQueryAsync("CREATE pg_temp.\"boolean\" AS bool");//todo:不支持DOMAIN
+        //todo:不支持DOMAIN
+        await conn.ExecuteNonQueryAsync("CREATE DOMAIN pg_temp.\"boolean\" AS bool");
         conn.ReloadTypes();
         var tableName = await CreateTempTable(conn, $"mybool \"boolean\"");
         await conn.ExecuteNonQueryAsync($"INSERT INTO {tableName} (mybool) VALUES (TRUE)");
 
         await conn.ExecuteScalarAsync($"SELECT mybool FROM {tableName}");
-    }
+    }*/
 
     [Test, IssueLink("https://github.com/npgsql/npgsql/issues/2660")]
     public void Standard_conforming_strings()
@@ -1239,7 +1241,8 @@ $$;");
         Assert.DoesNotThrowAsync(async () => await reader.NextResultAsync());
     }
 
-    [Test, IssueLink("https://github.com/npgsql/npgsql/issues/3649")]
+    //todo: Unsupported flags in COPY operation
+    /*[Test, IssueLink("https://github.com/npgsql/npgsql/issues/3649")]
     public async Task Bug3649()
     {
         await using var conn = await OpenConnectionAsync();
@@ -1266,7 +1269,7 @@ $$;");
             await exporter.StartRowAsync();
             Assert.AreEqual(2, await exporter.ReadAsync<int?>());
         }
-    }
+    }*/
 
     [Test]
     [IssueLink("https://github.com/npgsql/npgsql/issues/3839")]

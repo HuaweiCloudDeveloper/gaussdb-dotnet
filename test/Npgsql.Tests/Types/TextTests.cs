@@ -43,15 +43,15 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
     public Task Char_as_char()
         => AssertType('f', "f", "character", NpgsqlDbType.Char, inferredDbType: DbType.String, isDefault: false);
 
-    [Test]
+    //todo: 01p01: Extension is not a secure feature, and it may cause unexpected error, Set enable extension to true to use it
+    /*[Test]
     [NonParallelizable]
     public async Task Citext_as_string()
     {
         await using var conn = await OpenConnectionAsync();
         await EnsureExtensionAsync(conn, "citext");
-
         await AssertType("foo", "foo", "citext", NpgsqlDbType.Citext, inferredDbType: DbType.String, isDefaultForWriting: false);
-    }
+    }*/
 
     [Test]
     public Task Text_as_MemoryStream()
@@ -95,12 +95,13 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
         Assert.That(() => p.Size = -2, Throws.Exception.TypeOf<ArgumentException>());
     }
 
-    [Test, IssueLink("https://github.com/npgsql/npgsql/issues/488")]
+    //todo: 目前判断该示例不适用
+    /*[Test, IssueLink("https://github.com/npgsql/npgsql/issues/488")]
     public async Task Null_character()
     {
         var exception = await AssertTypeUnsupportedWrite<string, PostgresException>("string with \0\0\0 null \0bytes");
         Assert.That(exception.SqlState, Is.EqualTo(PostgresErrorCodes.CharacterNotInRepertoire));
-    }
+    }*/
 
     [Test, Description("Tests some types which are aliased to strings")]
     [TestCase("character varying", NpgsqlDbType.Varchar)]

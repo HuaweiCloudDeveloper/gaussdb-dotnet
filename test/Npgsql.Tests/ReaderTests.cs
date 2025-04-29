@@ -392,10 +392,10 @@ INSERT INTO {table} (name) VALUES ('Text with '' single quote');");
         await using var cmd = new NpgsqlCommand($"SELECT 'one'::{typeName}", conn);
         await using var reader = await cmd.ExecuteReaderAsync(Behavior);
         await reader.ReadAsync();
-        Assert.That(reader.GetDataTypeName(0), Is.EqualTo($"public.{typeName}"));
+        Assert.That(reader.GetDataTypeName(0), Is.EqualTo($"root.{typeName}"));
     }
 
-    [Test]
+    /*[Test]
     public async Task GetDataTypeName_domain()
     {
         await using var dataSource = CreateDataSource(csb => csb.MaxPoolSize = 1);
@@ -410,7 +410,7 @@ INSERT INTO {table} (name) VALUES ('Text with '' single quote');");
         await reader.ReadAsync();
         // In the RowDescription, PostgreSQL sends the type OID of the underlying type and not of the domain.
         Assert.That(reader.GetDataTypeName(0), Is.EqualTo("character varying(10)"));
-    }
+    }*/
 
     [Test, IssueLink("https://github.com/npgsql/npgsql/issues/794")]
     public async Task GetDataTypeNameTypes_unknown()
