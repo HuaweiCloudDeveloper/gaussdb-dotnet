@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Data;
 using System.Threading.Tasks;
 using NodaTime;
@@ -8,8 +8,8 @@ using NpgsqlTypes;
 using NUnit.Framework;
 
 namespace Npgsql.PluginTests;
-//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
-/*[TestFixture(false)]
+
+[TestFixture(false)]
 #if DEBUG
 [TestFixture(true)]
 [NonParallelizable] // Since this test suite manipulates an AppContext switch

@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,8 +13,8 @@ using NUnit.Framework;
 using static Npgsql.Tests.TestUtil;
 
 namespace Npgsql.PluginTests;
-//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
-/*public class GeoJSONTests : TestBase
+
+public class GeoJSONTests : TestBase
 {
     public struct TestData
     {

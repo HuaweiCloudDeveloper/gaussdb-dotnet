@@ -92,15 +92,25 @@ public abstract class NpgsqlDatabaseInfo
     /// </summary>
     public virtual bool SupportsUnlisten => Version.IsGreaterOrEqual(6, 4);  // overridden by PostgresDatabase
 
+    #region Not supported DISCARD
+
+    /**
+     * todo:因为不支持DISCARD所以移除了
+     * Version.IsGreaterOrEqual(8, 3);
+     * 将所有设置为false。
+     */
+
     /// <summary>
     /// Whether the backend supports the DISCARD TEMP statement.
     /// </summary>
-    public virtual bool SupportsDiscardTemp => false; //Version.IsGreaterOrEqual(8, 3);
+    public virtual bool SupportsDiscardTemp => false;
 
     /// <summary>
     /// Whether the backend supports the DISCARD statement.
     /// </summary>
-    public virtual bool SupportsDiscard => false; //Version.IsGreaterOrEqual(8, 3);
+    public virtual bool SupportsDiscard => false;
+
+    #endregion
 
     /// <summary>
     /// Reports whether the backend uses the newer integer timestamp representation.

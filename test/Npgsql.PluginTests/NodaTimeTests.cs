@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Data;
 using System.Threading.Tasks;
 using NodaTime;
@@ -10,8 +10,8 @@ using static Npgsql.Tests.TestUtil;
 
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable AccessToDisposedClosure
-//todo: 经沟通GaussDB中可能默认关闭了插件功能，暂不测试
-/*namespace Npgsql.PluginTests;
+
+namespace Npgsql.PluginTests;
 
 public class NodaTimeTests : MultiplexingTestBase, IDisposable
 {
