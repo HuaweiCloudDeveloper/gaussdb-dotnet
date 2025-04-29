@@ -65,7 +65,7 @@ INSERT INTO table{i} (id, data) VALUES (1, {i});
             for (var i = 0; i < TablesToJoinValues.Max(); i++)
             {
                 cmd.CommandText = $@"
-DROP TABLE IF EXISTS table{i};
+DROP TABLE IF EXISTS table{i} CASCADE;
 CREATE TABLE table{i} (id INT PRIMARY KEY, data INT);
 INSERT INTO table{i} (id, data) VALUES (1, {i});
 ";

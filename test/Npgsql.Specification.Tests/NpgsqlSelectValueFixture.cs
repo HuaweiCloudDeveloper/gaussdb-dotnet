@@ -11,7 +11,7 @@ public class NpgsqlSelectValueFixture : NpgsqlDbFactoryFixture, ISelectValueFixt
 {
     public NpgsqlSelectValueFixture()
         => Utility.ExecuteNonQuery(this, @"
-DROP TABLE IF EXISTS select_value;
+DROP TABLE IF EXISTS select_value CASCADE;
 CREATE TABLE select_value
 (
 	id INTEGER NOT NULL PRIMARY KEY,
@@ -39,7 +39,7 @@ INSERT INTO select_value VALUES
 (5, NULL, true, '9999-12-31', '9999-12-31 23:59:59.999', '9999-12-31 23:59:59.999 +14:00', 99999999999999999999.999999999999999, 1.79e308, 'ccddeeff-aabb-8899-7766-554433221100', 32767, 2147483647, 9223372036854775807, 3.40e38, NULL, '23:59:59.999');
 ");
 
-    public void Dispose() => Utility.ExecuteNonQuery(this, "DROP TABLE IF EXISTS select_value;");
+    public void Dispose() => Utility.ExecuteNonQuery(this, "DROP TABLE IF EXISTS select_value CASCADE;");
 
     public string CreateSelectSql(DbType dbType, ValueKind kind) =>
         $"SELECT \"{dbType.ToString()}\" FROM select_value WHERE id = {(int)kind};";

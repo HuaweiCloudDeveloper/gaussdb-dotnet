@@ -228,7 +228,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
 
         var dbName = GetUniqueIdentifier(nameof(Fail_connect_then_succeed));
         await using var conn1 = await OpenConnectionAsync();
-        await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\"");
+        await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" CASCADE");
         try
         {
             await using var dataSource = CreateDataSource(csb =>
@@ -249,7 +249,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
         }
         finally
         {
-            await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\"");
+            await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" CASCADE");
         }
     }
 
@@ -735,7 +735,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
     public async Task No_database_defaults_to_username()
     {
         var csb = new NpgsqlConnectionStringBuilder(ConnectionString) { Database = null };
-        using var conn = new NpgsqlConnection(csb.ToString());
+        await using var conn = new NpgsqlConnection(csb.ToString());
         Assert.That(conn.Database, Is.EqualTo(csb.Username));
         conn.Open();
         Assert.That(await conn.ExecuteScalarAsync("SELECT current_database()"), Is.EqualTo(csb.Username));
@@ -1269,7 +1269,7 @@ LANGUAGE 'plpgsql'");
         using var conn = await OpenConnectionAsync();
         await conn.ExecuteNonQueryAsync(@"
 
-DROP TABLE IF EXISTS record;
+DROP TABLE IF EXISTS record CASCADE;
 CREATE TABLE record ()");
         try
         {
@@ -1278,7 +1278,7 @@ CREATE TABLE record ()");
         }
         finally
         {
-            await conn.ExecuteNonQueryAsync("DROP TABLE record");
+            await conn.ExecuteNonQueryAsync("DROP TABLE record CASCADE");
         }
     }
 

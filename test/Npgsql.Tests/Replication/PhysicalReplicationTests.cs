@@ -145,7 +145,7 @@ public class PhysicalReplicationTests : SafeReplicationTestBase<PhysicalReplicat
         }
         finally
         {
-            await c.ExecuteNonQueryAsync($"DROP TABLE {tableName}");
+            await c.ExecuteNonQueryAsync($"DROP TABLE {tableName} CASCADE");
         }
     }
 

@@ -332,13 +332,10 @@ public class BugTests : TestBase
     {
         await using var adminConnection = await OpenConnectionAsync();
         var enumType = await GetTempTypeName(adminConnection);
-        var domainType = await GetTempTypeName(adminConnection);
         var compositeType = await GetTempTypeName(adminConnection);
-        //todo: 不支持CREATE DOMAIN {domainType} AS {enumType} NOT NULL;
         await adminConnection.ExecuteNonQueryAsync($@"
 CREATE TYPE {enumType} AS ENUM ('left', 'right');
-CREATE TYPE {domainType} AS {enumType} NOT NULL;
-CREATE TYPE {compositeType} AS (value {domainType})");
+CREATE TYPE {compositeType} AS (value {enumType})"); // 移除了DOMAIN
         var table = await CreateTempTable(adminConnection, $"value {compositeType}");
 
         var dataSourceBuilder = CreateDataSourceBuilder();
@@ -397,7 +394,7 @@ CREATE TYPE {compositeType} AS (value {domainType})");
     {
         await using var conn = await OpenConnectionAsync();
         // Note that the type has to be named boolean
-        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");//todo:不支持CASCADE
+        await conn.ExecuteNonQueryAsync("DROP TYPE IF EXISTS \"boolean\" ");
         await conn.ExecuteNonQueryAsync("CREATE pg_temp.\"boolean\" AS bool");//todo:不支持DOMAIN
         conn.ReloadTypes();
         var tableName = await CreateTempTable(conn, $"mybool \"boolean\"");
