@@ -505,7 +505,7 @@ public sealed partial class NpgsqlConnector
             SerializerOptions = DataSource.SerializerOptions;
             DatabaseInfo = DataSource.DatabaseInfo;
 
-            if (Settings.Pooling && Settings is { Multiplexing: false, NoResetOnClose: false } && DatabaseInfo.SupportsDiscard)
+            if (Settings.Pooling && Settings is { Multiplexing: false, NoResetOnClose: false })
             {
                 _sendResetOnClose = true;
                 GenerateResetMessage();
@@ -2314,19 +2314,8 @@ public sealed partial class NpgsqlConnector
             sb.Append("SELECT pg_advisory_unlock_all();");
             _resetWithoutDeallocateResponseCount += 2;
         }
-        if (DatabaseInfo.SupportsDiscardSequences)
-        {
-            //sb.Append("DISCARD SEQUENCES;");
-            //_resetWithoutDeallocateResponseCount++;
-        }
-        if (DatabaseInfo.SupportsDiscardTemp)
-        {
-            //sb.Append("DISCARD TEMP");
-            //_resetWithoutDeallocateResponseCount++;
-        }
 
         _resetWithoutDeallocateResponseCount++;  // One ReadyForQuery at the end
-
         _resetWithoutDeallocateMessage = PregeneratedMessages.Generate(WriteBuffer, sb.ToString());
     }
 

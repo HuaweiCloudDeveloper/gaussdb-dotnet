@@ -377,6 +377,7 @@ class PoolTests : TestBase
             csb.Port = 44444;
             csb.MaxPoolSize = 1;
         });
+        //todo: 重构时需要关注适配GaussDB连接池
         using var conn = dataSource.CreateConnection();
         for (var i = 0; i < 1; i++)
             Assert.That(() => conn.Open(), Throws.Exception
@@ -449,6 +450,7 @@ class PoolTests : TestBase
     [Test]
     public async Task OnePhysicalConnectionManyCommands()
     {
+        //todo: 操作超时30秒，重构时需要关注适配GaussDB连接池
         const int numParallelCommands = 10000;
 
         await using var dataSource = CreateDataSource(csb =>

@@ -318,8 +318,7 @@ public class SystemTransactionTests : TestBase
         {
             csb.Pooling = pooling;
             csb.Enlist = true;
-            //todo:需要本地有安装gauss db 该测试用例才有意义，否则将测试结果为未连接
-            csb.Host = multipleHosts ? "localhost,127.0.0.1" : csb.Host;
+            //csb.Host = multipleHosts ? "localhost,127.0.0.1" : csb.Host;
         });
 
         using (var scope = new TransactionScope())

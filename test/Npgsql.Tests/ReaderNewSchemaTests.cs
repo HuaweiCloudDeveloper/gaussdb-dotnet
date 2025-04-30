@@ -684,11 +684,11 @@ CREATE TABLE {table2} (foo INTEGER)");
     [Test]
     public async Task NpgsqlDbType()
     {
-        using var conn = await OpenConnectionAsync();
+        await using var conn = await OpenConnectionAsync();
         var table = await CreateTempTable(conn, "foo INTEGER");
 
-        using var cmd = new NpgsqlCommand($"SELECT foo,8::INTEGER FROM {table}", conn);
-        using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly);
+        await using var cmd = new NpgsqlCommand($"SELECT foo,8::INTEGER FROM {table}", conn);
+        await using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly);
         var columns = await GetColumnSchema(reader);
         Assert.That(columns[0].NpgsqlDbType, Is.EqualTo(NpgsqlTypes.NpgsqlDbType.Integer));
         Assert.That(columns[1].NpgsqlDbType, Is.EqualTo(NpgsqlTypes.NpgsqlDbType.Integer));
