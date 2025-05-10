@@ -27,7 +27,7 @@ jobs:
     services:
       # Label used to access the service container
       opengauss:
-        image: enmotech/opengauss:latest
+        image: enmotech/opengauss-lite:latest
         env:
           GS_USERNAME: gaussdb
           GS_PASSWORD: Pasword@123
