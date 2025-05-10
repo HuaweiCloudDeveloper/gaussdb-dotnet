@@ -36,9 +36,9 @@ jobs:
           - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd "su oom && . ~/.profile && /usr/local/opengauss/bin/gs_ctl -d gaussdb_tests -U gaussdb_tests -W 'Password@1234' -p 5432 -h 127.0.0.1 -c 'SELECT 1;'"
-          --health-interval 30s
-          --health-timeout 10s
+          --health-cmd "su oom && . ~/.profile && /usr/local/opengauss/bin/gsql -d gaussdb_tests -U gaussdb_tests -W 'Password@1234' -p 5432 -h 127.0.0.1 -c 'SELECT 1;'"
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 10
 
     strategy:
