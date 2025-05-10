@@ -1,0 +1,69 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'hotfix/**'
+    tags:
+      - '*'
+  pull_request:
+
+# Cancel previous PR branch commits (head_ref is only defined on PRs)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+
+    # Service containers to run with `container-job`
+    # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
+    services:
+      # Label used to access the service container
+      opengauss:
+        image: enmotech/opengauss:latest
+        env:
+          GS_USERNAME: gaussdb
+          GS_PASSWORD: Pasword@123
+        ports:
+          - 5432:5432
+
+    strategy:
+      matrix:
+        include:
+          - config: Release
+            test_tfm: net8.0
+          - config: Release
+            test_tfm: net9.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: NuGet Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Build.targets') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+
+      - name: Test
+        run: |
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.Tests --logger "GitHubActions;report-warnings=false"
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
+        env:
+          NPGSQL_TEST_DB: "Host=opengauss;Port=5432;Username=gaussdb;Password=Pasword@123;Database=postgres"
