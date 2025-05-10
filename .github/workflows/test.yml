@@ -30,7 +30,7 @@ jobs:
         image: enmotech/opengauss-lite:latest
         env:
           GS_USERNAME: gaussdb_tests
-          GS_PASSWORD: gaussdb_tests
+          GS_PASSWORD: Password@1234
           GS_DB: gaussdb_tests
         ports:
           - 5432:5432
@@ -73,4 +73,4 @@ jobs:
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.Tests --logger "GitHubActions;report-warnings=false"
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
         env:
-          NPGSQL_TEST_DB: "Host=opengauss;Port=5432;Username=gaussdb_tests;Password=gaussdb_tests;Database=gaussdb_tests"
+          NPGSQL_TEST_DB: "Host=opengauss;Port=5432;Username=gaussdb_tests;Password=Password@1234;Database=gaussdb_tests"
