@@ -29,8 +29,9 @@ jobs:
       opengauss:
         image: enmotech/opengauss-lite:latest
         env:
-          GS_USERNAME: gaussdb
-          GS_PASSWORD: Pasword@123
+          GS_USERNAME: gaussdb_tests
+          GS_PASSWORD: gaussdb_tests
+          GS_DB: gaussdb_tests
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -72,4 +73,4 @@ jobs:
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.Tests --logger "GitHubActions;report-warnings=false"
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
         env:
-          NPGSQL_TEST_DB: "Host=opengauss;Port=5432;Username=gaussdb;Password=Pasword@123;Database=postgres"
+          NPGSQL_TEST_DB: "Host=opengauss;Port=5432;Username=gaussdb_tests;Password=gaussdb_tests;Database=gaussdb_tests"
