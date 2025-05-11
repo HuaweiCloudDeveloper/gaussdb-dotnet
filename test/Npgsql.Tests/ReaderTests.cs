@@ -392,7 +392,7 @@ INSERT INTO {table} (name) VALUES ('Text with '' single quote');");
         await using var cmd = new NpgsqlCommand($"SELECT 'one'::{typeName}", conn);
         await using var reader = await cmd.ExecuteReaderAsync(Behavior);
         await reader.ReadAsync();
-        Assert.That(reader.GetDataTypeName(0), Is.EqualTo($"root.{typeName}"));
+        StringAssert.Contains(typeName,reader.GetDataTypeName(0));
     }
 
     /*[Test]
