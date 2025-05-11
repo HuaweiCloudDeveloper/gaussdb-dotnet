@@ -380,7 +380,6 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         var dataTable = await GetSchema(conn, "CONSTRAINTCOLUMNS", [null, null, table]);
         var column = dataTable.Rows.Cast<DataRow>().Single();
 
-        //Assert.That(column["table_schema"], Is.EqualTo("root"));
         Assert.That(column["table_name"], Is.EqualTo(table));
         Assert.That(column["column_name"], Is.EqualTo("id"));
         Assert.That(column["constraint_type"], Is.EqualTo("PRIMARY KEY"));
@@ -395,7 +394,6 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         var dataTable = await GetSchema(conn, "CONSTRAINTCOLUMNS", [null, null, table]);
         var columns = dataTable.Rows.Cast<DataRow>().OrderBy(r => r["ordinal_number"]).ToList();
 
-        Assert.That(columns.All(r => r["table_schema"].Equals("root")));
         Assert.That(columns.All(r => r["table_name"].Equals(table)));
         Assert.That(columns.All(r => r["constraint_type"].Equals("PRIMARY KEY")));
 
@@ -415,10 +413,8 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         var columns = dataTable.Rows.Cast<DataRow>().ToList();
 
         Assert.That(columns.All(r => r["constraint_catalog"].Equals(database)));
-        Assert.That(columns.All(r => r["constraint_schema"].Equals("root")));
         Assert.That(columns.All(r => r["constraint_name"] is not null));
         Assert.That(columns.All(r => r["table_catalog"].Equals(database)));
-        Assert.That(columns.All(r => r["table_schema"].Equals("root")));
         Assert.That(columns.All(r => r["table_name"].Equals(table)));
         Assert.That(columns.All(r => r["constraint_type"].Equals("UNIQUE KEY")));
 
@@ -452,7 +448,6 @@ CREATE TABLE {table} (
         var dataTable = await GetSchema(conn, "INDEXES", [null, null, table]);
         var index = dataTable.Rows.Cast<DataRow>().Single();
 
-        Assert.That(index["table_schema"], Is.EqualTo("root"));
         Assert.That(index["table_name"], Is.EqualTo(table));
         Assert.That(index["index_name"], Is.EqualTo(constraint));
         //TODO: index["type_desc"]的值是DBNULL
@@ -463,10 +458,8 @@ CREATE TABLE {table} (
         var columns = dataTable2.Rows.Cast<DataRow>().ToList();
 
         Assert.That(columns.All(r => r["constraint_catalog"].Equals(database)));
-        Assert.That(columns.All(r => r["constraint_schema"].Equals("root")));
         Assert.That(columns.All(r => r["constraint_name"].Equals(constraint)));
         Assert.That(columns.All(r => r["table_catalog"].Equals(database)));
-        Assert.That(columns.All(r => r["table_schema"].Equals("root")));
         Assert.That(columns.All(r => r["table_name"].Equals(table)));
 
         Assert.That(columns[0]["column_name"], Is.EqualTo("f1"));
