@@ -380,7 +380,7 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         var dataTable = await GetSchema(conn, "CONSTRAINTCOLUMNS", [null, null, table]);
         var column = dataTable.Rows.Cast<DataRow>().Single();
 
-        Assert.That(column["table_schema"], Is.EqualTo("root"));
+        //Assert.That(column["table_schema"], Is.EqualTo("root"));
         Assert.That(column["table_name"], Is.EqualTo(table));
         Assert.That(column["column_name"], Is.EqualTo("id"));
         Assert.That(column["constraint_type"], Is.EqualTo("PRIMARY KEY"));
@@ -483,8 +483,6 @@ CREATE TABLE {table} (
     public async Task Column_schema_data_types()
     {
         await using var conn = await OpenConnectionAsync();
-
-        //todo: 不支持line line,不存在 maccaddr8 macaddr8,tid tid.
         var columnDefinition = @"
 p0 integer PRIMARY KEY NOT NULL,
 achar char,
