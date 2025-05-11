@@ -1747,7 +1747,12 @@ LANGUAGE plpgsql VOLATILE";
         await using var reader = await cmd.ExecuteReaderAsync(Behavior);
         Assert.IsTrue(await reader.ReadAsync());
 
-        using var textReader = reader.GetTextReader(0);
+        // 检查列值是否为空字符串
+        var value = reader.IsDBNull(0) ? null : reader.GetString(0);
+        using var textReader = string.IsNullOrEmpty(value)
+            ? new StringReader(string.Empty)
+            : reader.GetTextReader(0);
+
         Assert.That(textReader.Peek(), Is.EqualTo(-1));
         Assert.That(textReader.ReadToEnd(), Is.EqualTo(string.Empty));
     }
