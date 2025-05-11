@@ -29,7 +29,7 @@ jobs:
     services:
       # Label used to access the service container
       opengauss:
-        image: opengauss/opengauss:latest
+        image: opengauss/opengauss:5.0.0
         env:
           # GS_USERNAME: gaussdb # by default
           GS_PASSWORD: Password@1234
