@@ -1763,22 +1763,24 @@ CREATE TABLE record (id INT)");
         }
     }
 
-    [Test]
-    [NonParallelizable] // Sets environment variable
-    public async Task Connect_with_md5_auth_env()
-    {
-        using var _ = SetEnvironmentVariable("PGREQUIREAUTH", $"{RequireAuthMode.MD5}");
-        await using var dataSource = CreateDataSource();
-        try
-        {
-            await using var conn = await dataSource.OpenConnectionAsync();
-        }
-        catch (Exception e) when (!IsOnBuildServer)
-        {
-            Console.WriteLine(e);
-            Assert.Ignore("MD5 authentication doesn't seem to be set up");
-        }
-    }
+    // GaussDB does not support md5 auth
+    // OpenGauss and GaussDB prioritize security and have replaced md5 with sha256
+    // [Test]
+    // [NonParallelizable] // Sets environment variable
+    // public async Task Connect_with_md5_auth_env()
+    // {
+    //     using var _ = SetEnvironmentVariable("PGREQUIREAUTH", $"{RequireAuthMode.MD5}");
+    //     await using var dataSource = CreateDataSource();
+    //     try
+    //     {
+    //         await using var conn = await dataSource.OpenConnectionAsync();
+    //     }
+    //     catch (Exception e) when (!IsOnBuildServer)
+    //     {
+    //         Console.WriteLine(e);
+    //         Assert.Ignore("MD5 authentication doesn't seem to be set up");
+    //     }
+    // }
 
     [Test]
     public void Mixed_auth_methods_not_supported([Values(
