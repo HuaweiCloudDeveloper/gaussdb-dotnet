@@ -484,7 +484,7 @@ CREATE TABLE {table} (
     {
         await using var conn = await OpenConnectionAsync();
 
-        //todo: 不支持line line,不存在 maccaddr8 macaddr8,
+        //todo: 不支持line line,不存在 maccaddr8 macaddr8,tid tid.
         var columnDefinition = @"
 p0 integer PRIMARY KEY NOT NULL,
 achar char,
@@ -529,7 +529,6 @@ json json,
 xml xml,
 tsvector tsvector,
 tsquery tsquery,
-tid tid,
 xid xid,
 cid cid";
         var table = await CreateTempTable(conn, columnDefinition);
