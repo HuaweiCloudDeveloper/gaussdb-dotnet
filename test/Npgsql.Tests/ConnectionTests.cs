@@ -228,7 +228,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
 
         var dbName = GetUniqueIdentifier(nameof(Fail_connect_then_succeed));
         await using var conn1 = await OpenConnectionAsync();
-        await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" CASCADE");
+        await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" ");
         try
         {
             await using var dataSource = CreateDataSource(csb =>
@@ -249,7 +249,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
         }
         finally
         {
-            await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" CASCADE");
+            await conn1.ExecuteNonQueryAsync($"DROP DATABASE IF EXISTS \"{dbName}\" ");
         }
     }
 
