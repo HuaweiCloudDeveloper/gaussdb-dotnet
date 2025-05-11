@@ -62,7 +62,7 @@ class PostgresDatabaseInfo : NpgsqlDatabaseInfo
     // Note that UNLISTEN is only needed for the reset message, but those don't get generated for Redshift anyway because e.g. DISCARD
     // isn't supported there either. So the IsRedshift check isn't actually used, but is here for completeness.
     /// <inheritdoc />
-    public override bool SupportsUnlisten => Version.IsGreaterOrEqual(6, 4) && !IsRedshift;
+    public override bool SupportsUnlisten => false;
 
     /// <summary>
     /// True if the 'pg_enum' table includes the 'enumsortorder' column; otherwise, false.
