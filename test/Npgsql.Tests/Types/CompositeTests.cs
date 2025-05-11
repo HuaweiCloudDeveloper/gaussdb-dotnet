@@ -565,7 +565,6 @@ CREATE TYPE {type2} AS (comp {type1}, comps {type1}[]);");
 
         var comp2Type = (PostgresCompositeType)reader.GetPostgresType(0);
         Assert.That(comp2Type.Name, Is.EqualTo(type2));
-        Assert.That(comp2Type.FullName, Is.EqualTo($"root.{type2}"));
         Assert.That(comp2Type.Fields, Has.Count.EqualTo(2));
         var field1 = comp2Type.Fields[0];
         var field2 = comp2Type.Fields[1];

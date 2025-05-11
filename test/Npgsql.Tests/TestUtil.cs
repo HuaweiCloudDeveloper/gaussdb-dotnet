@@ -19,7 +19,7 @@ public static class TestUtil
     /// test database.
     /// </summary>
     public const string DefaultConnectionString =
-        "Host=localhost;Username=npgsql_tests;Password=npgsql_tests;Database=npgsql_tests;Timeout=0;Command Timeout=0;SSL Mode=Disable;Multiplexing=False";
+        "Host=localhost;Port=8000;Username=gaussdb;Password=Password@123;Database=postgres;Timeout=0;Command Timeout=0;SSL Mode=Disable;Multiplexing=False";
 
     /// <summary>
     /// The connection string that will be used when opening the connection to the tests database.
@@ -202,7 +202,7 @@ public static class TestUtil
         await conn.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName};
+DROP TABLE IF EXISTS {tableName} CASCADE;
 COMMIT;
 CREATE TABLE {tableName} ({columns});");
         return tableName;
@@ -218,7 +218,7 @@ CREATE TABLE {tableName} ({columns});");
         await conn.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName} ;
+DROP TABLE IF EXISTS {tableName} CASCADE;
 COMMIT");
         return tableName;
     }
@@ -233,7 +233,7 @@ COMMIT");
         await dataSource.ExecuteNonQueryAsync(@$"
 START TRANSACTION;
 SELECT pg_advisory_xact_lock(0);
-DROP TABLE IF EXISTS {tableName};
+DROP TABLE IF EXISTS {tableName} CASCADE;
 COMMIT;
 CREATE TABLE {tableName} ({columns});");
         return tableName;
@@ -317,7 +317,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> GetTempTypeName(NpgsqlConnection conn)
     {
         var typeName = "temp_type" + Interlocked.Increment(ref _tempTypeCounter);
-        await conn.ExecuteNonQueryAsync($"DROP TYPE IF EXISTS {typeName}");
+        await conn.ExecuteNonQueryAsync($"DROP TYPE IF EXISTS {typeName} CASCADE");
         return typeName;
     }
 

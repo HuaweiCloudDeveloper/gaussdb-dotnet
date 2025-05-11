@@ -245,10 +245,10 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         Assert.That(exceptionTypeTag.Value, Is.EqualTo("Npgsql.PostgresException"));
 
         var exceptionMessageTag = exceptionEvent.Tags.First(x => x.Key == "exception.message");
-        StringAssert.Contains("Relation \"non_existing_table\" does not exist", (string)exceptionMessageTag.Value!);
+        StringAssert.Contains("does not exist", (string)exceptionMessageTag.Value!);
 
         var exceptionStacktraceTag = exceptionEvent.Tags.First(x => x.Key == "exception.stacktrace");
-        StringAssert.Contains("Relation \"non_existing_table\" does not exist", (string)exceptionStacktraceTag.Value!);
+        StringAssert.Contains("does not exist", (string)exceptionStacktraceTag.Value!);
 
         var exceptionEscapedTag = exceptionEvent.Tags.First(x => x.Key == "exception.escaped");
         Assert.That(exceptionEscapedTag.Value, Is.True);

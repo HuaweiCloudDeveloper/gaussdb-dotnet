@@ -1093,7 +1093,7 @@ CREATE TEMP TABLE ""OrganisatieQmo_Organisatie_QueryModelObjects_Imp""
 
         var tableName = await CreateTempTable(conn, "col1 text, col2 text");
 
-        await using var binaryImporter = await conn.BeginBinaryImportAsync($"COPY {tableName} FROM STDIN (FORMAT BINARY);");
+        await using var binaryImporter = await conn.BeginBinaryImportAsync($"COPY {tableName} FROM STDIN BINARY;");
         // 8163 writespace left
         await binaryImporter.StartRowAsync();
 
@@ -1119,7 +1119,7 @@ CREATE TEMP TABLE ""OrganisatieQmo_Organisatie_QueryModelObjects_Imp""
 
         var tableName = await CreateTempTable(conn, "col1 text, col2 text");
 
-        await using var binaryImporter = await conn.BeginBinaryImportAsync($"COPY {tableName} FROM STDIN (FORMAT BINARY);");
+        await using var binaryImporter = await conn.BeginBinaryImportAsync($"COPY {tableName} FROM STDIN BINARY;");
         // 8163 writespace left
         await binaryImporter.StartRowAsync();
 
