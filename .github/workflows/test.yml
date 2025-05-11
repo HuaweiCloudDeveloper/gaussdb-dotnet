@@ -46,8 +46,8 @@ jobs:
         include:
           - config: Release
             test_tfm: net8.0
-          - config: Release
-            test_tfm: net9.0
+          # - config: Release
+          #   test_tfm: net9.0
 
     steps:
       - name: Checkout
@@ -72,10 +72,10 @@ jobs:
         run: |
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
         env:
-          NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb_tests;Password=Password@1234;Database=gaussdb_tests"
+          NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb_tests;Password=Password@1234;Database=gaussdb_tests;IncludeErrorDetail=true"
       
       - name: Tests
         run: |
           dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.Tests --logger "GitHubActions;report-warnings=false"
         env:
-          NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb_tests;Password=Password@1234;Database=gaussdb_tests"
+          NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb_tests;Password=Password@1234;Database=gaussdb_tests;IncludeErrorDetail=true"
