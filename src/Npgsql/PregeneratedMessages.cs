@@ -19,7 +19,8 @@ static class PregeneratedMessages
         BeginTransReadUncommitted   = Generate(buf, "BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
         CommitTransaction           = Generate(buf, "COMMIT");
         RollbackTransaction         = Generate(buf, "ROLLBACK");
-        DiscardAll                  = Generate(buf, "DISCARD ALL");
+        ResetAll                    = Generate(buf, "RESET ALL");
+        CloseAll                    = Generate(buf, "CLOSE ALL");
     }
 
     internal static byte[] Generate(NpgsqlWriteBuffer buf, string query)
@@ -48,5 +49,6 @@ static class PregeneratedMessages
     internal static readonly byte[] CommitTransaction;
     internal static readonly byte[] RollbackTransaction;
 
-    internal static readonly byte[] DiscardAll;
+    internal static readonly byte[] ResetAll;
+    internal static readonly byte[] CloseAll;
 }

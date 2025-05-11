@@ -2378,7 +2378,13 @@ public sealed partial class NpgsqlConnector
                 {
                     // There are no prepared statements.
                     // We simply send DISCARD ALL which is more efficient than sending the above messages separately
-                    PrependInternalMessage(PregeneratedMessages.DiscardAll, 2);
+                    // PrependInternalMessage(PregeneratedMessages.DiscardAll, 2);
+                    // GaussDB doesn't support DISCARD ALL, use RESET + ClOSE ALL instead
+                    PrependInternalMessage(PregeneratedMessages.ResetAll, 2);
+                    if (DatabaseInfo.SupportsCloseAll)
+                    {
+                        PrependInternalMessage(PregeneratedMessages.CloseAll, 2);
+                    }
                 }
             }
 
