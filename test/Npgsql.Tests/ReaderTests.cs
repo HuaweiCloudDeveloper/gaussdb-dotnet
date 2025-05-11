@@ -901,7 +901,7 @@ LANGUAGE 'plpgsql'");
     {
         await using var conn = await OpenConnectionAsync();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = """select v.i, jsonb_build_object(), current_timestamp + make_interval(0, 0, 0, 0, 0, 0, v.i), null::jsonb, '{"value": 42}'::jsonb from generate_series(1, 1000) as v(i)""";
+        cmd.CommandText = """select v.i, '{}'::jsonb, current_timestamp + (v.i * interval '1 second'), null::jsonb, '{"value": 42}'::jsonb from generate_series(1, 1000) as v(i)""";
         var rdr = await cmd.ExecuteReaderAsync(Behavior);
         while (await rdr.ReadAsync()) {
             var v1 = rdr[0];
