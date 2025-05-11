@@ -85,7 +85,7 @@ public abstract class NpgsqlDatabaseInfo
     /// <summary>
     /// Whether the backend supports the DISCARD SEQUENCES statement.
     /// </summary>
-    public virtual bool SupportsDiscardSequences => Version.IsGreaterOrEqual(9, 4);
+    public virtual bool SupportsDiscardSequences => false;
 
     /// <summary>
     /// Whether the backend supports the UNLISTEN statement.
