@@ -55,9 +55,7 @@ jobs:
     steps:
       - name: Update max_wal_senders
         run: |
-          docker exec opengauss bash -c \
-            "source /opt/opengauss/config/opengauss_env.sh && \
-             gs_guc reload -D /var/lib/opengauss/data -c 'max_wal_senders=100'"
+          docker exec opengauss bash -c "gs_guc reload -D /var/lib/opengauss/data -c 'max_wal_senders=100'"
 
       - name: Checkout
         uses: actions/checkout@v4
