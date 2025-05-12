@@ -61,6 +61,7 @@ jobs:
           docker exec opengauss bash -c "cat /var/lib/opengauss/data/postgresql.conf"
           docker restart opengauss
           sleep 15
+          docker exec opengauss ls /tmp
 
       - name: Checkout
         uses: actions/checkout@v4
