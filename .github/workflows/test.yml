@@ -42,7 +42,7 @@ jobs:
           --health-interval 10s
           --health-timeout 30s
           --health-retries 10
-          -v ${{ github.workspace }}/.github/workflows/gaussdb:/var/lib/postgresql/data
+          -v ${{ github.workspace }}/.github/workflows/gaussdb/postgresql.conf:/var/lib/opengauss/data/postgresql.conf
 
     strategy:
       matrix:
