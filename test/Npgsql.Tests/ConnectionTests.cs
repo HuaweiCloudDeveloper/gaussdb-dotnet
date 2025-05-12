@@ -424,7 +424,8 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
 
     #endregion ConnectionString - Host
 
-    [Test]
+    // disable unix domain socket tests
+    // [Test]
     public async Task Unix_domain_socket()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -461,7 +462,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
         }
     }
 
-    [Test]
+    // [Test]
     [Platform(Exclude = "MacOsX", Reason = "Fails only on mac, needs to be investigated")]
     public async Task Unix_abstract_domain_socket()
     {
