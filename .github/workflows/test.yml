@@ -55,7 +55,7 @@ jobs:
     steps:
       - name: Update max_wal_senders
         run: |
-          docker exec opengauss bash -c "sed -i 's/^max_wal_senders\s*=\s*4/max_wal_senders = 100/' /var/lib/opengauss/data/postgresql.conf"
+          docker exec opengauss bash -c "sed -i 's/^max_wal_senders\s*=\s*4/max_wal_senders = 50/' /var/lib/opengauss/data/postgresql.conf"
           docker restart opengauss
           sleep 15
 
