@@ -57,7 +57,7 @@ jobs:
         run: |
           docker exec opengauss bash -c "sed -i 's/^max_wal_senders\s*=\s*4/max_wal_senders = 50/' /var/lib/opengauss/data/postgresql.conf"
           docker exec opengauss bash -c "sed -i 's/^max_connections\s*=\s*200/max_connections = 500/' /var/lib/opengauss/data/postgresql.conf"
-          docker exec opengauss bash -c "sed -i 's/^#unix_socket_directory\s*=\s*\'\'/unix_socket_directory = \'/tmp\'/' /var/lib/opengauss/data/postgresql.conf"
+          docker exec opengauss bash -c "sed -i 's/^#\?unix_socket_directory\s*=.*/unix_socket_directory = '\''\/tmp'\''/' /var/lib/opengauss/data/postgresql.conf"
           docker exec opengauss bash -c "cat /var/lib/opengauss/data/postgresql.conf"
           docker restart opengauss
           sleep 15
