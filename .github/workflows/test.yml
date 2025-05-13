@@ -34,7 +34,6 @@ jobs:
           # GS_USERNAME: gaussdb # by default
           GS_PASSWORD: Password@1234
           GS_DB: gaussdb_tests
-          GAUSSLOG: /var/log/opengauss
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
