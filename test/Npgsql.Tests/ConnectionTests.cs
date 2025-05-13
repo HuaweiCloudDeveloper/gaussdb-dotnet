@@ -1746,43 +1746,6 @@ CREATE TABLE record (id INT)");
         Assert.That(ex.Message, Does.Contain("authentication method is not allowed"));
     }
 
-    // GaussDB does not support md5 auth
-    // OpenGauss and GaussDB prioritize security and have replaced md5 with sha256
-    // [Test]
-    // public async Task Connect_with_md5_auth()
-    // {
-    //     await using var dataSource = CreateDataSource(csb =>
-    //     {
-    //         csb.RequireAuth = $"{RequireAuthMode.MD5}";
-    //     });
-    //     try
-    //     {
-    //         await using var conn = await dataSource.OpenConnectionAsync();
-    //     }
-    //     catch (Exception e) when (!IsOnBuildServer)
-    //     {
-    //         Console.WriteLine(e);
-    //         Assert.Ignore("MD5 authentication doesn't seem to be set up");
-    //     }
-    // }
-
-    // [Test]
-    // [NonParallelizable] // Sets environment variable
-    // public async Task Connect_with_md5_auth_env()
-    // {
-    //     using var _ = SetEnvironmentVariable("PGREQUIREAUTH", $"{RequireAuthMode.MD5}");
-    //     await using var dataSource = CreateDataSource();
-    //     try
-    //     {
-    //         await using var conn = await dataSource.OpenConnectionAsync();
-    //     }
-    //     catch (Exception e) when (!IsOnBuildServer)
-    //     {
-    //         Console.WriteLine(e);
-    //         Assert.Ignore("MD5 authentication doesn't seem to be set up");
-    //     }
-    // }
-
     [Test]
     public void Mixed_auth_methods_not_supported([Values(
             $"{nameof(RequireAuthMode.ScramSHA256)},!{nameof(RequireAuthMode.None)}",
