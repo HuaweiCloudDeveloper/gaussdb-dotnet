@@ -8,6 +8,10 @@
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
   <ItemGroup>
+    <!-- need to setup hpa, disabled for now -->
+    <Compile Remove="Replication/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../../src/Npgsql/Npgsql.csproj" />
   </ItemGroup>
   <ItemGroup>

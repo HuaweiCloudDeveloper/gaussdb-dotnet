@@ -34,6 +34,7 @@ jobs:
           # GS_USERNAME: gaussdb # by default
           GS_PASSWORD: Password@1234
           GS_DB: gaussdb_tests
+          GAUSSLOG: /var/log/opengauss
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -57,11 +58,9 @@ jobs:
         run: |
           docker exec opengauss bash -c "sed -i 's/^max_wal_senders\s*=\s*4/max_wal_senders = 80/' /var/lib/opengauss/data/postgresql.conf"
           docker exec opengauss bash -c "sed -i 's/^max_connections\s*=\s*200/max_connections = 500/' /var/lib/opengauss/data/postgresql.conf"
-          docker exec opengauss bash -c "sed -i 's/^#\?unix_socket_directory\s*=.*/unix_socket_directory = '\''\/tmp'\''/' /var/lib/opengauss/data/postgresql.conf"
           docker exec opengauss bash -c "cat /var/lib/opengauss/data/postgresql.conf"
           docker restart opengauss
           sleep 15
-          docker exec opengauss ls /tmp
 
       - name: Checkout
         uses: actions/checkout@v4
