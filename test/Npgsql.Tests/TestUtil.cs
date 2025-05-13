@@ -245,7 +245,7 @@ CREATE TABLE {tableName} ({columns});");
     internal static async Task<string> CreateTempSchema(NpgsqlConnection conn)
     {
         var schemaName = "temp_schema" + Interlocked.Increment(ref _tempSchemaCounter);
-        await conn.ExecuteNonQueryAsync($"DROP SCHEMA IF EXISTS {schemaName} ; CREATE SCHEMA {schemaName}");
+        await conn.ExecuteNonQueryAsync($"DROP SCHEMA IF EXISTS {schemaName} CASCADE; CREATE SCHEMA {schemaName}");
         return schemaName;
     }
 
