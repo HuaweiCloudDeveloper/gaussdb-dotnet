@@ -424,8 +424,8 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
 
     #endregion ConnectionString - Host
 
-    // disable unix domain socket tests
-    // [Test]
+    [Test]
+    [Ignore("Unix domain socket tests are disabled due to platform limitations or missing prerequisites.")]
     public async Task Unix_domain_socket()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
