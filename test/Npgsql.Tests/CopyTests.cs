@@ -18,7 +18,7 @@ using static Npgsql.Tests.TestUtil;
 namespace Npgsql.Tests;
 
 //todo: 当前测试用例中大量使用到COPY和Reader，适配GaussDB效果不好重构需要重点关注
-/*public class CopyTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
+public class CopyTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {
     #region Issue 2257
 
@@ -808,7 +808,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
     }
 
     //todo: 一直超时
-    /*[Test]
+    //[Test]
     public async Task Enum()
     {
         await using var adminConnection = await OpenConnectionAsync();
@@ -837,7 +837,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
             Assert.That(reader.Read<Mood>(), Is.EqualTo(Mood.Happy));
             Assert.That(reader.Read<Mood[]>(), Is.EqualTo(new[] { Mood.Happy }));
         }
-    }#1#
+    }
 
     enum Mood { Sad, Ok, Happy };
 
@@ -1395,4 +1395,4 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 1)");
     }
 
     #endregion
-}*/
+}
