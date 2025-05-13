@@ -42,7 +42,8 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
 
         await conn.ExecuteScalarAsync("SELECT 1");
 
-        Assert.That(activities.Count, Is.EqualTo(1));
+        // align with upstream https://github.com/npgsql/npgsql/blob/4da52a03f441f23a4f5597ac106b7833ab4fbe90/test/Npgsql.Tests/TracingTests.cs#L45
+        Assert.That(activities.Count, Is.EqualTo(2));
         ValidateActivity(activities[0], conn, IsMultiplexing);
 
         if (activities.Count > 1)
