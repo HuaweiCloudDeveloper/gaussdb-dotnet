@@ -1014,7 +1014,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         cmd.CommandText = $"INSERT INTO {tableName}(value) VALUES ('d'), ('s')";
         await cmd.ExecuteNonQueryAsync();
 
-        await using var export = await conn.BeginBinaryExportAsync($"COPY {tableName}(id, value) TO STDOUT (FORMAT BINARY)");
+        await using var export = await conn.BeginBinaryExportAsync($"COPY {tableName}(id, value) TO STDOUT BINARY");
         while (await export.StartRowAsync() != -1)
         {
             var id = export.Read<int>();
@@ -1062,7 +1062,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         var table = await CreateTempTable(conn, "field_text TEXT, field_int2 SMALLINT, field_int4 INTEGER");
         await using (var tx = await conn.BeginTransactionAsync())
         {
-            var writer = (NpgsqlCopyTextWriter)conn.BeginTextImport($"COPY {table} (field_text, field_int4) FROM STDIN");
+            var writer = (NpgsqlCopyTextWriter)conn.BeginTextImport($"COPY {table} (field_text, field_int4) FROM STDIN BINARY");
             writer.Write("HELLO\t1\n");
             writer.Cancel();
         }
