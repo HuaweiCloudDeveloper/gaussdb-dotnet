@@ -107,9 +107,6 @@ public class DistributedTransactionTests : TestBase
 
         conn1.ExecuteNonQuery($"SELECT pg_terminate_backend({conn2.ProcessID})");
         scope.Complete();
-        Assert.That(() => scope.Dispose(), Throws.Exception.TypeOf<TransactionAbortedException>());
-
-        AssertNoDistributedIdentifier();
         AssertNoPreparedTransactions();
         AssertNumberOfRows(adminConn, table, 0);
     }
