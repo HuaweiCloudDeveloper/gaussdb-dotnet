@@ -777,8 +777,10 @@ public class PrepareTests: TestBase
 
         if (!prepareAfterError)
         {
+            // align with upstream https://github.com/npgsql/npgsql/blob/4da52a03f441f23a4f5597ac106b7833ab4fbe90/test/Npgsql.Tests/PrepareTests.cs#L780C20-L780C25
+            // should be false
             // The command is unprepared, though. It's the user's responsibility to re-prepare if they wish.
-            Assert.True(command.IsPrepared);
+            Assert.False(command.IsPrepared);
         }
     }
 
