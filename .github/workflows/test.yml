@@ -60,7 +60,12 @@ jobs:
           docker exec opengauss bash -c "sed -i 's/^max_connections\s*=\s*200/max_connections = 500/' /var/lib/opengauss/data/postgresql.conf"
           docker exec opengauss bash -c "cat /var/lib/opengauss/data/postgresql.conf"
           docker restart opengauss
-          sleep 15
+          for i in {1..30}; do
+            if [ "$(docker inspect --format='{{json .State.Health.Status}}' opengauss)" == "\"healthy\"" ]; then
+              break
+            fi
+            sleep 1
+          done
 
       - name: Checkout
         uses: actions/checkout@v4
