@@ -773,7 +773,7 @@ public class PrepareTests: TestBase
         }
 
         // However, Npgsql should invalidate the prepared statement in this case, so the next execution should work
-        //Assert.DoesNotThrowAsync(() => command.ExecuteNonQueryAsync());
+        Assert.DoesNotThrowAsync(() => command.ExecuteNonQueryAsync());
 
         if (!prepareAfterError)
         {
