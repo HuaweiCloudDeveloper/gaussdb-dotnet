@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: "ubuntu-latest"
     env:
-      NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests;IncludeErrorDetail=true"
+      NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests;"
 
     # Service containers to run with `container-job`
     # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
