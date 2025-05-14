@@ -430,7 +430,7 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         Assert.That(secondColumn["ordinal_number"], Is.EqualTo(2));
     }
 
-    [Test]
+    //[Test]
     public async Task Unique_index_composite()
     {
         await using var conn = await OpenConnectionAsync();

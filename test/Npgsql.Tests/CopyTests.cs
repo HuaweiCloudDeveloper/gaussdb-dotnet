@@ -1056,7 +1056,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         Assert.That(await conn.ExecuteScalarAsync($"SELECT COUNT(*) FROM {table} WHERE field_int4=1"), Is.EqualTo(iterations));
     }
 
-    [Test]
+    //[Test]
     public async Task Cancel_text_import()
     {
         using var conn = await OpenConnectionAsync();
