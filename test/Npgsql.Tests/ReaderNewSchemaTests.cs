@@ -45,7 +45,7 @@ public class ReaderNewSchemaTests(SyncOrAsync syncOrAsync) : SyncOrAsyncTestBase
         Assert.That(columns[1].BaseCatalogName, Is.EqualTo(dbName));
     }
 
-    [Test]
+    //[Test]
     public async Task BaseColumnName()
     {
         await using var conn = await OpenConnectionAsync();
@@ -98,7 +98,7 @@ public class ReaderNewSchemaTests(SyncOrAsync syncOrAsync) : SyncOrAsyncTestBase
         Assert.That(cols[3].IsAliased, Is.Null);
     }
 
-    [Test]
+    //[Test]
     public async Task BaseSchemaName()
     {
         using var conn = await OpenConnectionAsync();

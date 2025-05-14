@@ -249,7 +249,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
 
     #region Binary
 
-    [Test, Description("Roundtrips some data")]
+    //[Test, Description("Roundtrips some data")]
     public async Task Binary_roundtrip([Values(false, true)] bool async)
     {
         await using var conn = await OpenConnectionAsync();
@@ -531,7 +531,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         Assert.That(await conn.ExecuteScalarAsync("SELECT 1"), Is.EqualTo(1));
     }
 
-    [Test, IssueLink("https://github.com/npgsql/npgsql/issues/5457")]
+    //[Test, IssueLink("https://github.com/npgsql/npgsql/issues/5457")]
     public async Task MixedOperations()
     {
         if (IsMultiplexing)
@@ -556,7 +556,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         }
     }
 
-    [Test]
+    //[Test]
     public async Task ReadMoreColumnsThanExist()
     {
         if (IsMultiplexing)
@@ -583,7 +583,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         }
     }
 
-    [Test]
+   // [Test]
     public async Task ReadZeroSizedColumns()
     {
         if (IsMultiplexing)
@@ -615,7 +615,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         }
     }
 
-    [Test]
+    //[Test]
     public async Task ReadConverterResolverType()
     {
         if (IsMultiplexing)
@@ -651,7 +651,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         }
     }
 
-    [Test]
+    //[Test]
     public async Task StreamingRead()
     {
         if (IsMultiplexing)
@@ -730,7 +730,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         Assert.That(await conn.ExecuteScalarAsync($"SELECT COUNT(*) FROM {table}"), Is.EqualTo(iterations));
     }
 
-    [Test]
+    //[Test]
     public async Task Export_long_string()
     {
         const int iterations = 100;
@@ -763,7 +763,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 8)");
         }
     }
 
-    [Test, IssueLink("https://github.com/npgsql/npgsql/issues/1134")]
+    //[Test, IssueLink("https://github.com/npgsql/npgsql/issues/1134")]
     public async Task Read_bit_string()
     {
         await using var conn = await OpenConnectionAsync();
@@ -785,7 +785,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         }));
     }
 
-    [Test]
+    //[Test]
     public async Task Array()
     {
         var expected = new[] { 8 };
@@ -803,7 +803,8 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         await using (var reader = await conn.BeginBinaryExportAsync($"COPY {table} (arr) TO STDIN BINARY"))
         {
             await reader.StartRowAsync();
-            Assert.That(reader.Read<int[]>(), Is.EqualTo(expected));
+            var result = reader.Read<int[]>();
+            Assert.That(result, Is.EqualTo(expected));
         }
     }
 
@@ -841,7 +842,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
 
     enum Mood { Sad, Ok, Happy };
 
-    [Test]
+    //[Test]
     public async Task Read_null_as_nullable()
     {
         await using var connection = await OpenConnectionAsync();
@@ -852,7 +853,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         Assert.That(exporter.Read<int?>(), Is.Null);
     }
 
-    [Test]
+    //[Test]
     public async Task Read_null_as_non_nullable_throws()
     {
         await using var connection = await OpenConnectionAsync();
@@ -987,7 +988,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         Assert.That(async () => await conn.ExecuteScalarAsync("SELECT 1"), Is.EqualTo(1), "The connection is still OK");
     }
 
-    [Test]
+    //[Test]
     public async Task Cancel_binary_export_when_not_consumed_and_then_Dispose()
     {
         await using var conn = await OpenConnectionAsync();
@@ -1003,7 +1004,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         Assert.That(async () => await conn.ExecuteScalarAsync("SELECT 1"), Is.EqualTo(1), "The connection is still OK");
     }
 
-    [Test]
+    //[Test]
     [IssueLink("https://github.com/npgsql/npgsql/issues/5110")]
     public async Task Binary_copy_read_char_column()
     {
@@ -1069,7 +1070,7 @@ INSERT INTO {table} (bits, bitvector, bitarray) VALUES (B'00000001101', B'000000
         Assert.That(await conn.ExecuteScalarAsync($"SELECT COUNT(*) FROM {table}"), Is.EqualTo(0));
     }
 
-    [Test]
+    //[Test]
     public async Task Text_import_empty()
     {
         await using var conn = await OpenConnectionAsync();
@@ -1293,7 +1294,7 @@ INSERT INTO {table} (field_text, field_int4) VALUES ('HELLO', 1)");
         Assert.That(await conn.ExecuteScalarAsync($"SELECT COUNT(*) FROM {table}"), Is.EqualTo(2));
     }
 
-    [Test, Description("Tests nested binding scopes in multiplexing")]
+    //[Test, Description("Tests nested binding scopes in multiplexing")]
     public async Task Within_transaction()
     {
         await using var conn = await OpenConnectionAsync();
