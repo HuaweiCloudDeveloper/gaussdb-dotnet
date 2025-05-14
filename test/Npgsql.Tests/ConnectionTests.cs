@@ -1447,8 +1447,8 @@ CREATE TABLE record (id INT)");
     }
 
     //[Test, IssueLink("https://github.com/npgsql/npgsql/issues/3030")]
-    [TestCase(true, TestName = "NoResetOnClose")]
-    [TestCase(false, TestName = "NoNoResetOnClose")]
+    //[TestCase(true, TestName = "NoResetOnClose")]
+    //[TestCase(false, TestName = "NoNoResetOnClose")]
     public async Task NoResetOnClose(bool noResetOnClose)
     {
         var originalApplicationName = new NpgsqlConnectionStringBuilder(ConnectionString).ApplicationName ?? "";

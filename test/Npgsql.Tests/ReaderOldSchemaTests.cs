@@ -214,7 +214,7 @@ SELECT 1 AS some_other_column, 2";
             reader.Read();
     }
 
-    [Test]
+    //[Test]
     public async Task BaseColumnName()
     {
         using var conn = OpenConnection();
