@@ -1,4 +1,4 @@
-# GaussDB
+# GaussDB Npgsql Driver
 
 [![PostgreSQL License](https://img.shields.io/badge/License-PostgreSQL-blue.svg)](https://opensource.org/licenses/PostgreSQL)
 
@@ -39,3 +39,10 @@ await using (var reader = await cmd.ExecuteReaderAsync())
         Console.WriteLine(reader.GetString(0));
 }
 ```
+
+
+
+
+
+## License
+This project is released under of the [PostgreSQL License](https://opensource.org/license/PostgreSQL).
