@@ -1,2 +1,2 @@
 #nullable enable
-static GaussDB.GaussDBNodaTimeExtensions.UseNodaTime<TMapper>(this TMapper mapper) -> TMapper
+static HuaweiCloud.GaussDB.GaussDBNodaTimeExtensions.UseNodaTime<TMapper>(this TMapper mapper) -> TMapper
