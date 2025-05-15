@@ -192,11 +192,11 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         Assert.That(intRangeRow["OID"], Is.EqualTo(3904));
 
         var enumRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("." + enumType));
-        Assert.That(enumRow["DataType"], Is.EqualTo("GaussDB.Tests.SchemaTests+TestEnum"));
+        Assert.That(enumRow["DataType"], Is.EqualTo("HuaweiCloud.GaussDB.Tests.SchemaTests+TestEnum"));
         Assert.That(enumRow["ProviderDbType"], Is.SameAs(DBNull.Value));
 
         var compositeRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("." + compositeType));
-        Assert.That(compositeRow["DataType"], Is.EqualTo("GaussDB.Tests.SchemaTests+TestComposite"));
+        Assert.That(compositeRow["DataType"], Is.EqualTo("HuaweiCloud.GaussDB.Tests.SchemaTests+TestComposite"));
         Assert.That(compositeRow["ProviderDbType"], Is.SameAs(DBNull.Value));
 
         //var domainRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("." + domainType));
