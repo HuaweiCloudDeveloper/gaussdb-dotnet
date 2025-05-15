@@ -3,6 +3,7 @@
   <PropertyGroup>
     <DebugType>portable</DebugType>
     <AssemblyName>GaussDB.Benchmarks</AssemblyName>
+    <RootNamespace>HuaweiCloud.GaussDB.Benchmarks</RootNamespace>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->
     

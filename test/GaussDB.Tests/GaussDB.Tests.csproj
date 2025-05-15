@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <RootNamespace>HuaweiCloud.GaussDB.Tests</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" />
     <PackageReference Include="Microsoft.Extensions.Logging" />

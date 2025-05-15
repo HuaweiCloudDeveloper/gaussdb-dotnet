@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  
+  <PropertyGroup>
+    <RootNamespace>HuaweiCloud.GaussDB.PluginTests</RootNamespace>
+  </PropertyGroup>  
   <ItemGroup>
     <PackageReference Include="NetTopologySuite" />
     <PackageReference Include="NodaTime" />

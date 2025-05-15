@@ -50,7 +50,7 @@ LANGUAGE 'plpgsql';
         Assert.That(data.Contains(nameof(PostgresException.Position)), Is.False);
 
         var exString = ex.ToString();
-        Assert.That(exString, Does.StartWith("GaussDB.PostgresException (0x80004005): 12345: testexception"));
+        Assert.That(exString, Does.StartWith("HuaweiCloud.GaussDB.PostgresException (0x80004005): 12345: testexception"));
         Assert.That(exString, Contains.Substring(nameof(PostgresException.Severity) + ": ERROR"));
         Assert.That(exString, Contains.Substring(nameof(PostgresException.SqlState) + ": 12345"));
 

@@ -243,7 +243,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         Assert.That(exceptionEvent.Tags.Count(), Is.EqualTo(4));
 
         var exceptionTypeTag = exceptionEvent.Tags.First(x => x.Key == "exception.type");
-        Assert.That(exceptionTypeTag.Value, Is.EqualTo("GaussDB.PostgresException"));
+        Assert.That(exceptionTypeTag.Value, Is.EqualTo("HuaweiCloud.GaussDB.PostgresException"));
 
         var exceptionMessageTag = exceptionEvent.Tags.First(x => x.Key == "exception.message");
         StringAssert.Contains("does not exist", (string)exceptionMessageTag.Value!);

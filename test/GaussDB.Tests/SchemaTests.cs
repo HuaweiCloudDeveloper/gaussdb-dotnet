@@ -187,7 +187,7 @@ CREATE TYPE {compositeType} AS (a INTEGER);
         Assert.That(numericArrayRow["CreateParameters"], Is.EqualTo("precision, scale"));
 
         var intRangeRow = dataTypes.Rows.Cast<DataRow>().Single(r => ((string)r["TypeName"]).EndsWith("int4range"));
-        Assert.That(intRangeRow["DataType"], Does.StartWith("GaussDBTypes.GaussDBRange`1[[System.Int32"));
+        Assert.That(intRangeRow["DataType"], Does.StartWith("HuaweiCloud.GaussDBTypes.GaussDBRange`1[[System.Int32"));
         Assert.That(intRangeRow["ProviderDbType"], Is.EqualTo((int)(GaussDBDbType.Integer | GaussDBDbType.Range)));
         Assert.That(intRangeRow["OID"], Is.EqualTo(3904));
 
