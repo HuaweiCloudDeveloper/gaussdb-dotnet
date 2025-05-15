@@ -1,4 +1,4 @@
-# GaussDB Npgsql Driver
+# GaussDB Driver
 
 [![PostgreSQL License](https://img.shields.io/badge/License-PostgreSQL-blue.svg)](https://opensource.org/licenses/PostgreSQL)
 

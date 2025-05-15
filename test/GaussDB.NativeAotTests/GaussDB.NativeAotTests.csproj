@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>exe</OutputType>
+    <PublishAot>true</PublishAot>
+    <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
+    <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StripSymbols>true</StripSymbols>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <StackTraceSupport>false</StackTraceSupport>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/GaussDB/GaussDB.csproj" />
+    <TrimmerRootAssembly Include="../../src/GaussDB/GaussDB.csproj" Condition="'$(RootGaussDB)' == 'True'" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Remove="GitHubActionsTestLogger" />
+  </ItemGroup>
+</Project>

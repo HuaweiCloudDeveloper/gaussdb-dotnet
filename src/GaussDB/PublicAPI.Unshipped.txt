@@ -1,0 +1,80 @@
+#nullable enable
+abstract GaussDB.GaussDBDataSource.Clear() -> void
+GaussDB.GaussDBConnection.CloneWithAsync(string! connectionString, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<GaussDB.GaussDBConnection!>
+GaussDB.GaussDBConnection.SslClientAuthenticationOptionsCallback.get -> System.Action<System.Net.Security.SslClientAuthenticationOptions!>?
+GaussDB.GaussDBConnection.SslClientAuthenticationOptionsCallback.set -> void
+GaussDB.GaussDBConnectionStringBuilder.RequireAuth.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.RequireAuth.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SslNegotiation.get -> GaussDB.SslNegotiation
+GaussDB.GaussDBConnectionStringBuilder.SslNegotiation.set -> void
+GaussDB.GaussDBDataSourceBuilder.ConfigureTypeLoading(System.Action<GaussDB.GaussDBTypeLoadingOptionsBuilder!>! configureAction) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.ConfigureTracing(System.Action<GaussDB.GaussDBTracingOptionsBuilder!>! configureAction) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseNegotiateOptionsCallback(System.Action<System.Net.Security.NegotiateAuthenticationClientOptions!>? negotiateOptionsCallback) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseSslClientAuthenticationOptionsCallback(System.Action<System.Net.Security.SslClientAuthenticationOptions!>? sslClientAuthenticationOptionsCallback) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBMetricsOptions
+GaussDB.GaussDBMetricsOptions.GaussDBMetricsOptions() -> void
+GaussDB.GaussDBSlimDataSourceBuilder.ConfigureTracing(System.Action<GaussDB.GaussDBTracingOptionsBuilder!>! configureAction) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.ConfigureTypeLoading(System.Action<GaussDB.GaussDBTypeLoadingOptionsBuilder!>! configureAction) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableGeometricTypes() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableJsonTypes() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableNetworkTypes() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseNegotiateOptionsCallback(System.Action<System.Net.Security.NegotiateAuthenticationClientOptions!>? negotiateOptionsCallback) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseSslClientAuthenticationOptionsCallback(System.Action<System.Net.Security.SslClientAuthenticationOptions!>? sslClientAuthenticationOptionsCallback) -> GaussDB.GaussDBSlimDataSourceBuilder!
+*REMOVED*GaussDB.GaussDBTracingOptions
+*REMOVED*GaussDB.GaussDBTracingOptions.GaussDBTracingOptions() -> void
+GaussDB.GaussDBTracingOptionsBuilder
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureBatchEnrichmentCallback(System.Action<System.Diagnostics.Activity!, GaussDB.GaussDBBatch!>? batchEnrichmentCallback) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureBatchFilter(System.Func<GaussDB.GaussDBBatch!, bool>? batchFilter) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureBatchSpanNameProvider(System.Func<GaussDB.GaussDBBatch!, string?>? batchSpanNameProvider) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureCommandEnrichmentCallback(System.Action<System.Diagnostics.Activity!, GaussDB.GaussDBCommand!>? commandEnrichmentCallback) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureCommandFilter(System.Func<GaussDB.GaussDBCommand!, bool>? commandFilter) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.ConfigureCommandSpanNameProvider(System.Func<GaussDB.GaussDBCommand!, string?>? commandSpanNameProvider) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.EnableFirstResponseEvent(bool enable = true) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTracingOptionsBuilder.EnablePhysicalOpenTracing(bool enable = true) -> GaussDB.GaussDBTracingOptionsBuilder!
+GaussDB.GaussDBTypeLoadingOptionsBuilder
+GaussDB.GaussDBTypeLoadingOptionsBuilder.EnableTableCompositesLoading(bool enable = true) -> GaussDB.GaussDBTypeLoadingOptionsBuilder!
+GaussDB.GaussDBTypeLoadingOptionsBuilder.EnableTypeLoading(bool enable = true) -> GaussDB.GaussDBTypeLoadingOptionsBuilder!
+GaussDB.GaussDBTypeLoadingOptionsBuilder.SetTypeLoadingSchemas(params System.Collections.Generic.IEnumerable<string!>? schemas) -> GaussDB.GaussDBTypeLoadingOptionsBuilder!
+GaussDB.Replication.PgOutput.ReplicationValue.GetFieldName() -> string!
+GaussDB.Replication.PgOutput.Messages.ParallelStreamAbortMessage
+GaussDB.Replication.PgOutput.Messages.ParallelStreamAbortMessage.AbortLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.ParallelStreamAbortMessage.AbortTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+GaussDB.Replication.PgOutput.PgOutputProtocolVersion.V1 = 1 -> GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+GaussDB.Replication.PgOutput.PgOutputProtocolVersion.V2 = 2 -> GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+GaussDB.Replication.PgOutput.PgOutputProtocolVersion.V3 = 3 -> GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+GaussDB.Replication.PgOutput.PgOutputProtocolVersion.V4 = 4 -> GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.PgOutputReplicationOptions(string! publicationName, GaussDB.Replication.PgOutput.PgOutputProtocolVersion protocolVersion, bool? binary = null, GaussDB.Replication.PgOutput.PgOutputStreamingMode? streamingMode = null, bool? messages = null, bool? twoPhase = null) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.PgOutputReplicationOptions(System.Collections.Generic.IEnumerable<string!>! publicationNames, GaussDB.Replication.PgOutput.PgOutputProtocolVersion protocolVersion, bool? binary = null, GaussDB.Replication.PgOutput.PgOutputStreamingMode? streamingMode = null, bool? messages = null, bool? twoPhase = null) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.ProtocolVersion.get -> GaussDB.Replication.PgOutput.PgOutputProtocolVersion
+*REMOVED*GaussDB.Replication.PgOutput.PgOutputReplicationOptions.ProtocolVersion.get -> ulong
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.StreamingMode.get -> GaussDB.Replication.PgOutput.PgOutputStreamingMode?
+*REMOVED*GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Streaming.get -> bool?
+GaussDB.Replication.PgOutput.PgOutputStreamingMode
+GaussDB.Replication.PgOutput.PgOutputStreamingMode.Off = 0 -> GaussDB.Replication.PgOutput.PgOutputStreamingMode
+GaussDB.Replication.PgOutput.PgOutputStreamingMode.On = 1 -> GaussDB.Replication.PgOutput.PgOutputStreamingMode
+GaussDB.Replication.PgOutput.PgOutputStreamingMode.Parallel = 2 -> GaussDB.Replication.PgOutput.PgOutputStreamingMode
+GaussDB.SslNegotiation
+GaussDB.SslNegotiation.Direct = 1 -> GaussDB.SslNegotiation
+GaussDB.SslNegotiation.Postgres = 0 -> GaussDB.SslNegotiation
+override GaussDB.GaussDBMultiHostDataSource.Clear() -> void
+GaussDB.GaussDBDataSource.ReloadTypes() -> void
+GaussDB.GaussDBDataSource.ReloadTypesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBConnection.ReloadTypesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+*REMOVED*GaussDB.GaussDBConnection.ReloadTypesAsync() -> System.Threading.Tasks.Task!
+*REMOVED*GaussDB.GaussDBDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBSlimDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBSlimDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBSlimDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+*REMOVED*GaussDB.GaussDBSlimDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!

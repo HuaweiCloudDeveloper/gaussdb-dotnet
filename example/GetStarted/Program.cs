@@ -1,12 +1,12 @@
-﻿using System.Data;
-using Npgsql;
+using System.Data;
+using GaussDB;
 
 dotenv.net.DotEnv.Load();
 
 var connString = Environment.GetEnvironmentVariable("GaussdbConnString");
 ArgumentNullException.ThrowIfNull(connString);
 
-await using var conn = new NpgsqlConnection(connString);
+await using var conn = new GaussDBConnection(connString);
 if (conn.State is ConnectionState.Closed)
 {
     await conn.OpenAsync();
@@ -24,14 +24,14 @@ Console.WriteLine(@"Completed!");
 
 async Task TestScalar()
 {
-    await using var cmd = new NpgsqlCommand("SELECT 1", conn);
+    await using var cmd = new GaussDBCommand("SELECT 1", conn);
     var result = await cmd.ExecuteScalarAsync();
     Console.WriteLine(result);
 }
 
 async Task TestReader()
 {
-    await using (var cmd = new NpgsqlCommand("SELECT * FROM employees", conn))
+    await using (var cmd = new GaussDBCommand("SELECT * FROM employees", conn))
     {
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())

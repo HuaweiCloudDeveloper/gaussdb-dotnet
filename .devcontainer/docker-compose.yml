@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  npgsql-dev:
+  gaussdb-dev:
     build: ./dotnet
     volumes:
       - ..:/workspace:cached

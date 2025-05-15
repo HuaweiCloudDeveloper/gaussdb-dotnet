@@ -19,10 +19,10 @@ echo "Configuring md5 authentication in $PGDATA/pg_hba.conf"
 echo 'local all all trust' > $PGDATA/pg_hba.conf
 echo "host all all all md5" >> $PGDATA/pg_hba.conf
 
-# Standard test account for Npgsql and enable extensions
+# Standard test account for GaussDB and enable extensions
 psql -U postgres <<EOF
-    CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests';
-    CREATE DATABASE npgsql_tests OWNER npgsql_tests;
-    CREATE EXTENSION ltree npgsql_tests;
-    CREATE EXTENSION postgis npgsql_tests;
+    CREATE USER gaussdb_tests SUPERUSER PASSWORD 'gaussdb_tests';
+    CREATE DATABASE gaussdb_tests OWNER gaussdb_tests;
+    CREATE EXTENSION ltree gaussdb_tests;
+    CREATE EXTENSION postgis gaussdb_tests;
 EOF

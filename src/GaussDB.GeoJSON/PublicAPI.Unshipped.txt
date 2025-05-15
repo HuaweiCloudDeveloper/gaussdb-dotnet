@@ -1,0 +1,3 @@
+#nullable enable
+static GaussDB.GaussDBGeoJSONExtensions.UseGeoJson<TMapper>(this TMapper mapper, GaussDB.GeoJSON.CrsMap! crsMap, GaussDB.GeoJSONOptions options = GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> TMapper
+static GaussDB.GaussDBGeoJSONExtensions.UseGeoJson<TMapper>(this TMapper mapper, GaussDB.GeoJSONOptions options = GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> TMapper

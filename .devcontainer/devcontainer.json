@@ -1,7 +1,7 @@
 {
-  "name": "Npgsql dev environment (.NET)",
+  "name": "GaussDB dev environment (.NET)",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "npgsql-dev",
+  "service": "gaussdb-dev",
 
   "workspaceFolder": "/workspace",
 
@@ -34,5 +34,5 @@
     "DeveloperBuild": "True"
   },
 
-  "postCreateCommand": "dotnet restore Npgsql.sln"
+  "postCreateCommand": "dotnet restore GaussDB.sln"
 }

@@ -1,4 +1,4 @@
-﻿using Mono.Cecil;
+using Mono.Cecil;
 using Mono.Cecil.Rocks;
 
 namespace MStatDumper
@@ -183,7 +183,7 @@ namespace MStatDumper
             if (markDownStyleOutput)
             {
                 var methodsByClass = methodStats
-                    .Where(x => x.Method.DeclaringType.Scope.Name == "Npgsql")
+                    .Where(x => x.Method.DeclaringType.Scope.Name == "GaussDB")
                     .GroupBy(x => GetClassName(x.Method))
                     .OrderByDescending(x => x.Sum(x => x.Size + x.GcInfoSize + x.EhInfoSize))
                     .Take(100)
@@ -196,7 +196,7 @@ namespace MStatDumper
                 }
 
                 Console.WriteLine("<details>");
-                Console.WriteLine("<summary>Top 100 Npgsql Classes By Methods Size</summary>");
+                Console.WriteLine("<summary>Top 100 GaussDB Classes By Methods Size</summary>");
                 Console.WriteLine();
                 Console.WriteLine("<br>");
                 Console.WriteLine();
@@ -260,13 +260,13 @@ namespace MStatDumper
                 Console.WriteLine("</details>");
 
                 var filteredTypeStats = GetTypes(versionMajor, types)
-                    .Where(x => x.Type.Scope.Name == "Npgsql")
+                    .Where(x => x.Type.Scope.Name == "GaussDB")
                     .GroupBy(x => x.Type.Name)
                     .OrderByDescending(x => x.Sum(x => x.Size))
                     .Take(100)
                     .ToList();
                 Console.WriteLine("<details>");
-                Console.WriteLine($"<summary>Top 100 Npgsql Types By Size</summary>");
+                Console.WriteLine($"<summary>Top 100 GaussDB Types By Size</summary>");
                 Console.WriteLine();
                 Console.WriteLine("<br>");
                 Console.WriteLine();

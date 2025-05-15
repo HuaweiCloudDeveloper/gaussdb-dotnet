@@ -1,0 +1,39 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/example/">
+    <Project Path="example/GetStarted/GetStarted.csproj" />
+  </Folder>
+  <Folder Name="/Github/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/codeql-analysis.yml" />
+    <File Path=".github/workflows/native-aot.yml" />
+    <File Path=".github/workflows/rich-code-nav.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/GaussDB.DependencyInjection/GaussDB.DependencyInjection.csproj" />
+    <Project Path="src/GaussDB.GeoJSON/GaussDB.GeoJSON.csproj" />
+    <Project Path="src/GaussDB.Json.NET/GaussDB.Json.NET.csproj" />
+    <Project Path="src/GaussDB.NetTopologySuite/GaussDB.NetTopologySuite.csproj" />
+    <Project Path="src/GaussDB.NodaTime/GaussDB.NodaTime.csproj" />
+    <Project Path="src/GaussDB.OpenTelemetry/GaussDB.OpenTelemetry.csproj" />
+    <Project Path="src/GaussDB.SourceGenerators/GaussDB.SourceGenerators.csproj" />
+    <Project Path="src/GaussDB/GaussDB.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/GaussDB.Benchmarks/GaussDB.Benchmarks.csproj" />
+    <Project Path="test/GaussDB.DependencyInjection.Tests/GaussDB.DependencyInjection.Tests.csproj" />
+    <Project Path="test/GaussDB.NativeAotTests/GaussDB.NativeAotTests.csproj" />
+    <!-- After discussion, the plugin feature may be disabled by default in GaussDB, so testing is temporarily postponed.-->
+    <Project Path="test/GaussDB.PluginTests/GaussDB.PluginTests.csproj" />
+    <Project Path="test/GaussDB.Specification.Tests/GaussDB.Specification.Tests.csproj" />
+    <Project Path="test/GaussDB.Tests/GaussDB.Tests.csproj" />
+  </Folder>
+</Solution>

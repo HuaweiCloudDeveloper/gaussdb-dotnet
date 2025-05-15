@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+
+#nullable disable
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable RS0016 // Add public types and members to the declared API
+#pragma warning disable CS0618 // Member is obsolete
+
+namespace GaussDB
+{
+    public sealed partial class GaussDBConnectionStringBuilder
+    {
+        private partial int Init()
+        {
+            // Set the strongly-typed properties to their default values
+            {{~
+               for p in properties
+                 if p.is_obsolete
+                   continue
+                 end
+
+                 if (p.default_value != null)
+            ~}}
+            {{ p.name }} = {{ p.default_value }};
+            {{~
+                 end
+               end ~}}
+
+            // Setting the strongly-typed properties here also set the string-based properties in the base class.
+            // Clear them (default settings = empty connection string)
+            base.Clear();
+
+            return 0;
+        }
+
+        private partial bool GeneratedActions(GeneratedAction action, string keyword, ref object value)
+        {
+            switch (keyword)
+            {
+            {{~ for kv in properties_by_keyword ~}}
+            case "{{ kv.key }}":
+            {{~ for alternative in kv.value.alternatives ~}}
+            case "{{ alternative }}":
+            {{~ end ~}}
+            {
+            {{~ p = kv.value ~}}
+                const string canonicalName = "{{ p.canonical_name }}";
+                switch(action)
+                {
+                case GeneratedAction.Remove: 
+                    var removed = base.ContainsKey(canonicalName);
+                    {{~ if p.default_value == null ~}}
+                    {{ p.name }} = default;
+                    {{~ else ~}}
+                    {{ p.name }} = {{ p.default_value }};
+                    {{~ end ~}}
+                    {{~ if p.type_name != "String" ~}}
+                    base.Remove(canonicalName);
+                    {{~ else ~}}
+                    // String property setters call SetValue, which itself calls base.Remove().
+                    {{~ end ~}}
+                    return removed;
+                case GeneratedAction.Set:
+                {{~ if p.is_enum ~}}
+                    {{ p.name }} = ({{ p.type_name }})GetValue(typeof({{ p.type_name }}), value);
+                {{~ else ~}}
+                    {{ p.name }} = ({{ p.type_name }})Convert.ChangeType(value, typeof({{ p.type_name }}));
+                {{~ end ~}}
+                    break;
+                case GeneratedAction.Get:
+                    value = (object){{ p.name }} ?? "";
+                    break;
+                case GeneratedAction.GetCanonical:
+                    value = canonicalName;
+                    break;
+                }
+                return true;
+            }
+            {{~ end ~}}
+            }
+            if (action is GeneratedAction.Get or GeneratedAction.GetCanonical)
+                return false;
+            throw new KeyNotFoundException();
+            
+            static object GetValue(Type type, object value)
+                => value is string s
+                    ? Enum.Parse(type, s, ignoreCase: true)
+                    : Convert.ChangeType(value, type);
+        }
+    }
+}

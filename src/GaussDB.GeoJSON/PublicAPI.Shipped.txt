@@ -1,0 +1,13 @@
+#nullable enable
+GaussDB.GeoJSON.CrsMap
+GaussDB.GeoJSON.CrsMapExtensions
+GaussDB.GeoJSONOptions
+GaussDB.GeoJSONOptions.BoundingBox = 1 -> GaussDB.GeoJSONOptions
+GaussDB.GeoJSONOptions.LongCRS = 4 -> GaussDB.GeoJSONOptions
+GaussDB.GeoJSONOptions.None = 0 -> GaussDB.GeoJSONOptions
+GaussDB.GeoJSONOptions.ShortCRS = 2 -> GaussDB.GeoJSONOptions
+GaussDB.GaussDBGeoJSONExtensions
+static GaussDB.GeoJSON.CrsMapExtensions.GetCrsMap(this GaussDB.GaussDBDataSource! dataSource) -> GaussDB.GeoJSON.CrsMap!
+static GaussDB.GeoJSON.CrsMapExtensions.GetCrsMapAsync(this GaussDB.GaussDBDataSource! dataSource) -> System.Threading.Tasks.Task<GaussDB.GeoJSON.CrsMap!>!
+static GaussDB.GaussDBGeoJSONExtensions.UseGeoJson(this GaussDB.TypeMapping.IGaussDBTypeMapper! mapper, GaussDB.GeoJSON.CrsMap! crsMap, GaussDB.GeoJSONOptions options = GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+static GaussDB.GaussDBGeoJSONExtensions.UseGeoJson(this GaussDB.TypeMapping.IGaussDBTypeMapper! mapper, GaussDB.GeoJSONOptions options = GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> GaussDB.TypeMapping.IGaussDBTypeMapper!

@@ -1,0 +1,3 @@
+#nullable enable
+GaussDB.GaussDBJsonNetExtensions
+static GaussDB.GaussDBJsonNetExtensions.UseJsonNet(this GaussDB.TypeMapping.IGaussDBTypeMapper! mapper, Newtonsoft.Json.JsonSerializerSettings? settings = null, System.Type![]? jsonbClrTypes = null, System.Type![]? jsonClrTypes = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!

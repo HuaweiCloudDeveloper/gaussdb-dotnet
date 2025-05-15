@@ -1,6 +1,6 @@
 ### Before submitting
 
-This repo is for Npgsql ADO.NET issues only. Entity Framework issues belong in Npgsql.EntityFrameworkCore.PostgreSQL for EF Core, or EntityFramework6.Npgsql for EF 6.x.
+This repo is for GaussDB ADO.NET issues only. Entity Framework issues belong in GaussDB.EntityFrameworkCore.PostgreSQL for EF Core, or EntityFramework6.GaussDB for EF 6.x.
 
 ### Steps to reproduce
 
@@ -19,8 +19,8 @@ Stack trace:
 
 ### Further technical details
 
-Npgsql version:
-PostgreSQL version:
+GaussDB driver version:
+GaussDB version:
 Operating system: 
 
 Other details about my project setup:

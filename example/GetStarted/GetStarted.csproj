@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Npgsql\Npgsql.csproj" />
+      <ProjectReference Include="..\..\src\GaussDB\GaussDB.csproj" />
     </ItemGroup>
 
     <ItemGroup>

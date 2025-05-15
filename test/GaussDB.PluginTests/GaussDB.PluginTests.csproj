@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" />
+    <PackageReference Include="NodaTime" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="../../src/GaussDB/GaussDB.csproj" />
+    <ProjectReference Include="../../src/GaussDB.NodaTime/GaussDB.NodaTime.csproj" />
+    <ProjectReference Include="../../src/GaussDB.Json.NET/GaussDB.Json.NET.csproj" />
+    <ProjectReference Include="../GaussDB.Tests/GaussDB.Tests.csproj" />
+    <ProjectReference Include="../../src/GaussDB.NetTopologySuite/GaussDB.NetTopologySuite.csproj" />
+    <ProjectReference Include="../../src/GaussDB.GeoJSON/GaussDB.GeoJSON.csproj" />
+  </ItemGroup>
+</Project>

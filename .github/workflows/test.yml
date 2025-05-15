@@ -86,8 +86,8 @@ jobs:
 
       - name: DependencyInjection Test
         run: |
-          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.DependencyInjection.Tests --logger "GitHubActions;report-warnings=false"
       
       - name: Tests
         run: |
-          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/Npgsql.Tests --logger "GitHubActions;report-warnings=false"
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.Tests --logger "GitHubActions;report-warnings=false"

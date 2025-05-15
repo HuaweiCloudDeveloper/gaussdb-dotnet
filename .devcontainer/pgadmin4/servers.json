@@ -1,13 +1,13 @@
 {
   "Servers": {
     "1": {
-      "Name": "Npgsql devcontainer server",
+      "Name": "GaussDB devcontainer server",
       "Group": "Servers",
       "Port": 5432,
-      "Username": "npgsql_tests",
+      "Username": "gaussdb_tests",
       "Host": "db",
       "SSLMode": "prefer",
-      "MaintenanceDB": "npgsql_tests",
+      "MaintenanceDB": "gaussdb_tests",
       "PassFile": "/.pgpass"
     }
   }

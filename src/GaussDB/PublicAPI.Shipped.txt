@@ -1,0 +1,1938 @@
+#nullable enable
+abstract GaussDB.Replication.PgOutput.Messages.UpdateMessage.NewRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+abstract GaussDBTypes.GaussDBTsQuery.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+const GaussDB.GaussDBConnection.DefaultPort = 5432 -> int
+const GaussDB.PostgresErrorCodes.ActiveSqlTransaction = "25001" -> string!
+const GaussDB.PostgresErrorCodes.AdminShutdown = "57P01" -> string!
+const GaussDB.PostgresErrorCodes.AmbiguousAlias = "42P09" -> string!
+const GaussDB.PostgresErrorCodes.AmbiguousColumn = "42702" -> string!
+const GaussDB.PostgresErrorCodes.AmbiguousFunction = "42725" -> string!
+const GaussDB.PostgresErrorCodes.AmbiguousParameter = "42P08" -> string!
+const GaussDB.PostgresErrorCodes.ArraySubscriptError = "2202E" -> string!
+const GaussDB.PostgresErrorCodes.AssertFailure = "P0004" -> string!
+const GaussDB.PostgresErrorCodes.BadCopyFileFormat = "22P04" -> string!
+const GaussDB.PostgresErrorCodes.BranchTransactionAlreadyActive = "25002" -> string!
+const GaussDB.PostgresErrorCodes.CannotCoerce = "42846" -> string!
+const GaussDB.PostgresErrorCodes.CannotConnectNow = "57P03" -> string!
+const GaussDB.PostgresErrorCodes.CantChangeRuntimeParam = "55P02" -> string!
+const GaussDB.PostgresErrorCodes.CardinalityViolation = "21000" -> string!
+const GaussDB.PostgresErrorCodes.CaseNotFound = "20000" -> string!
+const GaussDB.PostgresErrorCodes.CharacterNotInRepertoire = "22021" -> string!
+const GaussDB.PostgresErrorCodes.CheckViolation = "23514" -> string!
+const GaussDB.PostgresErrorCodes.CollationMismatch = "42P21" -> string!
+const GaussDB.PostgresErrorCodes.ConfigFileError = "F0000" -> string!
+const GaussDB.PostgresErrorCodes.ConfigurationLimitExceeded = "53400" -> string!
+const GaussDB.PostgresErrorCodes.ConnectionDoesNotExist = "08003" -> string!
+const GaussDB.PostgresErrorCodes.ConnectionException = "08000" -> string!
+const GaussDB.PostgresErrorCodes.ConnectionFailure = "08006" -> string!
+const GaussDB.PostgresErrorCodes.ContainingSqlNotPermittedExternalRoutineException = "38001" -> string!
+const GaussDB.PostgresErrorCodes.CrashShutdown = "57P02" -> string!
+const GaussDB.PostgresErrorCodes.DatabaseDropped = "57P04" -> string!
+const GaussDB.PostgresErrorCodes.DataCorrupted = "XX001" -> string!
+const GaussDB.PostgresErrorCodes.DataException = "22000" -> string!
+const GaussDB.PostgresErrorCodes.DatatypeMismatch = "42804" -> string!
+const GaussDB.PostgresErrorCodes.DatetimeFieldOverflow = "22008" -> string!
+const GaussDB.PostgresErrorCodes.DeadlockDetected = "40P01" -> string!
+const GaussDB.PostgresErrorCodes.DependentObjectsStillExist = "2BP01" -> string!
+const GaussDB.PostgresErrorCodes.DependentPrivilegeDescriptorsStillExist = "2B000" -> string!
+const GaussDB.PostgresErrorCodes.DeprecatedFeatureWarning = "01P01" -> string!
+const GaussDB.PostgresErrorCodes.DiagnosticsException = "0Z000" -> string!
+const GaussDB.PostgresErrorCodes.DiskFull = "53100" -> string!
+const GaussDB.PostgresErrorCodes.DivisionByZero = "22012" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateAlias = "42712" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateColumn = "42701" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateCursor = "42P03" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateDatabase = "42P04" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateFile = "58P02" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateFunction = "42723" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateObject = "42710" -> string!
+const GaussDB.PostgresErrorCodes.DuplicatePreparedStatement = "42P05" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateSchema = "42P06" -> string!
+const GaussDB.PostgresErrorCodes.DuplicateTable = "42P07" -> string!
+const GaussDB.PostgresErrorCodes.DynamicResultSetsReturnedWarning = "0100C" -> string!
+const GaussDB.PostgresErrorCodes.ErrorInAssignment = "22005" -> string!
+const GaussDB.PostgresErrorCodes.EscapeCharacterConflict = "2200B" -> string!
+const GaussDB.PostgresErrorCodes.EventTriggerProtocolViolatedExternalRoutineInvocationException = "39P03" -> string!
+const GaussDB.PostgresErrorCodes.ExclusionViolation = "23P01" -> string!
+const GaussDB.PostgresErrorCodes.ExternalRoutineException = "38000" -> string!
+const GaussDB.PostgresErrorCodes.ExternalRoutineInvocationException = "39000" -> string!
+const GaussDB.PostgresErrorCodes.FdwColumnNameNotFound = "HV005" -> string!
+const GaussDB.PostgresErrorCodes.FdwDynamicParameterValueNeeded = "HV002" -> string!
+const GaussDB.PostgresErrorCodes.FdwError = "HV000" -> string!
+const GaussDB.PostgresErrorCodes.FdwFunctionSequenceError = "HV010" -> string!
+const GaussDB.PostgresErrorCodes.FdwInconsistentDescriptorInformation = "HV021" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidAttributeValue = "HV024" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidColumnName = "HV007" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidColumnNumber = "HV008" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidDataType = "HV004" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidDataTypeDescriptors = "HV006" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidDescriptorFieldIdentifier = "HV091" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidHandle = "HV00B" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidOptionIndex = "HV00C" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidOptionName = "HV00D" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidStringFormat = "HV00A" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidStringLengthOrBufferLength = "HV090" -> string!
+const GaussDB.PostgresErrorCodes.FdwInvalidUseOfNullPointer = "HV009" -> string!
+const GaussDB.PostgresErrorCodes.FdwNoSchemas = "HV00P" -> string!
+const GaussDB.PostgresErrorCodes.FdwOptionNameNotFound = "HV00J" -> string!
+const GaussDB.PostgresErrorCodes.FdwOutOfMemory = "HV001" -> string!
+const GaussDB.PostgresErrorCodes.FdwReplyHandle = "HV00K" -> string!
+const GaussDB.PostgresErrorCodes.FdwSchemaNotFound = "HV00Q" -> string!
+const GaussDB.PostgresErrorCodes.FdwTableNotFound = "HV00R" -> string!
+const GaussDB.PostgresErrorCodes.FdwTooManyHandles = "HV014" -> string!
+const GaussDB.PostgresErrorCodes.FdwUnableToCreateExecution = "HV00L" -> string!
+const GaussDB.PostgresErrorCodes.FdwUnableToCreateReply = "HV00M" -> string!
+const GaussDB.PostgresErrorCodes.FdwUnableToEstablishConnection = "HV00N" -> string!
+const GaussDB.PostgresErrorCodes.FeatureNotSupported = "0A000" -> string!
+const GaussDB.PostgresErrorCodes.FloatingPointException = "22P01" -> string!
+const GaussDB.PostgresErrorCodes.ForeignKeyViolation = "23503" -> string!
+const GaussDB.PostgresErrorCodes.FunctionExecutedNoReturnStatementSqlRoutineException = "2F005" -> string!
+const GaussDB.PostgresErrorCodes.GroupingError = "42803" -> string!
+const GaussDB.PostgresErrorCodes.HeldCursorRequiresSameIsolationLevel = "25008" -> string!
+const GaussDB.PostgresErrorCodes.IdleSessionTimeout = "57P05" -> string!
+const GaussDB.PostgresErrorCodes.ImplicitZeroBitPaddingWarning = "01008" -> string!
+const GaussDB.PostgresErrorCodes.InappropriateAccessModeForBranchTransaction = "25003" -> string!
+const GaussDB.PostgresErrorCodes.InappropriateIsolationLevelForBranchTransaction = "25004" -> string!
+const GaussDB.PostgresErrorCodes.IndeterminateCollation = "42P22" -> string!
+const GaussDB.PostgresErrorCodes.IndeterminateDatatype = "42P18" -> string!
+const GaussDB.PostgresErrorCodes.IndexCorrupted = "XX002" -> string!
+const GaussDB.PostgresErrorCodes.IndicatorOverflow = "22022" -> string!
+const GaussDB.PostgresErrorCodes.InFailedSqlTransaction = "25P02" -> string!
+const GaussDB.PostgresErrorCodes.InsufficientPrivilege = "42501" -> string!
+const GaussDB.PostgresErrorCodes.InsufficientResources = "53000" -> string!
+const GaussDB.PostgresErrorCodes.IntegrityConstraintViolation = "23000" -> string!
+const GaussDB.PostgresErrorCodes.InternalError = "XX000" -> string!
+const GaussDB.PostgresErrorCodes.IntervalFieldOverflow = "22015" -> string!
+const GaussDB.PostgresErrorCodes.InvalidArgumentForLogarithm = "2201E" -> string!
+const GaussDB.PostgresErrorCodes.InvalidArgumentForNthValueFunction = "22016" -> string!
+const GaussDB.PostgresErrorCodes.InvalidArgumentForNtileFunction = "22014" -> string!
+const GaussDB.PostgresErrorCodes.InvalidArgumentForPowerFunction = "2201F" -> string!
+const GaussDB.PostgresErrorCodes.InvalidArgumentForWidthBucketFunction = "2201G" -> string!
+const GaussDB.PostgresErrorCodes.InvalidAuthorizationSpecification = "28000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidBinaryRepresentation = "22P03" -> string!
+const GaussDB.PostgresErrorCodes.InvalidCatalogName = "3D000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidCharacterValueForCast = "22018" -> string!
+const GaussDB.PostgresErrorCodes.InvalidColumnDefinition = "42611" -> string!
+const GaussDB.PostgresErrorCodes.InvalidColumnReference = "42P10" -> string!
+const GaussDB.PostgresErrorCodes.InvalidCursorDefinition = "42P11" -> string!
+const GaussDB.PostgresErrorCodes.InvalidCursorName = "34000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidCursorState = "24000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidDatabaseDefinition = "42P12" -> string!
+const GaussDB.PostgresErrorCodes.InvalidDatetimeFormat = "22007" -> string!
+const GaussDB.PostgresErrorCodes.InvalidEscapeCharacter = "22019" -> string!
+const GaussDB.PostgresErrorCodes.InvalidEscapeOctet = "2200D" -> string!
+const GaussDB.PostgresErrorCodes.InvalidEscapeSequence = "22025" -> string!
+const GaussDB.PostgresErrorCodes.InvalidForeignKey = "42830" -> string!
+const GaussDB.PostgresErrorCodes.InvalidFunctionDefinition = "42P13" -> string!
+const GaussDB.PostgresErrorCodes.InvalidGrantOperation = "0LP01" -> string!
+const GaussDB.PostgresErrorCodes.InvalidGrantor = "0L000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidIndicatorParameterValue = "22010" -> string!
+const GaussDB.PostgresErrorCodes.InvalidLocatorSpecification = "0F001" -> string!
+const GaussDB.PostgresErrorCodes.InvalidName = "42602" -> string!
+const GaussDB.PostgresErrorCodes.InvalidObjectDefinition = "42P17" -> string!
+const GaussDB.PostgresErrorCodes.InvalidParameterValue = "22023" -> string!
+const GaussDB.PostgresErrorCodes.InvalidPassword = "28P01" -> string!
+const GaussDB.PostgresErrorCodes.InvalidPreparedStatementDefinition = "42P14" -> string!
+const GaussDB.PostgresErrorCodes.InvalidRecursion = "42P19" -> string!
+const GaussDB.PostgresErrorCodes.InvalidRegularExpression = "2201B" -> string!
+const GaussDB.PostgresErrorCodes.InvalidRoleSpecification = "0P000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidRowCountInLimitClause = "2201W" -> string!
+const GaussDB.PostgresErrorCodes.InvalidRowCountInResultOffsetClause = "2201X" -> string!
+const GaussDB.PostgresErrorCodes.InvalidSavepointSpecification = "3B001" -> string!
+const GaussDB.PostgresErrorCodes.InvalidSchemaDefinition = "42P15" -> string!
+const GaussDB.PostgresErrorCodes.InvalidSchemaName = "3F000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidSqlStatementName = "26000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidSqlstateReturnedExternalRoutineInvocationException = "39001" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTableDefinition = "42P16" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTablesampleArgument = "2202H" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTablesampleRepeat = "2202G" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTextRepresentation = "22P02" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTimeZoneDisplacementValue = "22009" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTransactionInitiation = "0B000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTransactionState = "25000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidTransactionTermination = "2D000" -> string!
+const GaussDB.PostgresErrorCodes.InvalidUseOfEscapeCharacter = "2200C" -> string!
+const GaussDB.PostgresErrorCodes.InvalidXmlComment = "2200S" -> string!
+const GaussDB.PostgresErrorCodes.InvalidXmlContent = "2200N" -> string!
+const GaussDB.PostgresErrorCodes.InvalidXmlDocument = "2200M" -> string!
+const GaussDB.PostgresErrorCodes.InvalidXmlProcessingInstruction = "2200T" -> string!
+const GaussDB.PostgresErrorCodes.IoError = "58030" -> string!
+const GaussDB.PostgresErrorCodes.LocatorException = "0F000" -> string!
+const GaussDB.PostgresErrorCodes.LockFileExists = "F0001" -> string!
+const GaussDB.PostgresErrorCodes.LockNotAvailable = "55P03" -> string!
+const GaussDB.PostgresErrorCodes.ModifyingSqlDataNotPermittedExternalRoutineException = "38002" -> string!
+const GaussDB.PostgresErrorCodes.ModifyingSqlDataNotPermittedSqlRoutineException = "2F002" -> string!
+const GaussDB.PostgresErrorCodes.MostSpecificTypeMismatch = "2200G" -> string!
+const GaussDB.PostgresErrorCodes.NameTooLong = "42622" -> string!
+const GaussDB.PostgresErrorCodes.NoActiveSqlTransaction = "25P01" -> string!
+const GaussDB.PostgresErrorCodes.NoActiveSqlTransactionForBranchTransaction = "25005" -> string!
+const GaussDB.PostgresErrorCodes.NoAdditionalDynamicResultSetsReturned = "02001" -> string!
+const GaussDB.PostgresErrorCodes.NoData = "02000" -> string!
+const GaussDB.PostgresErrorCodes.NoDataFound = "P0002" -> string!
+const GaussDB.PostgresErrorCodes.NonstandardUseOfEscapeCharacter = "22P06" -> string!
+const GaussDB.PostgresErrorCodes.NotAnXmlDocument = "2200L" -> string!
+const GaussDB.PostgresErrorCodes.NotNullViolation = "23502" -> string!
+const GaussDB.PostgresErrorCodes.NullValueEliminatedInSetFunctionWarning = "01003" -> string!
+const GaussDB.PostgresErrorCodes.NullValueNoIndicatorParameter = "22002" -> string!
+const GaussDB.PostgresErrorCodes.NullValueNotAllowed = "22004" -> string!
+const GaussDB.PostgresErrorCodes.NullValueNotAllowedExternalRoutineInvocationException = "39004" -> string!
+const GaussDB.PostgresErrorCodes.NumericValueOutOfRange = "22003" -> string!
+const GaussDB.PostgresErrorCodes.ObjectInUse = "55006" -> string!
+const GaussDB.PostgresErrorCodes.ObjectNotInPrerequisiteState = "55000" -> string!
+const GaussDB.PostgresErrorCodes.OperatorIntervention = "57000" -> string!
+const GaussDB.PostgresErrorCodes.OutOfMemory = "53200" -> string!
+const GaussDB.PostgresErrorCodes.PlpgsqlError = "P0000" -> string!
+const GaussDB.PostgresErrorCodes.PrivilegeNotGrantedWarning = "01007" -> string!
+const GaussDB.PostgresErrorCodes.PrivilegeNotRevokedWarning = "01006" -> string!
+const GaussDB.PostgresErrorCodes.ProgramLimitExceeded = "54000" -> string!
+const GaussDB.PostgresErrorCodes.ProhibitedSqlStatementAttemptedExternalRoutineException = "38003" -> string!
+const GaussDB.PostgresErrorCodes.ProhibitedSqlStatementAttemptedSqlRoutineException = "2F003" -> string!
+const GaussDB.PostgresErrorCodes.ProtocolViolation = "08P01" -> string!
+const GaussDB.PostgresErrorCodes.QueryCanceled = "57014" -> string!
+const GaussDB.PostgresErrorCodes.RaiseException = "P0001" -> string!
+const GaussDB.PostgresErrorCodes.ReadingSqlDataNotPermittedExternalRoutineException = "38004" -> string!
+const GaussDB.PostgresErrorCodes.ReadingSqlDataNotPermittedSqlRoutineException = "2F004" -> string!
+const GaussDB.PostgresErrorCodes.ReadOnlySqlTransaction = "25006" -> string!
+const GaussDB.PostgresErrorCodes.ReservedName = "42939" -> string!
+const GaussDB.PostgresErrorCodes.RestrictViolation = "23001" -> string!
+const GaussDB.PostgresErrorCodes.SavepointException = "3B000" -> string!
+const GaussDB.PostgresErrorCodes.SchemaAndDataStatementMixingNotSupported = "25007" -> string!
+const GaussDB.PostgresErrorCodes.SerializationFailure = "40001" -> string!
+const GaussDB.PostgresErrorCodes.SnapshotFailure = "72000" -> string!
+const GaussDB.PostgresErrorCodes.SqlClientUnableToEstablishSqlConnection = "08001" -> string!
+const GaussDB.PostgresErrorCodes.SqlRoutineException = "2F000" -> string!
+const GaussDB.PostgresErrorCodes.SqlServerRejectedEstablishmentOfSqlConnection = "08004" -> string!
+const GaussDB.PostgresErrorCodes.SqlStatementNotYetComplete = "03000" -> string!
+const GaussDB.PostgresErrorCodes.SrfProtocolViolatedExternalRoutineInvocationException = "39P02" -> string!
+const GaussDB.PostgresErrorCodes.StackedDiagnosticsAccessedWithoutActiveHandler = "0Z002" -> string!
+const GaussDB.PostgresErrorCodes.StatementCompletionUnknown = "40003" -> string!
+const GaussDB.PostgresErrorCodes.StatementTooComplex = "54001" -> string!
+const GaussDB.PostgresErrorCodes.StringDataLengthMismatch = "22026" -> string!
+const GaussDB.PostgresErrorCodes.StringDataRightTruncation = "22001" -> string!
+const GaussDB.PostgresErrorCodes.StringDataRightTruncationWarning = "01004" -> string!
+const GaussDB.PostgresErrorCodes.SubstringError = "22011" -> string!
+const GaussDB.PostgresErrorCodes.SuccessfulCompletion = "00000" -> string!
+const GaussDB.PostgresErrorCodes.SyntaxError = "42601" -> string!
+const GaussDB.PostgresErrorCodes.SyntaxErrorOrAccessRuleViolation = "42000" -> string!
+const GaussDB.PostgresErrorCodes.SystemError = "58000" -> string!
+const GaussDB.PostgresErrorCodes.TooManyArguments = "54023" -> string!
+const GaussDB.PostgresErrorCodes.TooManyColumns = "54011" -> string!
+const GaussDB.PostgresErrorCodes.TooManyConnections = "53300" -> string!
+const GaussDB.PostgresErrorCodes.TooManyRows = "P0003" -> string!
+const GaussDB.PostgresErrorCodes.TransactionIntegrityConstraintViolation = "40002" -> string!
+const GaussDB.PostgresErrorCodes.TransactionResolutionUnknown = "08007" -> string!
+const GaussDB.PostgresErrorCodes.TransactionRollback = "40000" -> string!
+const GaussDB.PostgresErrorCodes.TriggeredActionException = "09000" -> string!
+const GaussDB.PostgresErrorCodes.TriggeredDataChangeViolation = "27000" -> string!
+const GaussDB.PostgresErrorCodes.TriggerProtocolViolatedExternalRoutineInvocationException = "39P01" -> string!
+const GaussDB.PostgresErrorCodes.TrimError = "22027" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedColumn = "42703" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedFile = "58P01" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedFunction = "42883" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedObject = "42704" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedParameter = "42P02" -> string!
+const GaussDB.PostgresErrorCodes.UndefinedTable = "42P01" -> string!
+const GaussDB.PostgresErrorCodes.UniqueViolation = "23505" -> string!
+const GaussDB.PostgresErrorCodes.UnterminatedCString = "22024" -> string!
+const GaussDB.PostgresErrorCodes.UntranslatableCharacter = "22P05" -> string!
+const GaussDB.PostgresErrorCodes.Warning = "01000" -> string!
+const GaussDB.PostgresErrorCodes.WindowingError = "42P20" -> string!
+const GaussDB.PostgresErrorCodes.WithCheckOptionViolation = "44000" -> string!
+const GaussDB.PostgresErrorCodes.WrongObjectType = "42809" -> string!
+const GaussDB.PostgresErrorCodes.ZeroLengthCharacterString = "2200F" -> string!
+GaussDB.ArrayNullabilityMode
+GaussDB.ArrayNullabilityMode.Always = 1 -> GaussDB.ArrayNullabilityMode
+GaussDB.ArrayNullabilityMode.Never = 0 -> GaussDB.ArrayNullabilityMode
+GaussDB.ArrayNullabilityMode.PerInstance = 2 -> GaussDB.ArrayNullabilityMode
+GaussDB.BackendMessages.FieldDescription
+GaussDB.BackendMessages.FieldDescription.TypeModifier.get -> int
+GaussDB.BackendMessages.FieldDescription.TypeModifier.set -> void
+GaussDB.BackendMessages.FieldDescription.TypeSize.get -> short
+GaussDB.BackendMessages.FieldDescription.TypeSize.set -> void
+GaussDB.ChannelBinding
+GaussDB.ChannelBinding.Disable = 0 -> GaussDB.ChannelBinding
+GaussDB.ChannelBinding.Prefer = 1 -> GaussDB.ChannelBinding
+GaussDB.ChannelBinding.Require = 2 -> GaussDB.ChannelBinding
+GaussDB.IGaussDBNameTranslator
+GaussDB.IGaussDBNameTranslator.TranslateMemberName(string! clrName) -> string!
+GaussDB.IGaussDBNameTranslator.TranslateTypeName(string! clrName) -> string!
+GaussDB.NameTranslation.GaussDBNullNameTranslator
+GaussDB.NameTranslation.GaussDBNullNameTranslator.GaussDBNullNameTranslator() -> void
+GaussDB.NameTranslation.GaussDBNullNameTranslator.TranslateMemberName(string! clrName) -> string!
+GaussDB.NameTranslation.GaussDBNullNameTranslator.TranslateTypeName(string! clrName) -> string!
+GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator
+GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator.GaussDBSnakeCaseNameTranslator(bool legacyMode, System.Globalization.CultureInfo? culture = null) -> void
+GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator.GaussDBSnakeCaseNameTranslator(System.Globalization.CultureInfo? culture = null) -> void
+GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator.TranslateMemberName(string! clrName) -> string!
+GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator.TranslateTypeName(string! clrName) -> string!
+GaussDB.NoticeEventHandler
+GaussDB.NotificationEventHandler
+GaussDB.GaussDBBatch
+GaussDB.GaussDBBatch.BatchCommands.get -> GaussDB.GaussDBBatchCommandCollection!
+GaussDB.GaussDBBatch.Connection.get -> GaussDB.GaussDBConnection?
+GaussDB.GaussDBBatch.Connection.set -> void
+GaussDB.GaussDBBatch.CreateBatchCommand() -> GaussDB.GaussDBBatchCommand!
+GaussDB.GaussDBBatch.EnableErrorBarriers.get -> bool
+GaussDB.GaussDBBatch.EnableErrorBarriers.set -> void
+GaussDB.GaussDBBatch.ExecuteReader(System.Data.CommandBehavior behavior = System.Data.CommandBehavior.Default) -> GaussDB.GaussDBDataReader!
+GaussDB.GaussDBBatch.ExecuteReaderAsync(System.Data.CommandBehavior behavior, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBDataReader!>!
+GaussDB.GaussDBBatch.ExecuteReaderAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBDataReader!>!
+GaussDB.GaussDBBatch.GaussDBBatch(GaussDB.GaussDBConnection? connection = null, GaussDB.GaussDBTransaction? transaction = null) -> void
+GaussDB.GaussDBBatch.Transaction.get -> GaussDB.GaussDBTransaction?
+GaussDB.GaussDBBatch.Transaction.set -> void
+GaussDB.GaussDBBatchCommand
+GaussDB.GaussDBBatchCommand.AppendErrorBarrier.get -> bool?
+GaussDB.GaussDBBatchCommand.AppendErrorBarrier.set -> void
+GaussDB.GaussDBBatchCommand.GaussDBBatchCommand() -> void
+GaussDB.GaussDBBatchCommand.GaussDBBatchCommand(string! commandText) -> void
+GaussDB.GaussDBBatchCommand.OID.get -> uint
+GaussDB.GaussDBBatchCommand.Parameters.get -> GaussDB.GaussDBParameterCollection!
+GaussDB.GaussDBBatchCommand.Rows.get -> ulong
+GaussDB.GaussDBBatchCommand.StatementType.get -> GaussDB.StatementType
+GaussDB.GaussDBBatchCommandCollection
+GaussDB.GaussDBBatchCommandCollection.Add(GaussDB.GaussDBBatchCommand! item) -> void
+GaussDB.GaussDBBatchCommandCollection.Contains(GaussDB.GaussDBBatchCommand! item) -> bool
+GaussDB.GaussDBBatchCommandCollection.CopyTo(GaussDB.GaussDBBatchCommand![]! array, int arrayIndex) -> void
+GaussDB.GaussDBBatchCommandCollection.IndexOf(GaussDB.GaussDBBatchCommand! item) -> int
+GaussDB.GaussDBBatchCommandCollection.Insert(int index, GaussDB.GaussDBBatchCommand! item) -> void
+GaussDB.GaussDBBatchCommandCollection.Remove(GaussDB.GaussDBBatchCommand! item) -> bool
+GaussDB.GaussDBBatchCommandCollection.this[int index].get -> GaussDB.GaussDBBatchCommand!
+GaussDB.GaussDBBatchCommandCollection.this[int index].set -> void
+GaussDB.GaussDBBinaryExporter
+GaussDB.GaussDBBinaryExporter.Cancel() -> void
+GaussDB.GaussDBBinaryExporter.CancelAsync() -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryExporter.Dispose() -> void
+GaussDB.GaussDBBinaryExporter.DisposeAsync() -> System.Threading.Tasks.ValueTask
+GaussDB.GaussDBBinaryExporter.IsNull.get -> bool
+GaussDB.GaussDBBinaryExporter.Read<T>() -> T
+GaussDB.GaussDBBinaryExporter.Read<T>(GaussDBTypes.GaussDBDbType type) -> T
+GaussDB.GaussDBBinaryExporter.ReadAsync<T>(GaussDBTypes.GaussDBDbType type, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<T>
+GaussDB.GaussDBBinaryExporter.ReadAsync<T>(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<T>
+GaussDB.GaussDBBinaryExporter.Skip() -> void
+GaussDB.GaussDBBinaryExporter.SkipAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryExporter.StartRow() -> int
+GaussDB.GaussDBBinaryExporter.StartRowAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<int>
+GaussDB.GaussDBBinaryExporter.Timeout.set -> void
+GaussDB.GaussDBBinaryImporter
+GaussDB.GaussDBBinaryImporter.Close() -> void
+GaussDB.GaussDBBinaryImporter.CloseAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+GaussDB.GaussDBBinaryImporter.Complete() -> ulong
+GaussDB.GaussDBBinaryImporter.CompleteAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<ulong>
+GaussDB.GaussDBBinaryImporter.Dispose() -> void
+GaussDB.GaussDBBinaryImporter.DisposeAsync() -> System.Threading.Tasks.ValueTask
+GaussDB.GaussDBBinaryImporter.StartRow() -> void
+GaussDB.GaussDBBinaryImporter.StartRowAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryImporter.Timeout.set -> void
+GaussDB.GaussDBBinaryImporter.Write<T>(T value) -> void
+GaussDB.GaussDBBinaryImporter.Write<T>(T value, GaussDBTypes.GaussDBDbType gaussdbDbType) -> void
+GaussDB.GaussDBBinaryImporter.Write<T>(T value, string! dataTypeName) -> void
+GaussDB.GaussDBBinaryImporter.WriteAsync<T>(T value, GaussDBTypes.GaussDBDbType gaussdbDbType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryImporter.WriteAsync<T>(T value, string! dataTypeName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryImporter.WriteAsync<T>(T value, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryImporter.WriteNull() -> void
+GaussDB.GaussDBBinaryImporter.WriteNullAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBBinaryImporter.WriteRow(params object?[]! values) -> void
+GaussDB.GaussDBBinaryImporter.WriteRowAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken), params object?[]! values) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBCommand
+GaussDB.GaussDBCommand.AllResultTypesAreUnknown.get -> bool
+GaussDB.GaussDBCommand.AllResultTypesAreUnknown.set -> void
+GaussDB.GaussDBCommand.Connection.get -> GaussDB.GaussDBConnection?
+GaussDB.GaussDBCommand.Connection.set -> void
+GaussDB.GaussDBCommand.CreateParameter() -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBCommand.Disposed -> System.EventHandler?
+GaussDB.GaussDBCommand.ExecuteReader(System.Data.CommandBehavior behavior = System.Data.CommandBehavior.Default) -> GaussDB.GaussDBDataReader!
+GaussDB.GaussDBCommand.ExecuteReaderAsync(System.Data.CommandBehavior behavior, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBDataReader!>!
+GaussDB.GaussDBCommand.ExecuteReaderAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBDataReader!>!
+GaussDB.GaussDBCommand.IsPrepared.get -> bool
+GaussDB.GaussDBCommand.GaussDBCommand() -> void
+GaussDB.GaussDBCommand.GaussDBCommand(string? cmdText) -> void
+GaussDB.GaussDBCommand.GaussDBCommand(string? cmdText, GaussDB.GaussDBConnection? connection) -> void
+GaussDB.GaussDBCommand.GaussDBCommand(string? cmdText, GaussDB.GaussDBConnection? connection, GaussDB.GaussDBTransaction? transaction) -> void
+GaussDB.GaussDBCommand.Parameters.get -> GaussDB.GaussDBParameterCollection!
+GaussDB.GaussDBCommand.Statements.get -> System.Collections.Generic.IReadOnlyList<GaussDB.GaussDBBatchCommand!>!
+GaussDB.GaussDBCommand.Transaction.get -> GaussDB.GaussDBTransaction?
+GaussDB.GaussDBCommand.Transaction.set -> void
+GaussDB.GaussDBCommand.UnknownResultTypeList.get -> bool[]?
+GaussDB.GaussDBCommand.UnknownResultTypeList.set -> void
+GaussDB.GaussDBCommand.Unprepare() -> void
+GaussDB.GaussDBCommand.UnprepareAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBCommandBuilder
+GaussDB.GaussDBCommandBuilder.GetDeleteCommand() -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GetDeleteCommand(bool useColumnsForParameterNames) -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GetInsertCommand() -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GetInsertCommand(bool useColumnsForParameterNames) -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GetUpdateCommand() -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GetUpdateCommand(bool useColumnsForParameterNames) -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBCommandBuilder.GaussDBCommandBuilder() -> void
+GaussDB.GaussDBCommandBuilder.GaussDBCommandBuilder(GaussDB.GaussDBDataAdapter? adapter) -> void
+GaussDB.GaussDBConnection
+GaussDB.GaussDBConnection.BeginBinaryExport(string! copyToCommand) -> GaussDB.GaussDBBinaryExporter!
+GaussDB.GaussDBConnection.BeginBinaryExportAsync(string! copyToCommand, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBBinaryExporter!>!
+GaussDB.GaussDBConnection.BeginBinaryImport(string! copyFromCommand) -> GaussDB.GaussDBBinaryImporter!
+GaussDB.GaussDBConnection.BeginBinaryImportAsync(string! copyFromCommand, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBBinaryImporter!>!
+GaussDB.GaussDBConnection.BeginRawBinaryCopy(string! copyCommand) -> GaussDB.GaussDBRawCopyStream!
+GaussDB.GaussDBConnection.BeginRawBinaryCopyAsync(string! copyCommand, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBRawCopyStream!>!
+GaussDB.GaussDBConnection.BeginTextExport(string! copyToCommand) -> System.IO.TextReader!
+GaussDB.GaussDBConnection.BeginTextExportAsync(string! copyToCommand, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.TextReader!>!
+GaussDB.GaussDBConnection.BeginTextImport(string! copyFromCommand) -> System.IO.TextWriter!
+GaussDB.GaussDBConnection.BeginTextImportAsync(string! copyFromCommand, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.TextWriter!>!
+GaussDB.GaussDBConnection.BeginTransaction() -> GaussDB.GaussDBTransaction!
+GaussDB.GaussDBConnection.BeginTransaction(System.Data.IsolationLevel level) -> GaussDB.GaussDBTransaction!
+GaussDB.GaussDBConnection.BeginTransactionAsync(System.Data.IsolationLevel level, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<GaussDB.GaussDBTransaction!>
+GaussDB.GaussDBConnection.BeginTransactionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<GaussDB.GaussDBTransaction!>
+GaussDB.GaussDBConnection.CloneWith(string! connectionString) -> GaussDB.GaussDBConnection!
+GaussDB.GaussDBConnection.CommandTimeout.get -> int
+GaussDB.GaussDBConnection.CreateBatch() -> GaussDB.GaussDBBatch!
+GaussDB.GaussDBConnection.CreateCommand() -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBConnection.Disposed -> System.EventHandler?
+GaussDB.GaussDBConnection.FullState.get -> System.Data.ConnectionState
+GaussDB.GaussDBConnection.HasIntegerDateTimes.get -> bool
+GaussDB.GaussDBConnection.Host.get -> string?
+GaussDB.GaussDBConnection.Notice -> GaussDB.NoticeEventHandler?
+GaussDB.GaussDBConnection.Notification -> GaussDB.NotificationEventHandler?
+GaussDB.GaussDBConnection.GaussDBConnection() -> void
+GaussDB.GaussDBConnection.GaussDBConnection(string? connectionString) -> void
+GaussDB.GaussDBConnection.Port.get -> int
+GaussDB.GaussDBConnection.PostgresParameters.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
+GaussDB.GaussDBConnection.PostgreSqlVersion.get -> System.Version!
+GaussDB.GaussDBConnection.ProcessID.get -> int
+GaussDB.GaussDBConnection.ProvideClientCertificatesCallback.get -> GaussDB.ProvideClientCertificatesCallback?
+GaussDB.GaussDBConnection.ProvideClientCertificatesCallback.set -> void
+GaussDB.GaussDBConnection.ProvidePasswordCallback.get -> GaussDB.ProvidePasswordCallback?
+GaussDB.GaussDBConnection.ProvidePasswordCallback.set -> void
+GaussDB.GaussDBConnection.ReloadTypes() -> void
+GaussDB.GaussDBConnection.ReloadTypesAsync() -> System.Threading.Tasks.Task!
+GaussDB.GaussDBConnection.Timezone.get -> string!
+GaussDB.GaussDBConnection.TypeMapper.get -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBConnection.UnprepareAll() -> void
+GaussDB.GaussDBConnection.UserCertificateValidationCallback.get -> System.Net.Security.RemoteCertificateValidationCallback?
+GaussDB.GaussDBConnection.UserCertificateValidationCallback.set -> void
+GaussDB.GaussDBConnection.UserName.get -> string?
+GaussDB.GaussDBConnection.Wait() -> void
+GaussDB.GaussDBConnection.Wait(int timeout) -> bool
+GaussDB.GaussDBConnection.Wait(System.TimeSpan timeout) -> bool
+GaussDB.GaussDBConnection.WaitAsync(int timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
+GaussDB.GaussDBConnection.WaitAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBConnection.WaitAsync(System.TimeSpan timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<bool>!
+GaussDB.GaussDBConnectionStringBuilder
+GaussDB.GaussDBConnectionStringBuilder.Add(System.Collections.Generic.KeyValuePair<string!, object?> item) -> void
+GaussDB.GaussDBConnectionStringBuilder.ApplicationName.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.ApplicationName.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ArrayNullabilityMode.get -> GaussDB.ArrayNullabilityMode
+GaussDB.GaussDBConnectionStringBuilder.ArrayNullabilityMode.set -> void
+GaussDB.GaussDBConnectionStringBuilder.AutoPrepareMinUsages.get -> int
+GaussDB.GaussDBConnectionStringBuilder.AutoPrepareMinUsages.set -> void
+GaussDB.GaussDBConnectionStringBuilder.CancellationTimeout.get -> int
+GaussDB.GaussDBConnectionStringBuilder.CancellationTimeout.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ChannelBinding.get -> GaussDB.ChannelBinding
+GaussDB.GaussDBConnectionStringBuilder.ChannelBinding.set -> void
+GaussDB.GaussDBConnectionStringBuilder.CheckCertificateRevocation.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.CheckCertificateRevocation.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ClientEncoding.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.ClientEncoding.set -> void
+GaussDB.GaussDBConnectionStringBuilder.CommandTimeout.get -> int
+GaussDB.GaussDBConnectionStringBuilder.CommandTimeout.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ConnectionIdleLifetime.get -> int
+GaussDB.GaussDBConnectionStringBuilder.ConnectionIdleLifetime.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ConnectionLifetime.get -> int
+GaussDB.GaussDBConnectionStringBuilder.ConnectionLifetime.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ConnectionPruningInterval.get -> int
+GaussDB.GaussDBConnectionStringBuilder.ConnectionPruningInterval.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Contains(System.Collections.Generic.KeyValuePair<string!, object?> item) -> bool
+GaussDB.GaussDBConnectionStringBuilder.CopyTo(System.Collections.Generic.KeyValuePair<string!, object?>[]! array, int arrayIndex) -> void
+GaussDB.GaussDBConnectionStringBuilder.Database.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Database.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Encoding.get -> string!
+GaussDB.GaussDBConnectionStringBuilder.Encoding.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Enlist.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.Enlist.set -> void
+GaussDB.GaussDBConnectionStringBuilder.GetEnumerator() -> System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<string!, object?>>!
+GaussDB.GaussDBConnectionStringBuilder.Host.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Host.set -> void
+GaussDB.GaussDBConnectionStringBuilder.HostRecheckSeconds.get -> int
+GaussDB.GaussDBConnectionStringBuilder.HostRecheckSeconds.set -> void
+GaussDB.GaussDBConnectionStringBuilder.IncludeErrorDetail.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.IncludeErrorDetail.set -> void
+GaussDB.GaussDBConnectionStringBuilder.IncludeRealm.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.IncludeRealm.set -> void
+GaussDB.GaussDBConnectionStringBuilder.InternalCommandTimeout.get -> int
+GaussDB.GaussDBConnectionStringBuilder.InternalCommandTimeout.set -> void
+GaussDB.GaussDBConnectionStringBuilder.KeepAlive.get -> int
+GaussDB.GaussDBConnectionStringBuilder.KeepAlive.set -> void
+GaussDB.GaussDBConnectionStringBuilder.KerberosServiceName.get -> string!
+GaussDB.GaussDBConnectionStringBuilder.KerberosServiceName.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Keys.get -> System.Collections.Generic.ICollection<string!>!
+GaussDB.GaussDBConnectionStringBuilder.LoadBalanceHosts.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.LoadBalanceHosts.set -> void
+GaussDB.GaussDBConnectionStringBuilder.LoadTableComposites.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.LoadTableComposites.set -> void
+GaussDB.GaussDBConnectionStringBuilder.LogParameters.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.LogParameters.set -> void
+GaussDB.GaussDBConnectionStringBuilder.MaxAutoPrepare.get -> int
+GaussDB.GaussDBConnectionStringBuilder.MaxAutoPrepare.set -> void
+GaussDB.GaussDBConnectionStringBuilder.MaxPoolSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.MaxPoolSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.MinPoolSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.MinPoolSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Multiplexing.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.Multiplexing.set -> void
+GaussDB.GaussDBConnectionStringBuilder.NoResetOnClose.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.NoResetOnClose.set -> void
+GaussDB.GaussDBConnectionStringBuilder.GaussDBConnectionStringBuilder() -> void
+GaussDB.GaussDBConnectionStringBuilder.GaussDBConnectionStringBuilder(bool useOdbcRules) -> void
+GaussDB.GaussDBConnectionStringBuilder.GaussDBConnectionStringBuilder(string? connectionString) -> void
+GaussDB.GaussDBConnectionStringBuilder.Options.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Options.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Passfile.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Passfile.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Password.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Password.set -> void
+GaussDB.GaussDBConnectionStringBuilder.PersistSecurityInfo.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.PersistSecurityInfo.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Pooling.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.Pooling.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Port.get -> int
+GaussDB.GaussDBConnectionStringBuilder.Port.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ReadBufferSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.ReadBufferSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Remove(System.Collections.Generic.KeyValuePair<string!, object?> item) -> bool
+GaussDB.GaussDBConnectionStringBuilder.RootCertificate.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.RootCertificate.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SearchPath.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.SearchPath.set -> void
+GaussDB.GaussDBConnectionStringBuilder.ServerCompatibilityMode.get -> GaussDB.ServerCompatibilityMode
+GaussDB.GaussDBConnectionStringBuilder.ServerCompatibilityMode.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SocketReceiveBufferSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.SocketReceiveBufferSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SocketSendBufferSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.SocketSendBufferSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SslCertificate.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.SslCertificate.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SslKey.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.SslKey.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SslMode.get -> GaussDB.SslMode
+GaussDB.GaussDBConnectionStringBuilder.SslMode.set -> void
+GaussDB.GaussDBConnectionStringBuilder.SslPassword.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.SslPassword.set -> void
+GaussDB.GaussDBConnectionStringBuilder.TargetSessionAttributes.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.TargetSessionAttributes.set -> void
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAlive.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAlive.set -> void
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAliveInterval.get -> int
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAliveInterval.set -> void
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAliveTime.get -> int
+GaussDB.GaussDBConnectionStringBuilder.TcpKeepAliveTime.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Timeout.get -> int
+GaussDB.GaussDBConnectionStringBuilder.Timeout.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Timezone.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Timezone.set -> void
+GaussDB.GaussDBConnectionStringBuilder.TrustServerCertificate.get -> bool
+GaussDB.GaussDBConnectionStringBuilder.TrustServerCertificate.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Username.get -> string?
+GaussDB.GaussDBConnectionStringBuilder.Username.set -> void
+GaussDB.GaussDBConnectionStringBuilder.Values.get -> System.Collections.Generic.ICollection<object?>!
+GaussDB.GaussDBConnectionStringBuilder.WriteBufferSize.get -> int
+GaussDB.GaussDBConnectionStringBuilder.WriteBufferSize.set -> void
+GaussDB.GaussDBConnectionStringBuilder.WriteCoalescingBufferThresholdBytes.get -> int
+GaussDB.GaussDBConnectionStringBuilder.WriteCoalescingBufferThresholdBytes.set -> void
+GaussDB.GaussDBCopyTextReader
+GaussDB.GaussDBCopyTextReader.Cancel() -> void
+GaussDB.GaussDBCopyTextReader.CancelAsync() -> System.Threading.Tasks.Task!
+GaussDB.GaussDBCopyTextReader.DisposeAsync() -> System.Threading.Tasks.ValueTask
+GaussDB.GaussDBCopyTextWriter
+GaussDB.GaussDBCopyTextWriter.Cancel() -> void
+GaussDB.GaussDBCopyTextWriter.CancelAsync() -> System.Threading.Tasks.Task!
+GaussDB.GaussDBDataAdapter
+GaussDB.GaussDBDataAdapter.DeleteCommand.get -> GaussDB.GaussDBCommand?
+GaussDB.GaussDBDataAdapter.DeleteCommand.set -> void
+GaussDB.GaussDBDataAdapter.InsertCommand.get -> GaussDB.GaussDBCommand?
+GaussDB.GaussDBDataAdapter.InsertCommand.set -> void
+GaussDB.GaussDBDataAdapter.GaussDBDataAdapter() -> void
+GaussDB.GaussDBDataAdapter.GaussDBDataAdapter(GaussDB.GaussDBCommand! selectCommand) -> void
+GaussDB.GaussDBDataAdapter.GaussDBDataAdapter(string! selectCommandText, GaussDB.GaussDBConnection! selectConnection) -> void
+GaussDB.GaussDBDataAdapter.GaussDBDataAdapter(string! selectCommandText, string! selectConnectionString) -> void
+GaussDB.GaussDBDataAdapter.RowUpdated -> GaussDB.GaussDBRowUpdatedEventHandler?
+GaussDB.GaussDBDataAdapter.RowUpdating -> GaussDB.GaussDBRowUpdatingEventHandler?
+GaussDB.GaussDBDataAdapter.SelectCommand.get -> GaussDB.GaussDBCommand?
+GaussDB.GaussDBDataAdapter.SelectCommand.set -> void
+GaussDB.GaussDBDataAdapter.UpdateCommand.get -> GaussDB.GaussDBCommand?
+GaussDB.GaussDBDataAdapter.UpdateCommand.set -> void
+GaussDB.GaussDBDataReader
+GaussDB.GaussDBDataReader.GetColumnSchema() -> System.Collections.ObjectModel.ReadOnlyCollection<GaussDB.Schema.GaussDBDbColumn!>!
+GaussDB.GaussDBDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.ObjectModel.ReadOnlyCollection<GaussDB.Schema.GaussDBDbColumn!>!>!
+GaussDB.GaussDBDataReader.GetData(int ordinal) -> GaussDB.GaussDBNestedDataReader!
+GaussDB.GaussDBDataReader.GetDataTypeOID(int ordinal) -> uint
+GaussDB.GaussDBDataReader.GetPostgresType(int ordinal) -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.GaussDBDataReader.GetStreamAsync(int ordinal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.Stream!>!
+GaussDB.GaussDBDataReader.GetTextReaderAsync(int ordinal, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.TextReader!>!
+GaussDB.GaussDBDataReader.GetTimeSpan(int ordinal) -> System.TimeSpan
+GaussDB.GaussDBDataReader.IsOnRow.get -> bool
+GaussDB.GaussDBDataReader.ReaderClosed -> System.EventHandler?
+GaussDB.GaussDBDataReader.Rows.get -> ulong
+GaussDB.GaussDBDataReader.Statements.get -> System.Collections.Generic.IReadOnlyList<GaussDB.GaussDBBatchCommand!>!
+GaussDB.GaussDBDataSource
+GaussDB.GaussDBDataSource.CreateBatch() -> GaussDB.GaussDBBatch!
+GaussDB.GaussDBDataSource.CreateCommand(string? commandText = null) -> GaussDB.GaussDBCommand!
+GaussDB.GaussDBDataSource.CreateConnection() -> GaussDB.GaussDBConnection!
+GaussDB.GaussDBDataSource.OpenConnection() -> GaussDB.GaussDBConnection!
+GaussDB.GaussDBDataSource.OpenConnectionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<GaussDB.GaussDBConnection!>
+GaussDB.GaussDBDataSource.Password.set -> void
+GaussDB.GaussDBDataSourceBuilder
+GaussDB.GaussDBDataSourceBuilder.AddTypeInfoResolverFactory(GaussDB.Internal.PgTypeInfoResolverFactory! factory) -> void
+GaussDB.GaussDBDataSourceBuilder.Build() -> GaussDB.GaussDBDataSource!
+GaussDB.GaussDBDataSourceBuilder.BuildMultiHost() -> GaussDB.GaussDBMultiHostDataSource!
+GaussDB.GaussDBDataSourceBuilder.ConfigureJsonOptions(System.Text.Json.JsonSerializerOptions! serializerOptions) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.ConnectionString.get -> string!
+GaussDB.GaussDBDataSourceBuilder.ConnectionStringBuilder.get -> GaussDB.GaussDBConnectionStringBuilder!
+GaussDB.GaussDBDataSourceBuilder.DefaultNameTranslator.get -> GaussDB.IGaussDBNameTranslator!
+GaussDB.GaussDBDataSourceBuilder.DefaultNameTranslator.set -> void
+GaussDB.GaussDBDataSourceBuilder.EnableDynamicJson(System.Type![]? jsonbClrTypes = null, System.Type![]? jsonClrTypes = null) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.EnableParameterLogging(bool parameterLoggingEnabled = true) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.EnableRecordsAsTuples() -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.EnableUnmappedTypes() -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBDataSourceBuilder.Name.get -> string?
+GaussDB.GaussDBDataSourceBuilder.Name.set -> void
+GaussDB.GaussDBDataSourceBuilder.GaussDBDataSourceBuilder(string? connectionString = null) -> void
+GaussDB.GaussDBDataSourceBuilder.UnmapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBDataSourceBuilder.UnmapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBDataSourceBuilder.UnmapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBDataSourceBuilder.UnmapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBDataSourceBuilder.UseClientCertificate(System.Security.Cryptography.X509Certificates.X509Certificate? clientCertificate) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseClientCertificates(System.Security.Cryptography.X509Certificates.X509CertificateCollection? clientCertificates) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseClientCertificatesCallback(System.Action<System.Security.Cryptography.X509Certificates.X509CertificateCollection!>? clientCertificatesCallback) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UsePasswordProvider(System.Func<GaussDB.GaussDBConnectionStringBuilder!, string!>? passwordProvider, System.Func<GaussDB.GaussDBConnectionStringBuilder!, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<string!>>? passwordProviderAsync) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UsePeriodicPasswordProvider(System.Func<GaussDB.GaussDBConnectionStringBuilder!, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<string!>>? passwordProvider, System.TimeSpan successRefreshInterval, System.TimeSpan failureRefreshInterval) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UsePhysicalConnectionInitializer(System.Action<GaussDB.GaussDBConnection!>? connectionInitializer, System.Func<GaussDB.GaussDBConnection!, System.Threading.Tasks.Task!>? connectionInitializerAsync) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseRootCertificate(System.Security.Cryptography.X509Certificates.X509Certificate2? rootCertificate) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseRootCertificateCallback(System.Func<System.Security.Cryptography.X509Certificates.X509Certificate2!>? rootCertificateCallback) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBDataSourceBuilder.UseUserCertificateValidationCallback(System.Net.Security.RemoteCertificateValidationCallback! userCertificateValidationCallback) -> GaussDB.GaussDBDataSourceBuilder!
+GaussDB.GaussDBException
+GaussDB.GaussDBException.BatchCommand.get -> GaussDB.GaussDBBatchCommand?
+GaussDB.GaussDBException.BatchCommand.set -> void
+GaussDB.GaussDBException.GaussDBException() -> void
+GaussDB.GaussDBException.GaussDBException(string? message) -> void
+GaussDB.GaussDBException.GaussDBException(string? message, System.Exception? innerException) -> void
+GaussDB.GaussDBException.GaussDBException(System.Runtime.Serialization.SerializationInfo! info, System.Runtime.Serialization.StreamingContext context) -> void
+GaussDB.GaussDBFactory
+GaussDB.GaussDBFactory.GetService(System.Type! serviceType) -> object?
+GaussDB.GaussDBLargeObjectManager
+GaussDB.GaussDBLargeObjectManager.Create(uint preferredOid = 0) -> uint
+GaussDB.GaussDBLargeObjectManager.CreateAsync(uint preferredOid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<uint>!
+GaussDB.GaussDBLargeObjectManager.ExportRemote(uint oid, string! path) -> void
+GaussDB.GaussDBLargeObjectManager.ExportRemoteAsync(uint oid, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBLargeObjectManager.Has64BitSupport.get -> bool
+GaussDB.GaussDBLargeObjectManager.ImportRemote(string! path, uint oid = 0) -> void
+GaussDB.GaussDBLargeObjectManager.ImportRemoteAsync(string! path, uint oid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBLargeObjectManager.MaxTransferBlockSize.get -> int
+GaussDB.GaussDBLargeObjectManager.MaxTransferBlockSize.set -> void
+GaussDB.GaussDBLargeObjectManager.GaussDBLargeObjectManager(GaussDB.GaussDBConnection! connection) -> void
+GaussDB.GaussDBLargeObjectManager.OpenRead(uint oid) -> GaussDB.GaussDBLargeObjectStream!
+GaussDB.GaussDBLargeObjectManager.OpenReadAsync(uint oid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBLargeObjectStream!>!
+GaussDB.GaussDBLargeObjectManager.OpenReadWrite(uint oid) -> GaussDB.GaussDBLargeObjectStream!
+GaussDB.GaussDBLargeObjectManager.OpenReadWriteAsync(uint oid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.GaussDBLargeObjectStream!>!
+GaussDB.GaussDBLargeObjectManager.Unlink(uint oid) -> void
+GaussDB.GaussDBLargeObjectManager.UnlinkAsync(uint oid, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBLargeObjectStream
+GaussDB.GaussDBLargeObjectStream.GetLengthAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<long>!
+GaussDB.GaussDBLargeObjectStream.Has64BitSupport.get -> bool
+GaussDB.GaussDBLargeObjectStream.SeekAsync(long offset, System.IO.SeekOrigin origin, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<long>!
+GaussDB.GaussDBLargeObjectStream.SetLength(long value, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+GaussDB.GaussDBLoggingConfiguration
+GaussDB.GaussDBMultiHostDataSource
+GaussDB.GaussDBMultiHostDataSource.ClearDatabaseStates() -> void
+GaussDB.GaussDBMultiHostDataSource.CreateConnection(GaussDB.TargetSessionAttributes targetSessionAttributes) -> GaussDB.GaussDBConnection!
+GaussDB.GaussDBMultiHostDataSource.OpenConnection(GaussDB.TargetSessionAttributes targetSessionAttributes) -> GaussDB.GaussDBConnection!
+GaussDB.GaussDBMultiHostDataSource.OpenConnectionAsync(GaussDB.TargetSessionAttributes targetSessionAttributes, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<GaussDB.GaussDBConnection!>
+GaussDB.GaussDBMultiHostDataSource.WithTargetSession(GaussDB.TargetSessionAttributes targetSessionAttributes) -> GaussDB.GaussDBDataSource!
+GaussDB.GaussDBNestedDataReader
+GaussDB.GaussDBNestedDataReader.GetData(int ordinal) -> GaussDB.GaussDBNestedDataReader!
+GaussDB.GaussDBNoticeEventArgs
+GaussDB.GaussDBNoticeEventArgs.Notice.get -> GaussDB.PostgresNotice!
+GaussDB.GaussDBNotificationEventArgs
+GaussDB.GaussDBNotificationEventArgs.Channel.get -> string!
+GaussDB.GaussDBNotificationEventArgs.Payload.get -> string!
+GaussDB.GaussDBNotificationEventArgs.PID.get -> int
+GaussDB.GaussDBOperationInProgressException
+GaussDB.GaussDBOperationInProgressException.CommandInProgress.get -> GaussDB.GaussDBCommand?
+GaussDB.GaussDBOperationInProgressException.GaussDBOperationInProgressException(GaussDB.GaussDBCommand! command) -> void
+GaussDB.GaussDBParameter
+GaussDB.GaussDBParameter.Clone() -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameter.Collection.get -> GaussDB.GaussDBParameterCollection?
+GaussDB.GaussDBParameter.Collection.set -> void
+GaussDB.GaussDBParameter.DataTypeName.get -> string?
+GaussDB.GaussDBParameter.DataTypeName.set -> void
+GaussDB.GaussDBParameter.GaussDBDbType.get -> GaussDBTypes.GaussDBDbType
+GaussDB.GaussDBParameter.GaussDBDbType.set -> void
+GaussDB.GaussDBParameter.GaussDBParameter() -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, int size, string? sourceColumn, System.Data.ParameterDirection direction, bool isNullable, byte precision, byte scale, System.Data.DataRowVersion sourceVersion, object! value) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string! parameterName, System.Data.DbType parameterType, int size, string? sourceColumn, System.Data.ParameterDirection direction, bool isNullable, byte precision, byte scale, System.Data.DataRowVersion sourceVersion, object! value) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, GaussDBTypes.GaussDBDbType parameterType) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, GaussDBTypes.GaussDBDbType parameterType, int size) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, GaussDBTypes.GaussDBDbType parameterType, int size, string? sourceColumn) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, object? value) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, System.Data.DbType parameterType) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, System.Data.DbType parameterType, int size) -> void
+GaussDB.GaussDBParameter.GaussDBParameter(string? parameterName, System.Data.DbType parameterType, int size, string? sourceColumn) -> void
+GaussDB.GaussDBParameter.GaussDBValue.get -> object?
+GaussDB.GaussDBParameter.GaussDBValue.set -> void
+GaussDB.GaussDBParameter.PostgresType.get -> GaussDB.PostgresTypes.PostgresType?
+GaussDB.GaussDBParameter.Precision.get -> byte
+GaussDB.GaussDBParameter.Precision.set -> void
+GaussDB.GaussDBParameter.Scale.get -> byte
+GaussDB.GaussDBParameter.Scale.set -> void
+GaussDB.GaussDBParameter<T>
+GaussDB.GaussDBParameter<T>.GaussDBParameter() -> void
+GaussDB.GaussDBParameter<T>.GaussDBParameter(string! parameterName, GaussDBTypes.GaussDBDbType gaussdbDbType) -> void
+GaussDB.GaussDBParameter<T>.GaussDBParameter(string! parameterName, System.Data.DbType dbType) -> void
+GaussDB.GaussDBParameter<T>.GaussDBParameter(string! parameterName, T value) -> void
+GaussDB.GaussDBParameter<T>.TypedValue.get -> T?
+GaussDB.GaussDBParameter<T>.TypedValue.set -> void
+GaussDB.GaussDBParameterCollection
+GaussDB.GaussDBParameterCollection.Add(GaussDB.GaussDBParameter! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.Add(string! parameterName, GaussDBTypes.GaussDBDbType parameterType) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.Add(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, int size) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.Add(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, int size, string! sourceColumn) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(GaussDBTypes.GaussDBDbType parameterType, object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, int size, object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, int size, string? sourceColumn, object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(string! parameterName, GaussDBTypes.GaussDBDbType parameterType, object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.AddWithValue(string! parameterName, object! value) -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.Contains(GaussDB.GaussDBParameter! item) -> bool
+GaussDB.GaussDBParameterCollection.CopyTo(GaussDB.GaussDBParameter![]! array, int arrayIndex) -> void
+GaussDB.GaussDBParameterCollection.IndexOf(GaussDB.GaussDBParameter! item) -> int
+GaussDB.GaussDBParameterCollection.Insert(int index, GaussDB.GaussDBParameter! item) -> void
+GaussDB.GaussDBParameterCollection.Remove(GaussDB.GaussDBParameter! item) -> bool
+GaussDB.GaussDBParameterCollection.Remove(string! parameterName) -> void
+GaussDB.GaussDBParameterCollection.this[int index].get -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.this[int index].set -> void
+GaussDB.GaussDBParameterCollection.this[string! parameterName].get -> GaussDB.GaussDBParameter!
+GaussDB.GaussDBParameterCollection.this[string! parameterName].set -> void
+GaussDB.GaussDBParameterCollection.ToArray() -> GaussDB.GaussDBParameter![]!
+GaussDB.GaussDBParameterCollection.TryGetValue(string! parameterName, out GaussDB.GaussDBParameter? parameter) -> bool
+GaussDB.GaussDBRawCopyStream
+GaussDB.GaussDBRawCopyStream.Cancel() -> void
+GaussDB.GaussDBRawCopyStream.CancelAsync() -> System.Threading.Tasks.Task!
+GaussDB.GaussDBRowUpdatedEventArgs
+GaussDB.GaussDBRowUpdatedEventArgs.GaussDBRowUpdatedEventArgs(System.Data.DataRow! dataRow, System.Data.IDbCommand? command, System.Data.StatementType statementType, System.Data.Common.DataTableMapping! tableMapping) -> void
+GaussDB.GaussDBRowUpdatedEventHandler
+GaussDB.GaussDBRowUpdatingEventArgs
+GaussDB.GaussDBRowUpdatingEventArgs.GaussDBRowUpdatingEventArgs(System.Data.DataRow! dataRow, System.Data.IDbCommand? command, System.Data.StatementType statementType, System.Data.Common.DataTableMapping! tableMapping) -> void
+GaussDB.GaussDBRowUpdatingEventHandler
+GaussDB.GaussDBSlimDataSourceBuilder
+GaussDB.GaussDBSlimDataSourceBuilder.AddTypeInfoResolverFactory(GaussDB.Internal.PgTypeInfoResolverFactory! factory) -> void
+GaussDB.GaussDBSlimDataSourceBuilder.Build() -> GaussDB.GaussDBDataSource!
+GaussDB.GaussDBSlimDataSourceBuilder.BuildMultiHost() -> GaussDB.GaussDBMultiHostDataSource!
+GaussDB.GaussDBSlimDataSourceBuilder.ConfigureJsonOptions(System.Text.Json.JsonSerializerOptions! serializerOptions) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.ConnectionString.get -> string!
+GaussDB.GaussDBSlimDataSourceBuilder.ConnectionStringBuilder.get -> GaussDB.GaussDBConnectionStringBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.DefaultNameTranslator.get -> GaussDB.IGaussDBNameTranslator!
+GaussDB.GaussDBSlimDataSourceBuilder.DefaultNameTranslator.set -> void
+GaussDB.GaussDBSlimDataSourceBuilder.EnableArrays() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableDynamicJson(System.Type![]? jsonbClrTypes = null, System.Type![]? jsonClrTypes = null) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableExtraConversions() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableFullTextSearch() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableIntegratedSecurity() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableLTree() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableMultiranges() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableParameterLogging(bool parameterLoggingEnabled = true) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableRanges() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableRecords() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableRecordsAsTuples() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableTransportSecurity() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.EnableUnmappedTypes() -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBSlimDataSourceBuilder.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBSlimDataSourceBuilder.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBSlimDataSourceBuilder.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.GaussDBSlimDataSourceBuilder.Name.get -> string?
+GaussDB.GaussDBSlimDataSourceBuilder.Name.set -> void
+GaussDB.GaussDBSlimDataSourceBuilder.GaussDBSlimDataSourceBuilder(string? connectionString = null) -> void
+GaussDB.GaussDBSlimDataSourceBuilder.UnmapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBSlimDataSourceBuilder.UnmapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBSlimDataSourceBuilder.UnmapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBSlimDataSourceBuilder.UnmapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.GaussDBSlimDataSourceBuilder.UseClientCertificate(System.Security.Cryptography.X509Certificates.X509Certificate? clientCertificate) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseClientCertificates(System.Security.Cryptography.X509Certificates.X509CertificateCollection? clientCertificates) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseClientCertificatesCallback(System.Action<System.Security.Cryptography.X509Certificates.X509CertificateCollection!>? clientCertificatesCallback) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UsePasswordProvider(System.Func<GaussDB.GaussDBConnectionStringBuilder!, string!>? passwordProvider, System.Func<GaussDB.GaussDBConnectionStringBuilder!, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<string!>>? passwordProviderAsync) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UsePeriodicPasswordProvider(System.Func<GaussDB.GaussDBConnectionStringBuilder!, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<string!>>? passwordProvider, System.TimeSpan successRefreshInterval, System.TimeSpan failureRefreshInterval) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UsePhysicalConnectionInitializer(System.Action<GaussDB.GaussDBConnection!>? connectionInitializer, System.Func<GaussDB.GaussDBConnection!, System.Threading.Tasks.Task!>? connectionInitializerAsync) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseRootCertificate(System.Security.Cryptography.X509Certificates.X509Certificate2? rootCertificate) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseRootCertificateCallback(System.Func<System.Security.Cryptography.X509Certificates.X509Certificate2!>? rootCertificateCallback) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBSlimDataSourceBuilder.UseUserCertificateValidationCallback(System.Net.Security.RemoteCertificateValidationCallback! userCertificateValidationCallback) -> GaussDB.GaussDBSlimDataSourceBuilder!
+GaussDB.GaussDBTracingOptions
+GaussDB.GaussDBTracingOptions.GaussDBTracingOptions() -> void
+GaussDB.GaussDBTransaction
+GaussDB.GaussDBTransaction.Connection.get -> GaussDB.GaussDBConnection?
+GaussDB.PostgresErrorCodes
+GaussDB.PostgresException
+GaussDB.PostgresException.ColumnName.get -> string?
+GaussDB.PostgresException.ConstraintName.get -> string?
+GaussDB.PostgresException.DataTypeName.get -> string?
+GaussDB.PostgresException.Detail.get -> string?
+GaussDB.PostgresException.File.get -> string?
+GaussDB.PostgresException.Hint.get -> string?
+GaussDB.PostgresException.InternalPosition.get -> int
+GaussDB.PostgresException.InternalQuery.get -> string?
+GaussDB.PostgresException.InvariantSeverity.get -> string!
+GaussDB.PostgresException.Line.get -> string?
+GaussDB.PostgresException.MessageText.get -> string!
+GaussDB.PostgresException.Position.get -> int
+GaussDB.PostgresException.PostgresException(string! messageText, string! severity, string! invariantSeverity, string! sqlState) -> void
+GaussDB.PostgresException.PostgresException(string! messageText, string! severity, string! invariantSeverity, string! sqlState, string? detail = null, string? hint = null, int position = 0, int internalPosition = 0, string? internalQuery = null, string? where = null, string? schemaName = null, string? tableName = null, string? columnName = null, string? dataTypeName = null, string? constraintName = null, string? file = null, string? line = null, string? routine = null) -> void
+GaussDB.PostgresException.Routine.get -> string?
+GaussDB.PostgresException.SchemaName.get -> string?
+GaussDB.PostgresException.Severity.get -> string!
+GaussDB.PostgresException.TableName.get -> string?
+GaussDB.PostgresException.Where.get -> string?
+GaussDB.PostgresNotice
+GaussDB.PostgresNotice.ColumnName.get -> string?
+GaussDB.PostgresNotice.ColumnName.set -> void
+GaussDB.PostgresNotice.ConstraintName.get -> string?
+GaussDB.PostgresNotice.ConstraintName.set -> void
+GaussDB.PostgresNotice.DataTypeName.get -> string?
+GaussDB.PostgresNotice.DataTypeName.set -> void
+GaussDB.PostgresNotice.Detail.get -> string?
+GaussDB.PostgresNotice.Detail.set -> void
+GaussDB.PostgresNotice.File.get -> string?
+GaussDB.PostgresNotice.File.set -> void
+GaussDB.PostgresNotice.Hint.get -> string?
+GaussDB.PostgresNotice.Hint.set -> void
+GaussDB.PostgresNotice.InternalPosition.get -> int
+GaussDB.PostgresNotice.InternalPosition.set -> void
+GaussDB.PostgresNotice.InternalQuery.get -> string?
+GaussDB.PostgresNotice.InternalQuery.set -> void
+GaussDB.PostgresNotice.InvariantSeverity.get -> string!
+GaussDB.PostgresNotice.Line.get -> string?
+GaussDB.PostgresNotice.Line.set -> void
+GaussDB.PostgresNotice.MessageText.get -> string!
+GaussDB.PostgresNotice.MessageText.set -> void
+GaussDB.PostgresNotice.Position.get -> int
+GaussDB.PostgresNotice.Position.set -> void
+GaussDB.PostgresNotice.PostgresNotice(string! messageText, string! severity, string! invariantSeverity, string! sqlState, string? detail = null, string? hint = null, int position = 0, int internalPosition = 0, string? internalQuery = null, string? where = null, string? schemaName = null, string? tableName = null, string? columnName = null, string? dataTypeName = null, string? constraintName = null, string? file = null, string? line = null, string? routine = null) -> void
+GaussDB.PostgresNotice.PostgresNotice(string! severity, string! invariantSeverity, string! sqlState, string! messageText) -> void
+GaussDB.PostgresNotice.Routine.get -> string?
+GaussDB.PostgresNotice.Routine.set -> void
+GaussDB.PostgresNotice.SchemaName.get -> string?
+GaussDB.PostgresNotice.SchemaName.set -> void
+GaussDB.PostgresNotice.Severity.get -> string!
+GaussDB.PostgresNotice.Severity.set -> void
+GaussDB.PostgresNotice.SqlState.get -> string!
+GaussDB.PostgresNotice.SqlState.set -> void
+GaussDB.PostgresNotice.TableName.get -> string?
+GaussDB.PostgresNotice.TableName.set -> void
+GaussDB.PostgresNotice.Where.get -> string?
+GaussDB.PostgresNotice.Where.set -> void
+GaussDB.PostgresTypes.PostgresArrayType
+GaussDB.PostgresTypes.PostgresArrayType.Element.get -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.PostgresTypes.PostgresArrayType.PostgresArrayType(string! ns, string! name, uint oid, GaussDB.PostgresTypes.PostgresType! elementPostgresType) -> void
+GaussDB.PostgresTypes.PostgresBaseType
+GaussDB.PostgresTypes.PostgresBaseType.PostgresBaseType(string! ns, string! name, uint oid) -> void
+GaussDB.PostgresTypes.PostgresCompositeType
+GaussDB.PostgresTypes.PostgresCompositeType.Field
+GaussDB.PostgresTypes.PostgresCompositeType.Field.Name.get -> string!
+GaussDB.PostgresTypes.PostgresCompositeType.Field.Type.get -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.PostgresTypes.PostgresCompositeType.Fields.get -> System.Collections.Generic.IReadOnlyList<GaussDB.PostgresTypes.PostgresCompositeType.Field!>!
+GaussDB.PostgresTypes.PostgresDomainType
+GaussDB.PostgresTypes.PostgresDomainType.BaseType.get -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.PostgresTypes.PostgresDomainType.NotNull.get -> bool
+GaussDB.PostgresTypes.PostgresDomainType.PostgresDomainType(string! ns, string! name, uint oid, GaussDB.PostgresTypes.PostgresType! baseType, bool notNull) -> void
+GaussDB.PostgresTypes.PostgresEnumType
+GaussDB.PostgresTypes.PostgresEnumType.Labels.get -> System.Collections.Generic.IReadOnlyList<string!>!
+GaussDB.PostgresTypes.PostgresEnumType.PostgresEnumType(string! ns, string! name, uint oid) -> void
+GaussDB.PostgresTypes.PostgresMultirangeType
+GaussDB.PostgresTypes.PostgresMultirangeType.PostgresMultirangeType(string! ns, string! name, uint oid, GaussDB.PostgresTypes.PostgresRangeType! rangePostgresType) -> void
+GaussDB.PostgresTypes.PostgresMultirangeType.Subrange.get -> GaussDB.PostgresTypes.PostgresRangeType!
+GaussDB.PostgresTypes.PostgresRangeType
+GaussDB.PostgresTypes.PostgresRangeType.Multirange.get -> GaussDB.PostgresTypes.PostgresMultirangeType?
+GaussDB.PostgresTypes.PostgresRangeType.PostgresRangeType(string! ns, string! name, uint oid, GaussDB.PostgresTypes.PostgresType! subtypePostgresType) -> void
+GaussDB.PostgresTypes.PostgresRangeType.Subtype.get -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.PostgresTypes.PostgresType
+GaussDB.PostgresTypes.PostgresType.Array.get -> GaussDB.PostgresTypes.PostgresArrayType?
+GaussDB.PostgresTypes.PostgresType.DisplayName.get -> string!
+GaussDB.PostgresTypes.PostgresType.FullName.get -> string!
+GaussDB.PostgresTypes.PostgresType.InternalName.get -> string!
+GaussDB.PostgresTypes.PostgresType.Name.get -> string!
+GaussDB.PostgresTypes.PostgresType.Namespace.get -> string!
+GaussDB.PostgresTypes.PostgresType.OID.get -> uint
+GaussDB.PostgresTypes.PostgresType.Range.get -> GaussDB.PostgresTypes.PostgresRangeType?
+GaussDB.PostgresTypes.UnknownBackendType
+GaussDB.ProvideClientCertificatesCallback
+GaussDB.ProvidePasswordCallback
+GaussDB.Replication.Internal.LogicalReplicationConnectionExtensions
+GaussDB.Replication.Internal.LogicalReplicationSlot
+GaussDB.Replication.Internal.LogicalReplicationSlot.ConsistentPoint.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.Internal.LogicalReplicationSlot.LogicalReplicationSlot(string! outputPlugin, GaussDB.Replication.ReplicationSlotOptions replicationSlotOptions) -> void
+GaussDB.Replication.Internal.LogicalReplicationSlot.OutputPlugin.get -> string!
+GaussDB.Replication.Internal.LogicalReplicationSlot.SnapshotName.get -> string?
+GaussDB.Replication.LogicalReplicationConnection
+GaussDB.Replication.LogicalReplicationConnection.LogicalReplicationConnection() -> void
+GaussDB.Replication.LogicalReplicationConnection.LogicalReplicationConnection(string? connectionString) -> void
+GaussDB.Replication.LogicalSlotSnapshotInitMode
+GaussDB.Replication.LogicalSlotSnapshotInitMode.Export = 0 -> GaussDB.Replication.LogicalSlotSnapshotInitMode
+GaussDB.Replication.LogicalSlotSnapshotInitMode.NoExport = 2 -> GaussDB.Replication.LogicalSlotSnapshotInitMode
+GaussDB.Replication.LogicalSlotSnapshotInitMode.Use = 1 -> GaussDB.Replication.LogicalSlotSnapshotInitMode
+GaussDB.Replication.PgOutput.Messages.BeginMessage
+GaussDB.Replication.PgOutput.Messages.BeginMessage.TransactionCommitTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.BeginMessage.TransactionFinalLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.BeginPrepareMessage
+GaussDB.Replication.PgOutput.Messages.CommitMessage
+GaussDB.Replication.PgOutput.Messages.CommitMessage.CommitFlags
+GaussDB.Replication.PgOutput.Messages.CommitMessage.CommitFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.CommitMessage.CommitFlags
+GaussDB.Replication.PgOutput.Messages.CommitMessage.CommitLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.CommitMessage.Flags.get -> GaussDB.Replication.PgOutput.Messages.CommitMessage.CommitFlags
+GaussDB.Replication.PgOutput.Messages.CommitMessage.TransactionCommitTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.CommitMessage.TransactionEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedFlags
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedFlags
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.Flags.get -> GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.CommitPreparedFlags
+GaussDB.Replication.PgOutput.Messages.CommitPreparedMessage.TransactionCommitTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.DefaultUpdateMessage
+GaussDB.Replication.PgOutput.Messages.DeleteMessage
+GaussDB.Replication.PgOutput.Messages.DeleteMessage.Relation.get -> GaussDB.Replication.PgOutput.Messages.RelationMessage!
+GaussDB.Replication.PgOutput.Messages.FullDeleteMessage
+GaussDB.Replication.PgOutput.Messages.FullDeleteMessage.OldRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+GaussDB.Replication.PgOutput.Messages.FullUpdateMessage
+GaussDB.Replication.PgOutput.Messages.FullUpdateMessage.OldRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+GaussDB.Replication.PgOutput.Messages.IndexUpdateMessage
+GaussDB.Replication.PgOutput.Messages.IndexUpdateMessage.Key.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+GaussDB.Replication.PgOutput.Messages.InsertMessage
+GaussDB.Replication.PgOutput.Messages.InsertMessage.NewRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+GaussDB.Replication.PgOutput.Messages.InsertMessage.Relation.get -> GaussDB.Replication.PgOutput.Messages.RelationMessage!
+GaussDB.Replication.PgOutput.Messages.KeyDeleteMessage
+GaussDB.Replication.PgOutput.Messages.KeyDeleteMessage.Key.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+GaussDB.Replication.PgOutput.Messages.LogicalDecodingMessage
+GaussDB.Replication.PgOutput.Messages.LogicalDecodingMessage.Data.get -> System.IO.Stream!
+GaussDB.Replication.PgOutput.Messages.LogicalDecodingMessage.Flags.get -> byte
+GaussDB.Replication.PgOutput.Messages.LogicalDecodingMessage.MessageLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.LogicalDecodingMessage.Prefix.get -> string!
+GaussDB.Replication.PgOutput.Messages.OriginMessage
+GaussDB.Replication.PgOutput.Messages.OriginMessage.OriginCommitLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.OriginMessage.OriginName.get -> string!
+GaussDB.Replication.PgOutput.Messages.PgOutputReplicationMessage
+GaussDB.Replication.PgOutput.Messages.PgOutputReplicationMessage.PgOutputReplicationMessage() -> void
+GaussDB.Replication.PgOutput.Messages.PreparedTransactionControlMessage
+GaussDB.Replication.PgOutput.Messages.PreparedTransactionControlMessage.TransactionGid.get -> string!
+GaussDB.Replication.PgOutput.Messages.PrepareMessage
+GaussDB.Replication.PgOutput.Messages.PrepareMessage.Flags.get -> GaussDB.Replication.PgOutput.Messages.PrepareMessage.PrepareFlags
+GaussDB.Replication.PgOutput.Messages.PrepareMessage.PrepareFlags
+GaussDB.Replication.PgOutput.Messages.PrepareMessage.PrepareFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.PrepareMessage.PrepareFlags
+GaussDB.Replication.PgOutput.Messages.PrepareMessageBase
+GaussDB.Replication.PgOutput.Messages.PrepareMessageBase.PrepareEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.PrepareMessageBase.PrepareLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.PrepareMessageBase.TransactionPrepareTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.RelationMessage
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.Column() -> void
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags.PartOfKey = 1 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnName.get -> string!
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.DataTypeId.get -> uint
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.Flags.get -> GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.ColumnFlags
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Column.TypeModifier.get -> int
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Columns.get -> System.Collections.Generic.IReadOnlyList<GaussDB.Replication.PgOutput.Messages.RelationMessage.Column>!
+GaussDB.Replication.PgOutput.Messages.RelationMessage.Namespace.get -> string!
+GaussDB.Replication.PgOutput.Messages.RelationMessage.RelationId.get -> uint
+GaussDB.Replication.PgOutput.Messages.RelationMessage.RelationName.get -> string!
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentity.get -> GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting.AllColumns = 102 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting.Default = 100 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting.IndexWithIndIsReplIdent = 105 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting.Nothing = 110 -> GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn.ColumnName.get -> string!
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn.DataTypeId.get -> uint
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn.Flags.get -> byte
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn.RelationMessageColumn() -> void
+GaussDB.Replication.PgOutput.Messages.RelationMessageColumn.TypeModifier.get -> int
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.Flags.get -> GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.RollbackPreparedFlags
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.PreparedTransactionEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.RollbackPreparedEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.RollbackPreparedFlags
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.RollbackPreparedFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.RollbackPreparedFlags
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.TransactionPrepareTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.RollbackPreparedMessage.TransactionRollbackTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.StreamAbortMessage
+GaussDB.Replication.PgOutput.Messages.StreamAbortMessage.SubtransactionXid.get -> uint
+GaussDB.Replication.PgOutput.Messages.StreamCommitMessage
+GaussDB.Replication.PgOutput.Messages.StreamCommitMessage.CommitLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.StreamCommitMessage.Flags.get -> byte
+GaussDB.Replication.PgOutput.Messages.StreamCommitMessage.TransactionCommitTimestamp.get -> System.DateTime
+GaussDB.Replication.PgOutput.Messages.StreamCommitMessage.TransactionEndLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage
+GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage.Flags.get -> GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage.StreamPrepareFlags
+GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage.StreamPrepareFlags
+GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage.StreamPrepareFlags.None = 0 -> GaussDB.Replication.PgOutput.Messages.StreamPrepareMessage.StreamPrepareFlags
+GaussDB.Replication.PgOutput.Messages.StreamStartMessage
+GaussDB.Replication.PgOutput.Messages.StreamStartMessage.StreamSegmentIndicator.get -> byte
+GaussDB.Replication.PgOutput.Messages.StreamStopMessage
+GaussDB.Replication.PgOutput.Messages.TransactionalMessage
+GaussDB.Replication.PgOutput.Messages.TransactionalMessage.TransactionalMessage() -> void
+GaussDB.Replication.PgOutput.Messages.TransactionalMessage.TransactionXid.get -> uint?
+GaussDB.Replication.PgOutput.Messages.TransactionControlMessage
+GaussDB.Replication.PgOutput.Messages.TransactionControlMessage.TransactionControlMessage() -> void
+GaussDB.Replication.PgOutput.Messages.TransactionControlMessage.TransactionXid.get -> uint
+GaussDB.Replication.PgOutput.Messages.TruncateMessage
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.Options.get -> GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.Relations.get -> System.Collections.Generic.IReadOnlyList<GaussDB.Replication.PgOutput.Messages.RelationMessage!>!
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions.Cascade = 1 -> GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions.None = 0 -> GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions
+GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions.RestartIdentity = 2 -> GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions
+GaussDB.Replication.PgOutput.Messages.TypeMessage
+GaussDB.Replication.PgOutput.Messages.TypeMessage.Name.get -> string!
+GaussDB.Replication.PgOutput.Messages.TypeMessage.Namespace.get -> string!
+GaussDB.Replication.PgOutput.Messages.TypeMessage.TypeId.get -> uint
+GaussDB.Replication.PgOutput.Messages.UpdateMessage
+GaussDB.Replication.PgOutput.Messages.UpdateMessage.Relation.get -> GaussDB.Replication.PgOutput.Messages.RelationMessage!
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Binary.get -> bool?
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Equals(GaussDB.Replication.PgOutput.PgOutputReplicationOptions? other) -> bool
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Messages.get -> bool?
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.PgOutputReplicationOptions(string! publicationName, ulong protocolVersion, bool? binary = null, bool? streaming = null, bool? messages = null, bool? twoPhase = null) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.PgOutputReplicationOptions(System.Collections.Generic.IEnumerable<string!>! publicationNames, ulong protocolVersion, bool? binary = null, bool? streaming = null, bool? messages = null, bool? twoPhase = null) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.ProtocolVersion.get -> ulong
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.PublicationNames.get -> System.Collections.Generic.List<string!>!
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Streaming.get -> bool?
+GaussDB.Replication.PgOutput.PgOutputReplicationOptions.TwoPhase.get -> bool?
+GaussDB.Replication.PgOutput.PgOutputReplicationSlot
+GaussDB.Replication.PgOutput.PgOutputReplicationSlot.PgOutputReplicationSlot(GaussDB.Replication.PgOutput.PgOutputReplicationSlot! slot) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationSlot.PgOutputReplicationSlot(GaussDB.Replication.ReplicationSlotOptions options) -> void
+GaussDB.Replication.PgOutput.PgOutputReplicationSlot.PgOutputReplicationSlot(string! slotName) -> void
+GaussDB.Replication.PgOutput.ReplicationTuple
+GaussDB.Replication.PgOutput.ReplicationTuple.NumColumns.get -> ushort
+GaussDB.Replication.PgOutput.ReplicationValue
+GaussDB.Replication.PgOutput.ReplicationValue.Get(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<object!>
+GaussDB.Replication.PgOutput.ReplicationValue.Get<T>(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<T>
+GaussDB.Replication.PgOutput.ReplicationValue.GetDataTypeName() -> string!
+GaussDB.Replication.PgOutput.ReplicationValue.GetFieldType() -> System.Type!
+GaussDB.Replication.PgOutput.ReplicationValue.GetPostgresType() -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.Replication.PgOutput.ReplicationValue.GetStream() -> System.IO.Stream!
+GaussDB.Replication.PgOutput.ReplicationValue.GetTextReader() -> System.IO.TextReader!
+GaussDB.Replication.PgOutput.ReplicationValue.IsDBNull.get -> bool
+GaussDB.Replication.PgOutput.ReplicationValue.IsUnchangedToastedValue.get -> bool
+GaussDB.Replication.PgOutput.ReplicationValue.Kind.get -> GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutput.ReplicationValue.Length.get -> int
+GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutput.TupleDataKind.BinaryValue = 98 -> GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutput.TupleDataKind.Null = 110 -> GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutput.TupleDataKind.TextValue = 116 -> GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutput.TupleDataKind.UnchangedToastedValue = 117 -> GaussDB.Replication.PgOutput.TupleDataKind
+GaussDB.Replication.PgOutputConnectionExtensions
+GaussDB.Replication.PhysicalReplicationConnection
+GaussDB.Replication.PhysicalReplicationConnection.CreateReplicationSlot(string! slotName, bool isTemporary = false, bool reserveWal = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.PhysicalReplicationSlot!>!
+GaussDB.Replication.PhysicalReplicationConnection.PhysicalReplicationConnection() -> void
+GaussDB.Replication.PhysicalReplicationConnection.PhysicalReplicationConnection(string? connectionString) -> void
+GaussDB.Replication.PhysicalReplicationConnection.ReadReplicationSlot(string! slotName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.PhysicalReplicationSlot?>!
+GaussDB.Replication.PhysicalReplicationConnection.StartReplication(GaussDB.Replication.PhysicalReplicationSlot! slot, System.Threading.CancellationToken cancellationToken) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.XLogDataMessage!>!
+GaussDB.Replication.PhysicalReplicationConnection.StartReplication(GaussDB.Replication.PhysicalReplicationSlot? slot, GaussDBTypes.GaussDBLogSequenceNumber walLocation, System.Threading.CancellationToken cancellationToken, uint timeline = 0) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.XLogDataMessage!>!
+GaussDB.Replication.PhysicalReplicationConnection.StartReplication(GaussDBTypes.GaussDBLogSequenceNumber walLocation, System.Threading.CancellationToken cancellationToken, uint timeline = 0) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.XLogDataMessage!>!
+GaussDB.Replication.PhysicalReplicationSlot
+GaussDB.Replication.PhysicalReplicationSlot.PhysicalReplicationSlot(string! slotName, GaussDBTypes.GaussDBLogSequenceNumber? restartLsn = null, uint? restartTimeline = null) -> void
+GaussDB.Replication.PhysicalReplicationSlot.RestartLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber?
+GaussDB.Replication.PhysicalReplicationSlot.RestartTimeline.get -> uint?
+GaussDB.Replication.ReplicationConnection
+GaussDB.Replication.ReplicationConnection.CommandTimeout.get -> System.TimeSpan
+GaussDB.Replication.ReplicationConnection.CommandTimeout.set -> void
+GaussDB.Replication.ReplicationConnection.ConnectionString.get -> string!
+GaussDB.Replication.ReplicationConnection.ConnectionString.set -> void
+GaussDB.Replication.ReplicationConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
+GaussDB.Replication.ReplicationConnection.DropReplicationSlot(string! slotName, bool wait = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.Replication.ReplicationConnection.Encoding.get -> System.Text.Encoding!
+GaussDB.Replication.ReplicationConnection.IdentifySystem(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.ReplicationSystemIdentification!>!
+GaussDB.Replication.ReplicationConnection.LastAppliedLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationConnection.LastAppliedLsn.set -> void
+GaussDB.Replication.ReplicationConnection.LastFlushedLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationConnection.LastFlushedLsn.set -> void
+GaussDB.Replication.ReplicationConnection.LastReceivedLsn.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationConnection.Open(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.Replication.ReplicationConnection.PostgreSqlVersion.get -> System.Version!
+GaussDB.Replication.ReplicationConnection.ProcessID.get -> int
+GaussDB.Replication.ReplicationConnection.SendStatusUpdate(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+GaussDB.Replication.ReplicationConnection.ServerVersion.get -> string!
+GaussDB.Replication.ReplicationConnection.SetReplicationStatus(GaussDBTypes.GaussDBLogSequenceNumber lastAppliedAndFlushedLsn) -> void
+GaussDB.Replication.ReplicationConnection.Show(string! parameterName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<string!>!
+GaussDB.Replication.ReplicationConnection.TimelineHistory(uint tli, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.TimelineHistoryFile>!
+GaussDB.Replication.ReplicationConnection.WalReceiverStatusInterval.get -> System.TimeSpan
+GaussDB.Replication.ReplicationConnection.WalReceiverStatusInterval.set -> void
+GaussDB.Replication.ReplicationConnection.WalReceiverTimeout.get -> System.TimeSpan
+GaussDB.Replication.ReplicationConnection.WalReceiverTimeout.set -> void
+GaussDB.Replication.ReplicationMessage
+GaussDB.Replication.ReplicationMessage.ReplicationMessage() -> void
+GaussDB.Replication.ReplicationMessage.ServerClock.get -> System.DateTime
+GaussDB.Replication.ReplicationMessage.WalEnd.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationMessage.WalStart.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationSlot
+GaussDB.Replication.ReplicationSlot.Name.get -> string!
+GaussDB.Replication.ReplicationSlotOptions
+GaussDB.Replication.ReplicationSlotOptions.ConsistentPoint.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.ReplicationSlotOptions.ReplicationSlotOptions() -> void
+GaussDB.Replication.ReplicationSlotOptions.ReplicationSlotOptions(string! slotName, GaussDBTypes.GaussDBLogSequenceNumber consistentPoint) -> void
+GaussDB.Replication.ReplicationSlotOptions.ReplicationSlotOptions(string! slotName, string? consistentPoint = null) -> void
+GaussDB.Replication.ReplicationSlotOptions.SlotName.get -> string!
+GaussDB.Replication.ReplicationSystemIdentification
+GaussDB.Replication.ReplicationSystemIdentification.DbName.get -> string?
+GaussDB.Replication.ReplicationSystemIdentification.SystemId.get -> string!
+GaussDB.Replication.ReplicationSystemIdentification.Timeline.get -> uint
+GaussDB.Replication.ReplicationSystemIdentification.XLogPos.get -> GaussDBTypes.GaussDBLogSequenceNumber
+GaussDB.Replication.TestDecoding.TestDecodingData
+GaussDB.Replication.TestDecoding.TestDecodingData.Clone() -> GaussDB.Replication.TestDecoding.TestDecodingData!
+GaussDB.Replication.TestDecoding.TestDecodingData.Data.get -> string!
+GaussDB.Replication.TestDecoding.TestDecodingData.TestDecodingData() -> void
+GaussDB.Replication.TestDecoding.TestDecodingOptions
+GaussDB.Replication.TestDecoding.TestDecodingOptions.Equals(GaussDB.Replication.TestDecoding.TestDecodingOptions? other) -> bool
+GaussDB.Replication.TestDecoding.TestDecodingOptions.ForceBinary.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.IncludeRewrites.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.IncludeTimestamp.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.IncludeXids.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.OnlyLocal.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.SkipEmptyXacts.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.StreamChanges.get -> bool?
+GaussDB.Replication.TestDecoding.TestDecodingOptions.TestDecodingOptions(bool? includeXids = null, bool? includeTimestamp = null, bool? forceBinary = null, bool? skipEmptyXacts = null, bool? onlyLocal = null, bool? includeRewrites = null, bool? streamChanges = null) -> void
+GaussDB.Replication.TestDecoding.TestDecodingReplicationSlot
+GaussDB.Replication.TestDecoding.TestDecodingReplicationSlot.TestDecodingReplicationSlot(GaussDB.Replication.ReplicationSlotOptions options) -> void
+GaussDB.Replication.TestDecoding.TestDecodingReplicationSlot.TestDecodingReplicationSlot(string! slotName) -> void
+GaussDB.Replication.TestDecodingConnectionExtensions
+GaussDB.Replication.TimelineHistoryFile
+GaussDB.Replication.TimelineHistoryFile.Content.get -> byte[]!
+GaussDB.Replication.TimelineHistoryFile.FileName.get -> string!
+GaussDB.Replication.TimelineHistoryFile.TimelineHistoryFile() -> void
+GaussDB.Replication.XLogDataMessage
+GaussDB.Replication.XLogDataMessage.Data.get -> System.IO.Stream!
+GaussDB.Replication.XLogDataMessage.XLogDataMessage() -> void
+GaussDB.Schema.GaussDBDbColumn
+GaussDB.Schema.GaussDBDbColumn.AllowDBNull.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.AllowDBNull.set -> void
+GaussDB.Schema.GaussDBDbColumn.BaseCatalogName.get -> string!
+GaussDB.Schema.GaussDBDbColumn.BaseCatalogName.set -> void
+GaussDB.Schema.GaussDBDbColumn.BaseColumnName.get -> string?
+GaussDB.Schema.GaussDBDbColumn.BaseColumnName.set -> void
+GaussDB.Schema.GaussDBDbColumn.BaseSchemaName.get -> string?
+GaussDB.Schema.GaussDBDbColumn.BaseSchemaName.set -> void
+GaussDB.Schema.GaussDBDbColumn.BaseServerName.get -> string!
+GaussDB.Schema.GaussDBDbColumn.BaseServerName.set -> void
+GaussDB.Schema.GaussDBDbColumn.BaseTableName.get -> string?
+GaussDB.Schema.GaussDBDbColumn.BaseTableName.set -> void
+GaussDB.Schema.GaussDBDbColumn.ColumnAttributeNumber.get -> short?
+GaussDB.Schema.GaussDBDbColumn.ColumnName.get -> string!
+GaussDB.Schema.GaussDBDbColumn.ColumnName.set -> void
+GaussDB.Schema.GaussDBDbColumn.ColumnOrdinal.get -> int?
+GaussDB.Schema.GaussDBDbColumn.ColumnOrdinal.set -> void
+GaussDB.Schema.GaussDBDbColumn.ColumnSize.get -> int?
+GaussDB.Schema.GaussDBDbColumn.ColumnSize.set -> void
+GaussDB.Schema.GaussDBDbColumn.DataType.get -> System.Type?
+GaussDB.Schema.GaussDBDbColumn.DataType.set -> void
+GaussDB.Schema.GaussDBDbColumn.DataTypeName.get -> string!
+GaussDB.Schema.GaussDBDbColumn.DataTypeName.set -> void
+GaussDB.Schema.GaussDBDbColumn.DefaultValue.get -> string?
+GaussDB.Schema.GaussDBDbColumn.IsAliased.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsAliased.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsAutoIncrement.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsAutoIncrement.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsIdentity.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsIdentity.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsKey.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsKey.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsLong.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsLong.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsReadOnly.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsReadOnly.set -> void
+GaussDB.Schema.GaussDBDbColumn.IsUnique.get -> bool?
+GaussDB.Schema.GaussDBDbColumn.IsUnique.set -> void
+GaussDB.Schema.GaussDBDbColumn.GaussDBDbColumn() -> void
+GaussDB.Schema.GaussDBDbColumn.GaussDBDbType.get -> GaussDBTypes.GaussDBDbType?
+GaussDB.Schema.GaussDBDbColumn.NumericPrecision.get -> int?
+GaussDB.Schema.GaussDBDbColumn.NumericPrecision.set -> void
+GaussDB.Schema.GaussDBDbColumn.NumericScale.get -> int?
+GaussDB.Schema.GaussDBDbColumn.NumericScale.set -> void
+GaussDB.Schema.GaussDBDbColumn.PostgresType.get -> GaussDB.PostgresTypes.PostgresType!
+GaussDB.Schema.GaussDBDbColumn.TableOID.get -> uint
+GaussDB.Schema.GaussDBDbColumn.TypeOID.get -> uint
+GaussDB.Schema.GaussDBDbColumn.UdtAssemblyQualifiedName.get -> string?
+GaussDB.Schema.GaussDBDbColumn.UdtAssemblyQualifiedName.set -> void
+GaussDB.ServerCompatibilityMode
+GaussDB.ServerCompatibilityMode.None = 0 -> GaussDB.ServerCompatibilityMode
+GaussDB.ServerCompatibilityMode.NoTypeLoading = 2 -> GaussDB.ServerCompatibilityMode
+GaussDB.ServerCompatibilityMode.Redshift = 1 -> GaussDB.ServerCompatibilityMode
+GaussDB.SslMode
+GaussDB.SslMode.Allow = 1 -> GaussDB.SslMode
+GaussDB.SslMode.Disable = 0 -> GaussDB.SslMode
+GaussDB.SslMode.Prefer = 2 -> GaussDB.SslMode
+GaussDB.SslMode.Require = 3 -> GaussDB.SslMode
+GaussDB.SslMode.VerifyCA = 4 -> GaussDB.SslMode
+GaussDB.SslMode.VerifyFull = 5 -> GaussDB.SslMode
+GaussDB.StatementType
+GaussDB.StatementType.Call = 11 -> GaussDB.StatementType
+GaussDB.StatementType.Copy = 8 -> GaussDB.StatementType
+GaussDB.StatementType.CreateTableAs = 5 -> GaussDB.StatementType
+GaussDB.StatementType.Delete = 3 -> GaussDB.StatementType
+GaussDB.StatementType.Fetch = 7 -> GaussDB.StatementType
+GaussDB.StatementType.Insert = 2 -> GaussDB.StatementType
+GaussDB.StatementType.Merge = 10 -> GaussDB.StatementType
+GaussDB.StatementType.Move = 6 -> GaussDB.StatementType
+GaussDB.StatementType.Other = 9 -> GaussDB.StatementType
+GaussDB.StatementType.Select = 1 -> GaussDB.StatementType
+GaussDB.StatementType.Unknown = 0 -> GaussDB.StatementType
+GaussDB.StatementType.Update = 4 -> GaussDB.StatementType
+GaussDB.TypeMapping.IGaussDBTypeMapper
+GaussDB.TypeMapping.IGaussDBTypeMapper.AddTypeInfoResolverFactory(GaussDB.Internal.PgTypeInfoResolverFactory! factory) -> void
+GaussDB.TypeMapping.IGaussDBTypeMapper.ConfigureJsonOptions(System.Text.Json.JsonSerializerOptions! serializerOptions) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.DefaultNameTranslator.get -> GaussDB.IGaussDBNameTranslator!
+GaussDB.TypeMapping.IGaussDBTypeMapper.DefaultNameTranslator.set -> void
+GaussDB.TypeMapping.IGaussDBTypeMapper.EnableDynamicJson(System.Type![]? jsonbClrTypes = null, System.Type![]? jsonClrTypes = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.EnableRecordsAsTuples() -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.EnableUnmappedTypes() -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.MapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.MapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.MapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.MapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+GaussDB.TypeMapping.IGaussDBTypeMapper.Reset() -> void
+GaussDB.TypeMapping.IGaussDBTypeMapper.UnmapComposite(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.TypeMapping.IGaussDBTypeMapper.UnmapComposite<T>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.TypeMapping.IGaussDBTypeMapper.UnmapEnum(System.Type! clrType, string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.TypeMapping.IGaussDBTypeMapper.UnmapEnum<TEnum>(string? pgName = null, GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> bool
+GaussDB.TypeMapping.UserTypeMapping
+GaussDB.TypeMapping.UserTypeMapping.ClrType.get -> System.Type!
+GaussDB.TypeMapping.UserTypeMapping.PgTypeName.get -> string!
+GaussDB.Util.GaussDBTimeout
+GaussDB.Util.GaussDBTimeout.GaussDBTimeout() -> void
+GaussDBTypes.GaussDBBox
+GaussDBTypes.GaussDBBox.Bottom.get -> double
+GaussDBTypes.GaussDBBox.Equals(GaussDBTypes.GaussDBBox other) -> bool
+GaussDBTypes.GaussDBBox.Height.get -> double
+GaussDBTypes.GaussDBBox.IsEmpty.get -> bool
+GaussDBTypes.GaussDBBox.Left.get -> double
+GaussDBTypes.GaussDBBox.LowerLeft.get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBBox.LowerLeft.set -> void
+GaussDBTypes.GaussDBBox.GaussDBBox() -> void
+GaussDBTypes.GaussDBBox.GaussDBBox(double top, double right, double bottom, double left) -> void
+GaussDBTypes.GaussDBBox.GaussDBBox(GaussDBTypes.GaussDBPoint upperRight, GaussDBTypes.GaussDBPoint lowerLeft) -> void
+GaussDBTypes.GaussDBBox.Right.get -> double
+GaussDBTypes.GaussDBBox.Top.get -> double
+GaussDBTypes.GaussDBBox.UpperRight.get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBBox.UpperRight.set -> void
+GaussDBTypes.GaussDBBox.Width.get -> double
+GaussDBTypes.GaussDBCidr
+GaussDBTypes.GaussDBCidr.Address.get -> System.Net.IPAddress!
+GaussDBTypes.GaussDBCidr.Deconstruct(out System.Net.IPAddress! address, out byte netmask) -> void
+GaussDBTypes.GaussDBCidr.Netmask.get -> byte
+GaussDBTypes.GaussDBCidr.GaussDBCidr() -> void
+GaussDBTypes.GaussDBCidr.GaussDBCidr(string! addr) -> void
+GaussDBTypes.GaussDBCidr.GaussDBCidr(System.Net.IPAddress! address, byte netmask) -> void
+GaussDBTypes.GaussDBCircle
+GaussDBTypes.GaussDBCircle.Center.get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBCircle.Center.set -> void
+GaussDBTypes.GaussDBCircle.Equals(GaussDBTypes.GaussDBCircle other) -> bool
+GaussDBTypes.GaussDBCircle.GaussDBCircle() -> void
+GaussDBTypes.GaussDBCircle.GaussDBCircle(double x, double y, double radius) -> void
+GaussDBTypes.GaussDBCircle.GaussDBCircle(GaussDBTypes.GaussDBPoint center, double radius) -> void
+GaussDBTypes.GaussDBCircle.Radius.get -> double
+GaussDBTypes.GaussDBCircle.Radius.set -> void
+GaussDBTypes.GaussDBCircle.X.get -> double
+GaussDBTypes.GaussDBCircle.X.set -> void
+GaussDBTypes.GaussDBCircle.Y.get -> double
+GaussDBTypes.GaussDBCircle.Y.set -> void
+GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Abstime = 33 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Array = -2147483648 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Bigint = 1 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.BigIntMultirange = 536870913 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.BigIntRange = 1073741825 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Bit = 25 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Boolean = 2 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Box = 3 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Bytea = 4 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Char = 6 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Cid = 43 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Cidr = 44 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Circle = 5 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Citext = 51 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Date = 7 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.DateMultirange = 536870919 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.DateRange = 1073741831 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Double = 8 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Geography = 55 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Geometry = 50 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Hstore = 37 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Inet = 24 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Int2Vector = 52 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Integer = 9 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.IntegerMultirange = 536870921 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.IntegerRange = 1073741833 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.InternalChar = 38 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Interval = 30 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Json = 35 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Jsonb = 36 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.JsonPath = 57 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Line = 10 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.LQuery = 61 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.LSeg = 11 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.LTree = 60 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.LTxtQuery = 62 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.MacAddr = 34 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.MacAddr8 = 54 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Money = 12 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Multirange = 536870912 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Name = 32 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Numeric = 13 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.NumericMultirange = 536870925 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.NumericRange = 1073741837 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Oid = 41 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Oidvector = 29 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Path = 14 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.PgLsn = 59 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Point = 15 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Polygon = 16 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Range = 1073741824 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Real = 17 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Refcursor = 23 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Regconfig = 56 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Regtype = 49 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Smallint = 18 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Text = 19 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Tid = 53 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Time = 20 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Timestamp = 21 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimestampMultirange = 536870933 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimestampRange = 1073741845 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimestampTz = 26 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimestampTzMultirange = 536870938 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimestampTzRange = 1073741850 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TimeTz = 31 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TsQuery = 46 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.TsVector = 45 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Unknown = 40 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Uuid = 27 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Varbit = 39 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Varchar = 22 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Xid = 42 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Xid8 = 64 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBDbType.Xml = 28 -> GaussDBTypes.GaussDBDbType
+GaussDBTypes.GaussDBInet
+GaussDBTypes.GaussDBInet.Address.get -> System.Net.IPAddress!
+GaussDBTypes.GaussDBInet.Deconstruct(out System.Net.IPAddress! address, out byte netmask) -> void
+GaussDBTypes.GaussDBInet.Netmask.get -> byte
+GaussDBTypes.GaussDBInet.GaussDBInet() -> void
+GaussDBTypes.GaussDBInet.GaussDBInet(string! addr) -> void
+GaussDBTypes.GaussDBInet.GaussDBInet(System.Net.IPAddress! address) -> void
+GaussDBTypes.GaussDBInet.GaussDBInet(System.Net.IPAddress! address, byte netmask) -> void
+GaussDBTypes.GaussDBInterval
+GaussDBTypes.GaussDBInterval.Days.get -> int
+GaussDBTypes.GaussDBInterval.Equals(GaussDBTypes.GaussDBInterval other) -> bool
+GaussDBTypes.GaussDBInterval.Months.get -> int
+GaussDBTypes.GaussDBInterval.GaussDBInterval() -> void
+GaussDBTypes.GaussDBInterval.GaussDBInterval(int months, int days, long time) -> void
+GaussDBTypes.GaussDBInterval.Time.get -> long
+GaussDBTypes.GaussDBLine
+GaussDBTypes.GaussDBLine.A.get -> double
+GaussDBTypes.GaussDBLine.A.set -> void
+GaussDBTypes.GaussDBLine.B.get -> double
+GaussDBTypes.GaussDBLine.B.set -> void
+GaussDBTypes.GaussDBLine.C.get -> double
+GaussDBTypes.GaussDBLine.C.set -> void
+GaussDBTypes.GaussDBLine.Equals(GaussDBTypes.GaussDBLine other) -> bool
+GaussDBTypes.GaussDBLine.GaussDBLine() -> void
+GaussDBTypes.GaussDBLine.GaussDBLine(double a, double b, double c) -> void
+GaussDBTypes.GaussDBLogSequenceNumber
+GaussDBTypes.GaussDBLogSequenceNumber.CompareTo(GaussDBTypes.GaussDBLogSequenceNumber value) -> int
+GaussDBTypes.GaussDBLogSequenceNumber.Equals(GaussDBTypes.GaussDBLogSequenceNumber other) -> bool
+GaussDBTypes.GaussDBLogSequenceNumber.GaussDBLogSequenceNumber() -> void
+GaussDBTypes.GaussDBLogSequenceNumber.GaussDBLogSequenceNumber(ulong value) -> void
+GaussDBTypes.GaussDBLSeg
+GaussDBTypes.GaussDBLSeg.End.get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBLSeg.End.set -> void
+GaussDBTypes.GaussDBLSeg.Equals(GaussDBTypes.GaussDBLSeg other) -> bool
+GaussDBTypes.GaussDBLSeg.GaussDBLSeg() -> void
+GaussDBTypes.GaussDBLSeg.GaussDBLSeg(double startx, double starty, double endx, double endy) -> void
+GaussDBTypes.GaussDBLSeg.GaussDBLSeg(GaussDBTypes.GaussDBPoint start, GaussDBTypes.GaussDBPoint end) -> void
+GaussDBTypes.GaussDBLSeg.Start.get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBLSeg.Start.set -> void
+GaussDBTypes.GaussDBPath
+GaussDBTypes.GaussDBPath.Add(GaussDBTypes.GaussDBPoint item) -> void
+GaussDBTypes.GaussDBPath.Capacity.get -> int
+GaussDBTypes.GaussDBPath.Clear() -> void
+GaussDBTypes.GaussDBPath.Contains(GaussDBTypes.GaussDBPoint item) -> bool
+GaussDBTypes.GaussDBPath.CopyTo(GaussDBTypes.GaussDBPoint[]! array, int arrayIndex) -> void
+GaussDBTypes.GaussDBPath.Count.get -> int
+GaussDBTypes.GaussDBPath.Equals(GaussDBTypes.GaussDBPath other) -> bool
+GaussDBTypes.GaussDBPath.GetEnumerator() -> System.Collections.Generic.IEnumerator<GaussDBTypes.GaussDBPoint>!
+GaussDBTypes.GaussDBPath.IndexOf(GaussDBTypes.GaussDBPoint item) -> int
+GaussDBTypes.GaussDBPath.Insert(int index, GaussDBTypes.GaussDBPoint item) -> void
+GaussDBTypes.GaussDBPath.IsReadOnly.get -> bool
+GaussDBTypes.GaussDBPath.GaussDBPath() -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(bool open) -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(int capacity) -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(int capacity, bool open) -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(params GaussDBTypes.GaussDBPoint[]! points) -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(System.Collections.Generic.IEnumerable<GaussDBTypes.GaussDBPoint>! points) -> void
+GaussDBTypes.GaussDBPath.GaussDBPath(System.Collections.Generic.IEnumerable<GaussDBTypes.GaussDBPoint>! points, bool open) -> void
+GaussDBTypes.GaussDBPath.Open.get -> bool
+GaussDBTypes.GaussDBPath.Open.set -> void
+GaussDBTypes.GaussDBPath.Remove(GaussDBTypes.GaussDBPoint item) -> bool
+GaussDBTypes.GaussDBPath.RemoveAt(int index) -> void
+GaussDBTypes.GaussDBPath.this[int index].get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBPath.this[int index].set -> void
+GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBPoint.Equals(GaussDBTypes.GaussDBPoint other) -> bool
+GaussDBTypes.GaussDBPoint.GaussDBPoint() -> void
+GaussDBTypes.GaussDBPoint.GaussDBPoint(double x, double y) -> void
+GaussDBTypes.GaussDBPoint.X.get -> double
+GaussDBTypes.GaussDBPoint.X.set -> void
+GaussDBTypes.GaussDBPoint.Y.get -> double
+GaussDBTypes.GaussDBPoint.Y.set -> void
+GaussDBTypes.GaussDBPolygon
+GaussDBTypes.GaussDBPolygon.Add(GaussDBTypes.GaussDBPoint item) -> void
+GaussDBTypes.GaussDBPolygon.Capacity.get -> int
+GaussDBTypes.GaussDBPolygon.Clear() -> void
+GaussDBTypes.GaussDBPolygon.Contains(GaussDBTypes.GaussDBPoint item) -> bool
+GaussDBTypes.GaussDBPolygon.CopyTo(GaussDBTypes.GaussDBPoint[]! array, int arrayIndex) -> void
+GaussDBTypes.GaussDBPolygon.Count.get -> int
+GaussDBTypes.GaussDBPolygon.Equals(GaussDBTypes.GaussDBPolygon other) -> bool
+GaussDBTypes.GaussDBPolygon.GetEnumerator() -> System.Collections.Generic.IEnumerator<GaussDBTypes.GaussDBPoint>!
+GaussDBTypes.GaussDBPolygon.IndexOf(GaussDBTypes.GaussDBPoint item) -> int
+GaussDBTypes.GaussDBPolygon.Insert(int index, GaussDBTypes.GaussDBPoint item) -> void
+GaussDBTypes.GaussDBPolygon.IsReadOnly.get -> bool
+GaussDBTypes.GaussDBPolygon.GaussDBPolygon() -> void
+GaussDBTypes.GaussDBPolygon.GaussDBPolygon(int capacity) -> void
+GaussDBTypes.GaussDBPolygon.GaussDBPolygon(params GaussDBTypes.GaussDBPoint[]! points) -> void
+GaussDBTypes.GaussDBPolygon.GaussDBPolygon(System.Collections.Generic.IEnumerable<GaussDBTypes.GaussDBPoint>! points) -> void
+GaussDBTypes.GaussDBPolygon.Remove(GaussDBTypes.GaussDBPoint item) -> bool
+GaussDBTypes.GaussDBPolygon.RemoveAt(int index) -> void
+GaussDBTypes.GaussDBPolygon.this[int index].get -> GaussDBTypes.GaussDBPoint
+GaussDBTypes.GaussDBPolygon.this[int index].set -> void
+GaussDBTypes.GaussDBRange<T>
+GaussDBTypes.GaussDBRange<T>.Equals(GaussDBTypes.GaussDBRange<T> other) -> bool
+GaussDBTypes.GaussDBRange<T>.IsEmpty.get -> bool
+GaussDBTypes.GaussDBRange<T>.LowerBound.get -> T
+GaussDBTypes.GaussDBRange<T>.LowerBoundInfinite.get -> bool
+GaussDBTypes.GaussDBRange<T>.LowerBoundIsInclusive.get -> bool
+GaussDBTypes.GaussDBRange<T>.GaussDBRange() -> void
+GaussDBTypes.GaussDBRange<T>.GaussDBRange(T lowerBound, bool lowerBoundIsInclusive, bool lowerBoundInfinite, T upperBound, bool upperBoundIsInclusive, bool upperBoundInfinite) -> void
+GaussDBTypes.GaussDBRange<T>.GaussDBRange(T lowerBound, bool lowerBoundIsInclusive, T upperBound, bool upperBoundIsInclusive) -> void
+GaussDBTypes.GaussDBRange<T>.GaussDBRange(T lowerBound, T upperBound) -> void
+GaussDBTypes.GaussDBRange<T>.RangeTypeConverter
+GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.RangeTypeConverter() -> void
+GaussDBTypes.GaussDBRange<T>.UpperBound.get -> T
+GaussDBTypes.GaussDBRange<T>.UpperBoundInfinite.get -> bool
+GaussDBTypes.GaussDBRange<T>.UpperBoundIsInclusive.get -> bool
+GaussDBTypes.GaussDBTid
+GaussDBTypes.GaussDBTid.BlockNumber.get -> uint
+GaussDBTypes.GaussDBTid.Equals(GaussDBTypes.GaussDBTid other) -> bool
+GaussDBTypes.GaussDBTid.GaussDBTid() -> void
+GaussDBTypes.GaussDBTid.GaussDBTid(uint blockNumber, ushort offsetNumber) -> void
+GaussDBTypes.GaussDBTid.OffsetNumber.get -> ushort
+GaussDBTypes.GaussDBTsQuery
+GaussDBTypes.GaussDBTsQuery.Kind.get -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.And = 2 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.Empty = -1 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.Lexeme = 0 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.Not = 1 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.Or = 3 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.NodeKind.Phrase = 4 -> GaussDBTypes.GaussDBTsQuery.NodeKind
+GaussDBTypes.GaussDBTsQuery.GaussDBTsQuery(GaussDBTypes.GaussDBTsQuery.NodeKind kind) -> void
+GaussDBTypes.GaussDBTsQuery.Write(System.Text.StringBuilder! stringBuilder) -> void
+GaussDBTypes.GaussDBTsQueryAnd
+GaussDBTypes.GaussDBTsQueryAnd.GaussDBTsQueryAnd(GaussDBTypes.GaussDBTsQuery! left, GaussDBTypes.GaussDBTsQuery! right) -> void
+GaussDBTypes.GaussDBTsQueryBinOp
+GaussDBTypes.GaussDBTsQueryBinOp.Left.get -> GaussDBTypes.GaussDBTsQuery!
+GaussDBTypes.GaussDBTsQueryBinOp.Left.set -> void
+GaussDBTypes.GaussDBTsQueryBinOp.GaussDBTsQueryBinOp(GaussDBTypes.GaussDBTsQuery.NodeKind kind, GaussDBTypes.GaussDBTsQuery! left, GaussDBTypes.GaussDBTsQuery! right) -> void
+GaussDBTypes.GaussDBTsQueryBinOp.Right.get -> GaussDBTypes.GaussDBTsQuery!
+GaussDBTypes.GaussDBTsQueryBinOp.Right.set -> void
+GaussDBTypes.GaussDBTsQueryEmpty
+GaussDBTypes.GaussDBTsQueryEmpty.GaussDBTsQueryEmpty() -> void
+GaussDBTypes.GaussDBTsQueryFollowedBy
+GaussDBTypes.GaussDBTsQueryFollowedBy.Distance.get -> short
+GaussDBTypes.GaussDBTsQueryFollowedBy.Distance.set -> void
+GaussDBTypes.GaussDBTsQueryFollowedBy.GaussDBTsQueryFollowedBy(GaussDBTypes.GaussDBTsQuery! left, short distance, GaussDBTypes.GaussDBTsQuery! right) -> void
+GaussDBTypes.GaussDBTsQueryLexeme
+GaussDBTypes.GaussDBTsQueryLexeme.IsPrefixSearch.get -> bool
+GaussDBTypes.GaussDBTsQueryLexeme.IsPrefixSearch.set -> void
+GaussDBTypes.GaussDBTsQueryLexeme.GaussDBTsQueryLexeme(string! text) -> void
+GaussDBTypes.GaussDBTsQueryLexeme.GaussDBTsQueryLexeme(string! text, GaussDBTypes.GaussDBTsQueryLexeme.Weight weights) -> void
+GaussDBTypes.GaussDBTsQueryLexeme.GaussDBTsQueryLexeme(string! text, GaussDBTypes.GaussDBTsQueryLexeme.Weight weights, bool isPrefixSearch) -> void
+GaussDBTypes.GaussDBTsQueryLexeme.Text.get -> string!
+GaussDBTypes.GaussDBTsQueryLexeme.Text.set -> void
+GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weight.A = 8 -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weight.B = 4 -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weight.C = 2 -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weight.D = 1 -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weight.None = 0 -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weights.get -> GaussDBTypes.GaussDBTsQueryLexeme.Weight
+GaussDBTypes.GaussDBTsQueryLexeme.Weights.set -> void
+GaussDBTypes.GaussDBTsQueryNot
+GaussDBTypes.GaussDBTsQueryNot.Child.get -> GaussDBTypes.GaussDBTsQuery!
+GaussDBTypes.GaussDBTsQueryNot.Child.set -> void
+GaussDBTypes.GaussDBTsQueryNot.GaussDBTsQueryNot(GaussDBTypes.GaussDBTsQuery! child) -> void
+GaussDBTypes.GaussDBTsQueryOr
+GaussDBTypes.GaussDBTsQueryOr.GaussDBTsQueryOr(GaussDBTypes.GaussDBTsQuery! left, GaussDBTypes.GaussDBTsQuery! right) -> void
+GaussDBTypes.GaussDBTsVector
+GaussDBTypes.GaussDBTsVector.Count.get -> int
+GaussDBTypes.GaussDBTsVector.Equals(GaussDBTypes.GaussDBTsVector? other) -> bool
+GaussDBTypes.GaussDBTsVector.GetEnumerator() -> System.Collections.Generic.IEnumerator<GaussDBTypes.GaussDBTsVector.Lexeme>!
+GaussDBTypes.GaussDBTsVector.Lexeme
+GaussDBTypes.GaussDBTsVector.Lexeme.Count.get -> int
+GaussDBTypes.GaussDBTsVector.Lexeme.Equals(GaussDBTypes.GaussDBTsVector.Lexeme o) -> bool
+GaussDBTypes.GaussDBTsVector.Lexeme.Lexeme() -> void
+GaussDBTypes.GaussDBTsVector.Lexeme.Lexeme(string! text) -> void
+GaussDBTypes.GaussDBTsVector.Lexeme.Lexeme(string! text, System.Collections.Generic.List<GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos>? wordEntryPositions) -> void
+GaussDBTypes.GaussDBTsVector.Lexeme.Text.get -> string!
+GaussDBTypes.GaussDBTsVector.Lexeme.Text.set -> void
+GaussDBTypes.GaussDBTsVector.Lexeme.this[int index].get -> GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos
+GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.Weight.A = 3 -> GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.Weight.B = 2 -> GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.Weight.C = 1 -> GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.Weight.D = 0 -> GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.Equals(GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos o) -> bool
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.Pos.get -> int
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.Weight.get -> GaussDBTypes.GaussDBTsVector.Lexeme.Weight
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.WordEntryPos() -> void
+GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.WordEntryPos(int pos, GaussDBTypes.GaussDBTsVector.Lexeme.Weight weight = GaussDBTypes.GaussDBTsVector.Lexeme.Weight.D) -> void
+GaussDBTypes.GaussDBTsVector.this[int index].get -> GaussDBTypes.GaussDBTsVector.Lexeme
+GaussDBTypes.PgNameAttribute
+GaussDBTypes.PgNameAttribute.PgName.get -> string!
+GaussDBTypes.PgNameAttribute.PgNameAttribute(string! pgName) -> void
+override GaussDB.BackendMessages.FieldDescription.ToString() -> string!
+override GaussDB.GaussDBBatch.Cancel() -> void
+override GaussDB.GaussDBBatch.CreateDbBatchCommand() -> System.Data.Common.DbBatchCommand!
+override GaussDB.GaussDBBatch.DbBatchCommands.get -> System.Data.Common.DbBatchCommandCollection!
+override GaussDB.GaussDBBatch.DbConnection.get -> System.Data.Common.DbConnection?
+override GaussDB.GaussDBBatch.DbConnection.set -> void
+override GaussDB.GaussDBBatch.DbTransaction.get -> System.Data.Common.DbTransaction?
+override GaussDB.GaussDBBatch.DbTransaction.set -> void
+override GaussDB.GaussDBBatch.Dispose() -> void
+override GaussDB.GaussDBBatch.ExecuteDbDataReader(System.Data.CommandBehavior behavior) -> System.Data.Common.DbDataReader!
+override GaussDB.GaussDBBatch.ExecuteDbDataReaderAsync(System.Data.CommandBehavior behavior, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Data.Common.DbDataReader!>!
+override GaussDB.GaussDBBatch.ExecuteNonQuery() -> int
+override GaussDB.GaussDBBatch.ExecuteNonQueryAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<int>!
+override GaussDB.GaussDBBatch.ExecuteScalar() -> object?
+override GaussDB.GaussDBBatch.ExecuteScalarAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<object?>!
+override GaussDB.GaussDBBatch.Prepare() -> void
+override GaussDB.GaussDBBatch.PrepareAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBBatch.Timeout.get -> int
+override GaussDB.GaussDBBatch.Timeout.set -> void
+override GaussDB.GaussDBBatchCommand.CanCreateParameter.get -> bool
+override GaussDB.GaussDBBatchCommand.CommandText.get -> string!
+override GaussDB.GaussDBBatchCommand.CommandText.set -> void
+override GaussDB.GaussDBBatchCommand.CommandType.get -> System.Data.CommandType
+override GaussDB.GaussDBBatchCommand.CommandType.set -> void
+override GaussDB.GaussDBBatchCommand.CreateParameter() -> GaussDB.GaussDBParameter!
+override GaussDB.GaussDBBatchCommand.RecordsAffected.get -> int
+override GaussDB.GaussDBBatchCommand.ToString() -> string!
+override GaussDB.GaussDBBatchCommandCollection.Add(System.Data.Common.DbBatchCommand! item) -> void
+override GaussDB.GaussDBBatchCommandCollection.Clear() -> void
+override GaussDB.GaussDBBatchCommandCollection.Contains(System.Data.Common.DbBatchCommand! item) -> bool
+override GaussDB.GaussDBBatchCommandCollection.CopyTo(System.Data.Common.DbBatchCommand![]! array, int arrayIndex) -> void
+override GaussDB.GaussDBBatchCommandCollection.Count.get -> int
+override GaussDB.GaussDBBatchCommandCollection.GetEnumerator() -> System.Collections.Generic.IEnumerator<System.Data.Common.DbBatchCommand!>!
+override GaussDB.GaussDBBatchCommandCollection.IndexOf(System.Data.Common.DbBatchCommand! item) -> int
+override GaussDB.GaussDBBatchCommandCollection.Insert(int index, System.Data.Common.DbBatchCommand! item) -> void
+override GaussDB.GaussDBBatchCommandCollection.IsReadOnly.get -> bool
+override GaussDB.GaussDBBatchCommandCollection.Remove(System.Data.Common.DbBatchCommand! item) -> bool
+override GaussDB.GaussDBBatchCommandCollection.RemoveAt(int index) -> void
+override GaussDB.GaussDBCommand.Cancel() -> void
+override GaussDB.GaussDBCommand.CommandText.get -> string!
+override GaussDB.GaussDBCommand.CommandText.set -> void
+override GaussDB.GaussDBCommand.CommandTimeout.get -> int
+override GaussDB.GaussDBCommand.CommandTimeout.set -> void
+override GaussDB.GaussDBCommand.CommandType.get -> System.Data.CommandType
+override GaussDB.GaussDBCommand.CommandType.set -> void
+override GaussDB.GaussDBCommand.CreateDbParameter() -> System.Data.Common.DbParameter!
+override GaussDB.GaussDBCommand.DbConnection.get -> System.Data.Common.DbConnection?
+override GaussDB.GaussDBCommand.DbConnection.set -> void
+override GaussDB.GaussDBCommand.DbParameterCollection.get -> System.Data.Common.DbParameterCollection!
+override GaussDB.GaussDBCommand.DbTransaction.get -> System.Data.Common.DbTransaction?
+override GaussDB.GaussDBCommand.DbTransaction.set -> void
+override GaussDB.GaussDBCommand.DesignTimeVisible.get -> bool
+override GaussDB.GaussDBCommand.DesignTimeVisible.set -> void
+override GaussDB.GaussDBCommand.Dispose(bool disposing) -> void
+override GaussDB.GaussDBCommand.ExecuteDbDataReader(System.Data.CommandBehavior behavior) -> System.Data.Common.DbDataReader!
+override GaussDB.GaussDBCommand.ExecuteDbDataReaderAsync(System.Data.CommandBehavior behavior, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Data.Common.DbDataReader!>!
+override GaussDB.GaussDBCommand.ExecuteNonQuery() -> int
+override GaussDB.GaussDBCommand.ExecuteNonQueryAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<int>!
+override GaussDB.GaussDBCommand.ExecuteScalar() -> object?
+override GaussDB.GaussDBCommand.ExecuteScalarAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+override GaussDB.GaussDBCommand.Prepare() -> void
+override GaussDB.GaussDBCommand.PrepareAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBCommand.UpdatedRowSource.get -> System.Data.UpdateRowSource
+override GaussDB.GaussDBCommand.UpdatedRowSource.set -> void
+override GaussDB.GaussDBCommandBuilder.QuoteIdentifier(string! unquotedIdentifier) -> string!
+override GaussDB.GaussDBCommandBuilder.QuotePrefix.get -> string!
+override GaussDB.GaussDBCommandBuilder.QuotePrefix.set -> void
+override GaussDB.GaussDBCommandBuilder.QuoteSuffix.get -> string!
+override GaussDB.GaussDBCommandBuilder.QuoteSuffix.set -> void
+override GaussDB.GaussDBCommandBuilder.UnquoteIdentifier(string! quotedIdentifier) -> string!
+override GaussDB.GaussDBConnection.CanCreateBatch.get -> bool
+override GaussDB.GaussDBConnection.ChangeDatabase(string! dbName) -> void
+override GaussDB.GaussDBConnection.Close() -> void
+override GaussDB.GaussDBConnection.CloseAsync() -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBConnection.ConnectionString.get -> string!
+override GaussDB.GaussDBConnection.ConnectionString.set -> void
+override GaussDB.GaussDBConnection.ConnectionTimeout.get -> int
+override GaussDB.GaussDBConnection.Database.get -> string!
+override GaussDB.GaussDBConnection.DataSource.get -> string!
+override GaussDB.GaussDBConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
+override GaussDB.GaussDBConnection.EnlistTransaction(System.Transactions.Transaction? transaction) -> void
+override GaussDB.GaussDBConnection.GetSchema() -> System.Data.DataTable!
+override GaussDB.GaussDBConnection.GetSchema(string? collectionName) -> System.Data.DataTable!
+override GaussDB.GaussDBConnection.GetSchema(string? collectionName, string?[]? restrictions) -> System.Data.DataTable!
+override GaussDB.GaussDBConnection.GetSchemaAsync(string! collectionName, string?[]? restrictions, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Data.DataTable!>!
+override GaussDB.GaussDBConnection.GetSchemaAsync(string! collectionName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Data.DataTable!>!
+override GaussDB.GaussDBConnection.GetSchemaAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Data.DataTable!>!
+override GaussDB.GaussDBConnection.Open() -> void
+override GaussDB.GaussDBConnection.OpenAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBConnection.ServerVersion.get -> string!
+override GaussDB.GaussDBConnection.State.get -> System.Data.ConnectionState
+override GaussDB.GaussDBConnectionStringBuilder.Clear() -> void
+override GaussDB.GaussDBConnectionStringBuilder.ContainsKey(string! keyword) -> bool
+override GaussDB.GaussDBConnectionStringBuilder.Equals(object? obj) -> bool
+override GaussDB.GaussDBConnectionStringBuilder.GetHashCode() -> int
+override GaussDB.GaussDBConnectionStringBuilder.Remove(string! keyword) -> bool
+override GaussDB.GaussDBConnectionStringBuilder.this[string! keyword].get -> object!
+override GaussDB.GaussDBConnectionStringBuilder.this[string! keyword].set -> void
+override GaussDB.GaussDBConnectionStringBuilder.TryGetValue(string! keyword, out object? value) -> bool
+override GaussDB.GaussDBDataReader.Close() -> void
+override GaussDB.GaussDBDataReader.CloseAsync() -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBDataReader.Depth.get -> int
+override GaussDB.GaussDBDataReader.DisposeAsync() -> System.Threading.Tasks.ValueTask
+override GaussDB.GaussDBDataReader.FieldCount.get -> int
+override GaussDB.GaussDBDataReader.GetBoolean(int ordinal) -> bool
+override GaussDB.GaussDBDataReader.GetByte(int ordinal) -> byte
+override GaussDB.GaussDBDataReader.GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length) -> long
+override GaussDB.GaussDBDataReader.GetChar(int ordinal) -> char
+override GaussDB.GaussDBDataReader.GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length) -> long
+override GaussDB.GaussDBDataReader.GetDataTypeName(int ordinal) -> string!
+override GaussDB.GaussDBDataReader.GetDateTime(int ordinal) -> System.DateTime
+override GaussDB.GaussDBDataReader.GetDecimal(int ordinal) -> decimal
+override GaussDB.GaussDBDataReader.GetDouble(int ordinal) -> double
+override GaussDB.GaussDBDataReader.GetEnumerator() -> System.Collections.IEnumerator!
+override GaussDB.GaussDBDataReader.GetFieldType(int ordinal) -> System.Type!
+override GaussDB.GaussDBDataReader.GetFieldValue<T>(int ordinal) -> T
+override GaussDB.GaussDBDataReader.GetFieldValueAsync<T>(int ordinal, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>!
+override GaussDB.GaussDBDataReader.GetFloat(int ordinal) -> float
+override GaussDB.GaussDBDataReader.GetGuid(int ordinal) -> System.Guid
+override GaussDB.GaussDBDataReader.GetInt16(int ordinal) -> short
+override GaussDB.GaussDBDataReader.GetInt32(int ordinal) -> int
+override GaussDB.GaussDBDataReader.GetInt64(int ordinal) -> long
+override GaussDB.GaussDBDataReader.GetName(int ordinal) -> string!
+override GaussDB.GaussDBDataReader.GetOrdinal(string! name) -> int
+override GaussDB.GaussDBDataReader.GetSchemaTable() -> System.Data.DataTable?
+override GaussDB.GaussDBDataReader.GetSchemaTableAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Data.DataTable?>!
+override GaussDB.GaussDBDataReader.GetStream(int ordinal) -> System.IO.Stream!
+override GaussDB.GaussDBDataReader.GetString(int ordinal) -> string!
+override GaussDB.GaussDBDataReader.GetTextReader(int ordinal) -> System.IO.TextReader!
+override GaussDB.GaussDBDataReader.GetValue(int ordinal) -> object!
+override GaussDB.GaussDBDataReader.GetValues(object![]! values) -> int
+override GaussDB.GaussDBDataReader.HasRows.get -> bool
+override GaussDB.GaussDBDataReader.IsClosed.get -> bool
+override GaussDB.GaussDBDataReader.IsDBNull(int ordinal) -> bool
+override GaussDB.GaussDBDataReader.IsDBNullAsync(int ordinal, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<bool>!
+override GaussDB.GaussDBDataReader.NextResult() -> bool
+override GaussDB.GaussDBDataReader.NextResultAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<bool>!
+override GaussDB.GaussDBDataReader.Read() -> bool
+override GaussDB.GaussDBDataReader.ReadAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<bool>!
+override GaussDB.GaussDBDataReader.RecordsAffected.get -> int
+override GaussDB.GaussDBDataReader.this[int ordinal].get -> object!
+override GaussDB.GaussDBDataReader.this[string! name].get -> object!
+override GaussDB.GaussDBDataSource.ConnectionString.get -> string!
+override GaussDB.GaussDBException.DbBatchCommand.get -> System.Data.Common.DbBatchCommand?
+override GaussDB.GaussDBException.IsTransient.get -> bool
+override GaussDB.GaussDBFactory.CanCreateBatch.get -> bool
+override GaussDB.GaussDBFactory.CanCreateCommandBuilder.get -> bool
+override GaussDB.GaussDBFactory.CanCreateDataAdapter.get -> bool
+override GaussDB.GaussDBFactory.CreateBatch() -> System.Data.Common.DbBatch!
+override GaussDB.GaussDBFactory.CreateBatchCommand() -> System.Data.Common.DbBatchCommand!
+override GaussDB.GaussDBFactory.CreateCommand() -> System.Data.Common.DbCommand!
+override GaussDB.GaussDBFactory.CreateCommandBuilder() -> System.Data.Common.DbCommandBuilder!
+override GaussDB.GaussDBFactory.CreateConnection() -> System.Data.Common.DbConnection!
+override GaussDB.GaussDBFactory.CreateConnectionStringBuilder() -> System.Data.Common.DbConnectionStringBuilder!
+override GaussDB.GaussDBFactory.CreateDataAdapter() -> System.Data.Common.DbDataAdapter!
+override GaussDB.GaussDBFactory.CreateDataSource(string! connectionString) -> System.Data.Common.DbDataSource!
+override GaussDB.GaussDBFactory.CreateParameter() -> System.Data.Common.DbParameter!
+override GaussDB.GaussDBLargeObjectStream.CanRead.get -> bool
+override GaussDB.GaussDBLargeObjectStream.CanSeek.get -> bool
+override GaussDB.GaussDBLargeObjectStream.CanTimeout.get -> bool
+override GaussDB.GaussDBLargeObjectStream.CanWrite.get -> bool
+override GaussDB.GaussDBLargeObjectStream.Close() -> void
+override GaussDB.GaussDBLargeObjectStream.Flush() -> void
+override GaussDB.GaussDBLargeObjectStream.Length.get -> long
+override GaussDB.GaussDBLargeObjectStream.Position.get -> long
+override GaussDB.GaussDBLargeObjectStream.Position.set -> void
+override GaussDB.GaussDBLargeObjectStream.Read(byte[]! buffer, int offset, int count) -> int
+override GaussDB.GaussDBLargeObjectStream.ReadAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<int>!
+override GaussDB.GaussDBLargeObjectStream.Seek(long offset, System.IO.SeekOrigin origin) -> long
+override GaussDB.GaussDBLargeObjectStream.SetLength(long value) -> void
+override GaussDB.GaussDBLargeObjectStream.Write(byte[]! buffer, int offset, int count) -> void
+override GaussDB.GaussDBLargeObjectStream.WriteAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBNestedDataReader.Close() -> void
+override GaussDB.GaussDBNestedDataReader.Depth.get -> int
+override GaussDB.GaussDBNestedDataReader.FieldCount.get -> int
+override GaussDB.GaussDBNestedDataReader.GetBoolean(int ordinal) -> bool
+override GaussDB.GaussDBNestedDataReader.GetByte(int ordinal) -> byte
+override GaussDB.GaussDBNestedDataReader.GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length) -> long
+override GaussDB.GaussDBNestedDataReader.GetChar(int ordinal) -> char
+override GaussDB.GaussDBNestedDataReader.GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length) -> long
+override GaussDB.GaussDBNestedDataReader.GetDataTypeName(int ordinal) -> string!
+override GaussDB.GaussDBNestedDataReader.GetDateTime(int ordinal) -> System.DateTime
+override GaussDB.GaussDBNestedDataReader.GetDecimal(int ordinal) -> decimal
+override GaussDB.GaussDBNestedDataReader.GetDouble(int ordinal) -> double
+override GaussDB.GaussDBNestedDataReader.GetEnumerator() -> System.Collections.IEnumerator!
+override GaussDB.GaussDBNestedDataReader.GetFieldType(int ordinal) -> System.Type!
+override GaussDB.GaussDBNestedDataReader.GetFieldValue<T>(int ordinal) -> T
+override GaussDB.GaussDBNestedDataReader.GetFloat(int ordinal) -> float
+override GaussDB.GaussDBNestedDataReader.GetGuid(int ordinal) -> System.Guid
+override GaussDB.GaussDBNestedDataReader.GetInt16(int ordinal) -> short
+override GaussDB.GaussDBNestedDataReader.GetInt32(int ordinal) -> int
+override GaussDB.GaussDBNestedDataReader.GetInt64(int ordinal) -> long
+override GaussDB.GaussDBNestedDataReader.GetName(int ordinal) -> string!
+override GaussDB.GaussDBNestedDataReader.GetOrdinal(string! name) -> int
+override GaussDB.GaussDBNestedDataReader.GetString(int ordinal) -> string!
+override GaussDB.GaussDBNestedDataReader.GetValue(int ordinal) -> object!
+override GaussDB.GaussDBNestedDataReader.GetValues(object![]! values) -> int
+override GaussDB.GaussDBNestedDataReader.HasRows.get -> bool
+override GaussDB.GaussDBNestedDataReader.IsClosed.get -> bool
+override GaussDB.GaussDBNestedDataReader.IsDBNull(int ordinal) -> bool
+override GaussDB.GaussDBNestedDataReader.NextResult() -> bool
+override GaussDB.GaussDBNestedDataReader.Read() -> bool
+override GaussDB.GaussDBNestedDataReader.RecordsAffected.get -> int
+override GaussDB.GaussDBNestedDataReader.this[int ordinal].get -> object!
+override GaussDB.GaussDBNestedDataReader.this[string! name].get -> object!
+override GaussDB.GaussDBParameter.ResetDbType() -> void
+override GaussDB.GaussDBParameter.Value.get -> object?
+override GaussDB.GaussDBParameter.Value.set -> void
+override GaussDB.GaussDBParameter<T>.Value.get -> object?
+override GaussDB.GaussDBParameter<T>.Value.set -> void
+override GaussDB.GaussDBParameterCollection.Add(object! value) -> int
+override GaussDB.GaussDBParameterCollection.AddRange(System.Array! values) -> void
+override GaussDB.GaussDBParameterCollection.Clear() -> void
+override GaussDB.GaussDBParameterCollection.Contains(object! value) -> bool
+override GaussDB.GaussDBParameterCollection.Contains(string! parameterName) -> bool
+override GaussDB.GaussDBParameterCollection.CopyTo(System.Array! array, int index) -> void
+override GaussDB.GaussDBParameterCollection.Count.get -> int
+override GaussDB.GaussDBParameterCollection.GetEnumerator() -> System.Collections.IEnumerator!
+override GaussDB.GaussDBParameterCollection.IndexOf(object! value) -> int
+override GaussDB.GaussDBParameterCollection.IndexOf(string! parameterName) -> int
+override GaussDB.GaussDBParameterCollection.Insert(int index, object! value) -> void
+override GaussDB.GaussDBParameterCollection.IsFixedSize.get -> bool
+override GaussDB.GaussDBParameterCollection.IsReadOnly.get -> bool
+override GaussDB.GaussDBParameterCollection.IsSynchronized.get -> bool
+override GaussDB.GaussDBParameterCollection.Remove(object! value) -> void
+override GaussDB.GaussDBParameterCollection.RemoveAt(int index) -> void
+override GaussDB.GaussDBParameterCollection.RemoveAt(string! parameterName) -> void
+override GaussDB.GaussDBParameterCollection.SyncRoot.get -> object!
+override GaussDB.GaussDBRawCopyStream.CanRead.get -> bool
+override GaussDB.GaussDBRawCopyStream.CanSeek.get -> bool
+override GaussDB.GaussDBRawCopyStream.CanTimeout.get -> bool
+override GaussDB.GaussDBRawCopyStream.CanWrite.get -> bool
+override GaussDB.GaussDBRawCopyStream.DisposeAsync() -> System.Threading.Tasks.ValueTask
+override GaussDB.GaussDBRawCopyStream.Flush() -> void
+override GaussDB.GaussDBRawCopyStream.FlushAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBRawCopyStream.Length.get -> long
+override GaussDB.GaussDBRawCopyStream.Position.get -> long
+override GaussDB.GaussDBRawCopyStream.Position.set -> void
+override GaussDB.GaussDBRawCopyStream.Read(byte[]! buffer, int offset, int count) -> int
+override GaussDB.GaussDBRawCopyStream.Read(System.Span<byte> span) -> int
+override GaussDB.GaussDBRawCopyStream.ReadAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<int>!
+override GaussDB.GaussDBRawCopyStream.ReadAsync(System.Memory<byte> buffer, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.ValueTask<int>
+override GaussDB.GaussDBRawCopyStream.ReadTimeout.get -> int
+override GaussDB.GaussDBRawCopyStream.ReadTimeout.set -> void
+override GaussDB.GaussDBRawCopyStream.Seek(long offset, System.IO.SeekOrigin origin) -> long
+override GaussDB.GaussDBRawCopyStream.SetLength(long value) -> void
+override GaussDB.GaussDBRawCopyStream.Write(byte[]! buffer, int offset, int count) -> void
+override GaussDB.GaussDBRawCopyStream.Write(System.ReadOnlySpan<byte> buffer) -> void
+override GaussDB.GaussDBRawCopyStream.WriteAsync(byte[]! buffer, int offset, int count, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBRawCopyStream.WriteAsync(System.ReadOnlyMemory<byte> buffer, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+override GaussDB.GaussDBRawCopyStream.WriteTimeout.get -> int
+override GaussDB.GaussDBRawCopyStream.WriteTimeout.set -> void
+override GaussDB.GaussDBTransaction.Commit() -> void
+override GaussDB.GaussDBTransaction.CommitAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBTransaction.DisposeAsync() -> System.Threading.Tasks.ValueTask
+override GaussDB.GaussDBTransaction.IsolationLevel.get -> System.Data.IsolationLevel
+override GaussDB.GaussDBTransaction.Release(string! name) -> void
+override GaussDB.GaussDBTransaction.ReleaseAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBTransaction.Rollback() -> void
+override GaussDB.GaussDBTransaction.Rollback(string! name) -> void
+override GaussDB.GaussDBTransaction.RollbackAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBTransaction.RollbackAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBTransaction.Save(string! name) -> void
+override GaussDB.GaussDBTransaction.SaveAsync(string! name, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+override GaussDB.GaussDBTransaction.SupportsSavepoints.get -> bool
+override GaussDB.PostgresException.GetObjectData(System.Runtime.Serialization.SerializationInfo! info, System.Runtime.Serialization.StreamingContext context) -> void
+override GaussDB.PostgresException.IsTransient.get -> bool
+override GaussDB.PostgresException.SqlState.get -> string!
+override GaussDB.PostgresException.ToString() -> string!
+override GaussDB.PostgresTypes.PostgresCompositeType.Field.ToString() -> string!
+override GaussDB.PostgresTypes.PostgresType.ToString() -> string!
+override GaussDB.Replication.PgOutput.Messages.DefaultUpdateMessage.NewRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+override GaussDB.Replication.PgOutput.Messages.FullUpdateMessage.NewRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+override GaussDB.Replication.PgOutput.Messages.IndexUpdateMessage.NewRow.get -> GaussDB.Replication.PgOutput.ReplicationTuple!
+override GaussDB.Replication.PgOutput.Messages.PgOutputReplicationMessage.ToString() -> string!
+override GaussDB.Replication.PgOutput.PgOutputReplicationOptions.Equals(object? obj) -> bool
+override GaussDB.Replication.PgOutput.PgOutputReplicationOptions.GetHashCode() -> int
+override GaussDB.Replication.TestDecoding.TestDecodingData.ToString() -> string!
+override GaussDB.Replication.TestDecoding.TestDecodingOptions.Equals(object? obj) -> bool
+override GaussDB.Replication.TestDecoding.TestDecodingOptions.GetHashCode() -> int
+override GaussDB.Schema.GaussDBDbColumn.this[string! propertyName].get -> object?
+override GaussDBTypes.GaussDBBox.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBBox.GetHashCode() -> int
+override GaussDBTypes.GaussDBBox.ToString() -> string!
+override GaussDBTypes.GaussDBCidr.ToString() -> string!
+override GaussDBTypes.GaussDBCircle.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBCircle.GetHashCode() -> int
+override GaussDBTypes.GaussDBCircle.ToString() -> string!
+override GaussDBTypes.GaussDBInet.ToString() -> string!
+override GaussDBTypes.GaussDBInterval.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBInterval.GetHashCode() -> int
+override GaussDBTypes.GaussDBLine.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBLine.GetHashCode() -> int
+override GaussDBTypes.GaussDBLine.ToString() -> string!
+override GaussDBTypes.GaussDBLogSequenceNumber.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBLogSequenceNumber.GetHashCode() -> int
+override GaussDBTypes.GaussDBLogSequenceNumber.ToString() -> string!
+override GaussDBTypes.GaussDBLSeg.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBLSeg.GetHashCode() -> int
+override GaussDBTypes.GaussDBLSeg.ToString() -> string!
+override GaussDBTypes.GaussDBPath.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBPath.GetHashCode() -> int
+override GaussDBTypes.GaussDBPath.ToString() -> string!
+override GaussDBTypes.GaussDBPoint.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBPoint.GetHashCode() -> int
+override GaussDBTypes.GaussDBPoint.ToString() -> string!
+override GaussDBTypes.GaussDBPolygon.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBPolygon.GetHashCode() -> int
+override GaussDBTypes.GaussDBPolygon.ToString() -> string!
+override GaussDBTypes.GaussDBRange<T>.Equals(object? o) -> bool
+override GaussDBTypes.GaussDBRange<T>.GetHashCode() -> int
+override GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext? context, System.Type! sourceType) -> bool
+override GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext? context, System.Type? destinationType) -> bool
+override GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object! value) -> object?
+override GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object? value, System.Type! destinationType) -> object?
+override GaussDBTypes.GaussDBRange<T>.ToString() -> string!
+override GaussDBTypes.GaussDBTid.Equals(object? o) -> bool
+override GaussDBTypes.GaussDBTid.GetHashCode() -> int
+override GaussDBTypes.GaussDBTid.ToString() -> string!
+override GaussDBTypes.GaussDBTsQuery.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBTsQuery.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQuery.ToString() -> string!
+override GaussDBTypes.GaussDBTsQueryAnd.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryAnd.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQueryEmpty.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryEmpty.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQueryFollowedBy.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryFollowedBy.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQueryLexeme.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryLexeme.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQueryNot.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryNot.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsQueryOr.Equals(GaussDBTypes.GaussDBTsQuery? other) -> bool
+override GaussDBTypes.GaussDBTsQueryOr.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsVector.Equals(object? obj) -> bool
+override GaussDBTypes.GaussDBTsVector.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsVector.Lexeme.Equals(object? o) -> bool
+override GaussDBTypes.GaussDBTsVector.Lexeme.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsVector.Lexeme.ToString() -> string!
+override GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.Equals(object? o) -> bool
+override GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.GetHashCode() -> int
+override GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.ToString() -> string!
+override GaussDBTypes.GaussDBTsVector.ToString() -> string!
+override sealed GaussDB.GaussDBParameter.DbType.get -> System.Data.DbType
+override sealed GaussDB.GaussDBParameter.DbType.set -> void
+override sealed GaussDB.GaussDBParameter.Direction.get -> System.Data.ParameterDirection
+override sealed GaussDB.GaussDBParameter.Direction.set -> void
+override sealed GaussDB.GaussDBParameter.IsNullable.get -> bool
+override sealed GaussDB.GaussDBParameter.IsNullable.set -> void
+override sealed GaussDB.GaussDBParameter.ParameterName.get -> string!
+override sealed GaussDB.GaussDBParameter.ParameterName.set -> void
+override sealed GaussDB.GaussDBParameter.Size.get -> int
+override sealed GaussDB.GaussDBParameter.Size.set -> void
+override sealed GaussDB.GaussDBParameter.SourceColumn.get -> string!
+override sealed GaussDB.GaussDBParameter.SourceColumn.set -> void
+override sealed GaussDB.GaussDBParameter.SourceColumnNullMapping.get -> bool
+override sealed GaussDB.GaussDBParameter.SourceColumnNullMapping.set -> void
+override sealed GaussDB.GaussDBParameter.SourceVersion.get -> System.Data.DataRowVersion
+override sealed GaussDB.GaussDBParameter.SourceVersion.set -> void
+static GaussDB.NameTranslation.GaussDBSnakeCaseNameTranslator.ConvertToSnakeCase(string! name, System.Globalization.CultureInfo? culture = null) -> string!
+static GaussDB.GaussDBCommandBuilder.DeriveParameters(GaussDB.GaussDBCommand! command) -> void
+static GaussDB.GaussDBConnection.ClearAllPools() -> void
+static GaussDB.GaussDBConnection.ClearPool(GaussDB.GaussDBConnection! connection) -> void
+static GaussDB.GaussDBConnection.GlobalTypeMapper.get -> GaussDB.TypeMapping.IGaussDBTypeMapper!
+static GaussDB.GaussDBDataSource.Create(GaussDB.GaussDBConnectionStringBuilder! connectionStringBuilder) -> GaussDB.GaussDBDataSource!
+static GaussDB.GaussDBDataSource.Create(string! connectionString) -> GaussDB.GaussDBDataSource!
+static GaussDB.GaussDBLoggingConfiguration.InitializeLogging(Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory, bool parameterLoggingEnabled = false) -> void
+static GaussDB.Replication.Internal.LogicalReplicationConnectionExtensions.CreateLogicalReplicationSlot(this GaussDB.Replication.LogicalReplicationConnection! connection, string! slotName, string! outputPlugin, bool isTemporary = false, GaussDB.Replication.LogicalSlotSnapshotInitMode? slotSnapshotInitMode = null, bool twoPhase = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.ReplicationSlotOptions>!
+static GaussDB.Replication.Internal.LogicalReplicationConnectionExtensions.StartLogicalReplication(this GaussDB.Replication.LogicalReplicationConnection! connection, GaussDB.Replication.Internal.LogicalReplicationSlot! slot, System.Threading.CancellationToken cancellationToken, GaussDBTypes.GaussDBLogSequenceNumber? walLocation = null, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string?>>? options = null, bool bypassingStream = false) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.XLogDataMessage!>!
+static GaussDB.Replication.PgOutputConnectionExtensions.CreatePgOutputReplicationSlot(this GaussDB.Replication.LogicalReplicationConnection! connection, string! slotName, bool temporarySlot = false, GaussDB.Replication.LogicalSlotSnapshotInitMode? slotSnapshotInitMode = null, bool twoPhase = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.PgOutput.PgOutputReplicationSlot!>!
+static GaussDB.Replication.PgOutputConnectionExtensions.StartReplication(this GaussDB.Replication.LogicalReplicationConnection! connection, GaussDB.Replication.PgOutput.PgOutputReplicationSlot! slot, GaussDB.Replication.PgOutput.PgOutputReplicationOptions! options, System.Threading.CancellationToken cancellationToken, GaussDBTypes.GaussDBLogSequenceNumber? walLocation = null) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.PgOutput.Messages.PgOutputReplicationMessage!>!
+static GaussDB.Replication.TestDecodingConnectionExtensions.CreateTestDecodingReplicationSlot(this GaussDB.Replication.LogicalReplicationConnection! connection, string! slotName, bool temporarySlot = false, GaussDB.Replication.LogicalSlotSnapshotInitMode? slotSnapshotInitMode = null, bool twoPhase = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<GaussDB.Replication.TestDecoding.TestDecodingReplicationSlot!>!
+static GaussDB.Replication.TestDecodingConnectionExtensions.StartReplication(this GaussDB.Replication.LogicalReplicationConnection! connection, GaussDB.Replication.TestDecoding.TestDecodingReplicationSlot! slot, System.Threading.CancellationToken cancellationToken, GaussDB.Replication.TestDecoding.TestDecodingOptions? options = null, GaussDBTypes.GaussDBLogSequenceNumber? walLocation = null) -> System.Collections.Generic.IAsyncEnumerable<GaussDB.Replication.TestDecoding.TestDecodingData!>!
+static GaussDBTypes.GaussDBBox.operator !=(GaussDBTypes.GaussDBBox x, GaussDBTypes.GaussDBBox y) -> bool
+static GaussDBTypes.GaussDBBox.operator ==(GaussDBTypes.GaussDBBox x, GaussDBTypes.GaussDBBox y) -> bool
+static GaussDBTypes.GaussDBCidr.explicit operator System.Net.IPAddress!(GaussDBTypes.GaussDBCidr cidr) -> System.Net.IPAddress!
+static GaussDBTypes.GaussDBCidr.implicit operator GaussDBTypes.GaussDBInet(GaussDBTypes.GaussDBCidr cidr) -> GaussDBTypes.GaussDBInet
+static GaussDBTypes.GaussDBCircle.operator !=(GaussDBTypes.GaussDBCircle x, GaussDBTypes.GaussDBCircle y) -> bool
+static GaussDBTypes.GaussDBCircle.operator ==(GaussDBTypes.GaussDBCircle x, GaussDBTypes.GaussDBCircle y) -> bool
+static GaussDBTypes.GaussDBInet.explicit operator System.Net.IPAddress!(GaussDBTypes.GaussDBInet inet) -> System.Net.IPAddress!
+static GaussDBTypes.GaussDBInet.implicit operator GaussDBTypes.GaussDBInet(System.Net.IPAddress! ip) -> GaussDBTypes.GaussDBInet
+static GaussDBTypes.GaussDBLine.operator !=(GaussDBTypes.GaussDBLine x, GaussDBTypes.GaussDBLine y) -> bool
+static GaussDBTypes.GaussDBLine.operator ==(GaussDBTypes.GaussDBLine x, GaussDBTypes.GaussDBLine y) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.explicit operator GaussDBTypes.GaussDBLogSequenceNumber(ulong value) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.explicit operator ulong(GaussDBTypes.GaussDBLogSequenceNumber value) -> ulong
+static GaussDBTypes.GaussDBLogSequenceNumber.Larger(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.operator !=(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.operator +(GaussDBTypes.GaussDBLogSequenceNumber lsn, double nbytes) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.operator -(GaussDBTypes.GaussDBLogSequenceNumber first, GaussDBTypes.GaussDBLogSequenceNumber second) -> ulong
+static GaussDBTypes.GaussDBLogSequenceNumber.operator -(GaussDBTypes.GaussDBLogSequenceNumber lsn, double nbytes) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.operator <(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.operator <=(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.operator ==(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.operator >(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.operator >=(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.Parse(string! s) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.Parse(System.ReadOnlySpan<char> s) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.Smaller(GaussDBTypes.GaussDBLogSequenceNumber value1, GaussDBTypes.GaussDBLogSequenceNumber value2) -> GaussDBTypes.GaussDBLogSequenceNumber
+static GaussDBTypes.GaussDBLogSequenceNumber.TryParse(string! s, out GaussDBTypes.GaussDBLogSequenceNumber result) -> bool
+static GaussDBTypes.GaussDBLogSequenceNumber.TryParse(System.ReadOnlySpan<char> s, out GaussDBTypes.GaussDBLogSequenceNumber result) -> bool
+static GaussDBTypes.GaussDBLSeg.operator !=(GaussDBTypes.GaussDBLSeg x, GaussDBTypes.GaussDBLSeg y) -> bool
+static GaussDBTypes.GaussDBLSeg.operator ==(GaussDBTypes.GaussDBLSeg x, GaussDBTypes.GaussDBLSeg y) -> bool
+static GaussDBTypes.GaussDBPath.operator !=(GaussDBTypes.GaussDBPath x, GaussDBTypes.GaussDBPath y) -> bool
+static GaussDBTypes.GaussDBPath.operator ==(GaussDBTypes.GaussDBPath x, GaussDBTypes.GaussDBPath y) -> bool
+static GaussDBTypes.GaussDBPoint.operator !=(GaussDBTypes.GaussDBPoint x, GaussDBTypes.GaussDBPoint y) -> bool
+static GaussDBTypes.GaussDBPoint.operator ==(GaussDBTypes.GaussDBPoint x, GaussDBTypes.GaussDBPoint y) -> bool
+static GaussDBTypes.GaussDBPolygon.operator !=(GaussDBTypes.GaussDBPolygon x, GaussDBTypes.GaussDBPolygon y) -> bool
+static GaussDBTypes.GaussDBPolygon.operator ==(GaussDBTypes.GaussDBPolygon x, GaussDBTypes.GaussDBPolygon y) -> bool
+static GaussDBTypes.GaussDBRange<T>.operator !=(GaussDBTypes.GaussDBRange<T> x, GaussDBTypes.GaussDBRange<T> y) -> bool
+static GaussDBTypes.GaussDBRange<T>.operator ==(GaussDBTypes.GaussDBRange<T> x, GaussDBTypes.GaussDBRange<T> y) -> bool
+static GaussDBTypes.GaussDBRange<T>.Parse(string! value) -> GaussDBTypes.GaussDBRange<T>
+static GaussDBTypes.GaussDBRange<T>.RangeTypeConverter.Register() -> void
+static GaussDBTypes.GaussDBTid.operator !=(GaussDBTypes.GaussDBTid left, GaussDBTypes.GaussDBTid right) -> bool
+static GaussDBTypes.GaussDBTid.operator ==(GaussDBTypes.GaussDBTid left, GaussDBTypes.GaussDBTid right) -> bool
+static GaussDBTypes.GaussDBTsQuery.operator !=(GaussDBTypes.GaussDBTsQuery? left, GaussDBTypes.GaussDBTsQuery? right) -> bool
+static GaussDBTypes.GaussDBTsQuery.operator ==(GaussDBTypes.GaussDBTsQuery? left, GaussDBTypes.GaussDBTsQuery? right) -> bool
+static GaussDBTypes.GaussDBTsQuery.Parse(string! value) -> GaussDBTypes.GaussDBTsQuery!
+static GaussDBTypes.GaussDBTsVector.Lexeme.operator !=(GaussDBTypes.GaussDBTsVector.Lexeme left, GaussDBTypes.GaussDBTsVector.Lexeme right) -> bool
+static GaussDBTypes.GaussDBTsVector.Lexeme.operator ==(GaussDBTypes.GaussDBTsVector.Lexeme left, GaussDBTypes.GaussDBTsVector.Lexeme right) -> bool
+static GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.operator !=(GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos left, GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos right) -> bool
+static GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos.operator ==(GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos left, GaussDBTypes.GaussDBTsVector.Lexeme.WordEntryPos right) -> bool
+static GaussDBTypes.GaussDBTsVector.Parse(string! value) -> GaussDBTypes.GaussDBTsVector!
+static readonly GaussDB.GaussDBFactory.Instance -> GaussDB.GaussDBFactory!
+static readonly GaussDBTypes.GaussDBLogSequenceNumber.Invalid -> GaussDBTypes.GaussDBLogSequenceNumber
+static readonly GaussDBTypes.GaussDBRange<T>.Empty -> GaussDBTypes.GaussDBRange<T>
+virtual GaussDB.GaussDBCommand.Clone() -> GaussDB.GaussDBCommand!
+virtual GaussDB.Replication.PgOutput.ReplicationTuple.GetAsyncEnumerator(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerator<GaussDB.Replication.PgOutput.ReplicationValue!>!
