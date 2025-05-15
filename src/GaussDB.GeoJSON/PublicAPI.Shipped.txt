@@ -1,13 +1,13 @@
 #nullable enable
-GaussDB.GeoJSON.CrsMap
-GaussDB.GeoJSON.CrsMapExtensions
-GaussDB.GeoJSONOptions
-GaussDB.GeoJSONOptions.BoundingBox = 1 -> HuaweiCloud.GaussDB.GeoJSONOptions
-GaussDB.GeoJSONOptions.LongCRS = 4 -> HuaweiCloud.GaussDB.GeoJSONOptions
-GaussDB.GeoJSONOptions.None = 0 -> HuaweiCloud.GaussDB.GeoJSONOptions
-GaussDB.GeoJSONOptions.ShortCRS = 2 -> HuaweiCloud.GaussDB.GeoJSONOptions
-GaussDB.GaussDBGeoJSONExtensions
+HuaweiCloud.GaussDB.GeoJSON.CrsMap
+HuaweiCloud.GaussDB.GeoJSON.CrsMapExtensions
+HuaweiCloud.GaussDB.GeoJSONOptions
+HuaweiCloud.GaussDB.GeoJSONOptions.BoundingBox = 1 -> HuaweiCloud.GaussDB.GeoJSONOptions
+HuaweiCloud.GaussDB.GeoJSONOptions.LongCRS = 4 -> HuaweiCloud.GaussDB.GeoJSONOptions
+HuaweiCloud.GaussDB.GeoJSONOptions.None = 0 -> HuaweiCloud.GaussDB.GeoJSONOptions
+HuaweiCloud.GaussDB.GeoJSONOptions.ShortCRS = 2 -> HuaweiCloud.GaussDB.GeoJSONOptions
+HuaweiCloud.GaussDB.GaussDBGeoJSONExtensions
 static HuaweiCloud.GaussDB.GeoJSON.CrsMapExtensions.GetCrsMap(this HuaweiCloud.GaussDB.GaussDBDataSource! dataSource) -> HuaweiCloud.GaussDB.GeoJSON.CrsMap!
-static HuaweiCloud.GaussDB.GeoJSON.CrsMapExtensions.GetCrsMapAsync(this HuaweiCloud.GaussDB.GaussDBDataSource! dataSource) -> System.Threading.Tasks.Task<GaussDB.GeoJSON.CrsMap!>!
+static HuaweiCloud.GaussDB.GeoJSON.CrsMapExtensions.GetCrsMapAsync(this HuaweiCloud.GaussDB.GaussDBDataSource! dataSource) -> System.Threading.Tasks.Task<HuaweiCloud.GaussDB.GeoJSON.CrsMap!>!
 static HuaweiCloud.GaussDB.GaussDBGeoJSONExtensions.UseGeoJson(this HuaweiCloud.GaussDB.TypeMapping.IGaussDBTypeMapper! mapper, HuaweiCloud.GaussDB.GeoJSON.CrsMap! crsMap, HuaweiCloud.GaussDB.GeoJSONOptions options = HuaweiCloud.GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> HuaweiCloud.GaussDB.TypeMapping.IGaussDBTypeMapper!
 static HuaweiCloud.GaussDB.GaussDBGeoJSONExtensions.UseGeoJson(this HuaweiCloud.GaussDB.TypeMapping.IGaussDBTypeMapper! mapper, HuaweiCloud.GaussDB.GeoJSONOptions options = HuaweiCloud.GaussDB.GeoJSONOptions.None, bool geographyAsDefault = false) -> HuaweiCloud.GaussDB.TypeMapping.IGaussDBTypeMapper!
