@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Authors>Shay Rojansky</Authors>
     <Description>NodaTime plugin for GaussDB, allowing mapping of PostgreSQL date/time types to NodaTime types.</Description>
-    <PackageTags>gaussdb;postgresql;postgres;nodatime;date;time;ado;ado;net;database;sql</PackageTags>
+    <PackageTags>gaussdb;openguass;nodatime;date;time;ado;ado;net;database;sql</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <TargetFramework>net8.0</TargetFramework>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->

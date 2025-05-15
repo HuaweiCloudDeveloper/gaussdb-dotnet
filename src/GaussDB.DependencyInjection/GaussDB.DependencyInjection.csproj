@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Authors>Shay Rojansky</Authors>
+        <Authors>gaussdb-dotnet team</Authors>
         <TargetFramework>net8.0</TargetFramework>
-        <PackageTags>gaussdb;postgresql;postgres;ado;ado.net;database;sql;di;dependency injection</PackageTags>
+        <PackageTags>gaussdb;openguass;ado;ado.net;database;sql;di;dependency injection</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

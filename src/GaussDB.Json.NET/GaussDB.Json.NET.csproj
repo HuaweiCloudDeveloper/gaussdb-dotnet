@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>Shay Rojansky</Authors>
+    <Authors>gaussdb-dotnet team</Authors>
     <Description>Json.NET plugin for GaussDB, allowing transparent serialization/deserialization of JSON objects directly to and from the database.</Description>
-    <PackageTags>gaussdb;postgresql;json;postgres;ado;ado.net;database;sql</PackageTags>
+    <PackageTags>gaussdb;openguass;json;postgres;ado;ado.net;database;sql</PackageTags>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->

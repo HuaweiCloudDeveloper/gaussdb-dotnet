@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>Yoh Deadfall;Shay Rojansky</Authors>
+    <Authors>gaussdb-dotnet team</Authors>
     <Description>GeoJSON plugin for GaussDB, allowing mapping of PostGIS geometry types to GeoJSON types.</Description>
-    <PackageTags>gaussdb;postgresql;postgres;postgis;geojson;spatial;ado;ado.net;database;sql</PackageTags>
+    <PackageTags>gaussdb;openguass;postgis;geojson;spatial;ado;ado.net;database;sql</PackageTags>
     <TargetFramework>net8.0</TargetFramework>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->
   </PropertyGroup>
