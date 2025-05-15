@@ -6,7 +6,7 @@ using HuaweiCloud.GaussDB.NodaTime.Properties;
 using HuaweiCloud.GaussDB.Tests;
 using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable AccessToDisposedClosure

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HuaweiCloud.GaussDBTypes;
-using static GaussDBTypes.GaussDBTsQuery.NodeKind;
+using static HuaweiCloud.GaussDBTypes.GaussDBTsQuery.NodeKind;
 
 // ReSharper disable once CheckNamespace
 namespace HuaweiCloud.GaussDB.Internal.Converters;

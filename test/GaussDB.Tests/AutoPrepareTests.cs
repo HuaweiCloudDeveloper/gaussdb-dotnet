@@ -4,7 +4,7 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 

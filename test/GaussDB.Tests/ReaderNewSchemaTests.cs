@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HuaweiCloud.GaussDB.PostgresTypes;
 using NUnit.Framework;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 

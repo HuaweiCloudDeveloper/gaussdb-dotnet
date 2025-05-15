@@ -6,7 +6,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 

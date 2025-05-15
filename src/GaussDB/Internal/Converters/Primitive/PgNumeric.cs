@@ -4,7 +4,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using static GaussDB.Internal.Converters.PgNumeric.Builder;
+using static HuaweiCloud.GaussDB.Internal.Converters.PgNumeric.Builder;
 
 namespace HuaweiCloud.GaussDB.Internal.Converters;
 

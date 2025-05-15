@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using HuaweiCloud.GaussDB.BackendMessages;
 using HuaweiCloud.GaussDB.Internal;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 #pragma warning disable 1591
 

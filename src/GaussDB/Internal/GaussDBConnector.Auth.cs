@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using HuaweiCloud.GaussDB.BackendMessages;
 using HuaweiCloud.GaussDB.Util;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 namespace HuaweiCloud.GaussDB.Internal;
 

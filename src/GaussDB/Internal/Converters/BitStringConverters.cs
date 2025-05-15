@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HuaweiCloud.GaussDB.Internal.Postgres;
-using static GaussDB.Internal.Converters.BitStringHelpers;
+using static HuaweiCloud.GaussDB.Internal.Converters.BitStringHelpers;
 
 namespace HuaweiCloud.GaussDB.Internal.Converters;
 

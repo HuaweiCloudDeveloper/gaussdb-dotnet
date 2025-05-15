@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using HuaweiCloud.GaussDB.Tests;
 using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.PluginTests;
 

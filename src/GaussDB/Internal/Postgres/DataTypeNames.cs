@@ -1,4 +1,4 @@
-using static GaussDB.Internal.Postgres.DataTypeName;
+using static HuaweiCloud.GaussDB.Internal.Postgres.DataTypeName;
 
 namespace HuaweiCloud.GaussDB.Internal.Postgres;
 

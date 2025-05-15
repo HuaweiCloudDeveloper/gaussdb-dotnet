@@ -10,7 +10,7 @@ using HuaweiCloud.GaussDB.BackendMessages;
 using HuaweiCloud.GaussDB.Internal;
 using HuaweiCloud.GaussDB.PostgresTypes;
 using HuaweiCloud.GaussDB.Util;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo

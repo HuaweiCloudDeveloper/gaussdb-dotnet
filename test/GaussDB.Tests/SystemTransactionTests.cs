@@ -3,7 +3,7 @@ using System.Data;
 using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 

@@ -23,16 +23,16 @@ public class GaussDBConnectionStringBuilderSourceGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
-        if (context.Compilation.Assembly.GetTypeByMetadataName("GaussDB.GaussDBConnectionStringBuilder") is not { } type)
+        if (context.Compilation.Assembly.GetTypeByMetadataName("HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder") is not { } type)
             return;
 
-        if (context.Compilation.Assembly.GetTypeByMetadataName("GaussDB.GaussDBConnectionStringPropertyAttribute") is not
+        if (context.Compilation.Assembly.GetTypeByMetadataName("HuaweiCloud.GaussDB.GaussDBConnectionStringPropertyAttribute") is not
             { } connectionStringPropertyAttribute)
         {
             context.ReportDiagnostic(Diagnostic.Create(
                 InternalError,
                 location: null,
-                "Could not find GaussDB.GaussDBConnectionStringPropertyAttribute"));
+                "Could not find HuaweiCloud.GaussDB.GaussDBConnectionStringPropertyAttribute"));
             return;
         }
 

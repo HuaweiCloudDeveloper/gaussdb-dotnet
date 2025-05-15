@@ -12,8 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using HuaweiCloud.GaussDB.Properties;
-using static GaussDB.Tests.Support.MockState;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.Support.MockState;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 using IsolationLevel = System.Transactions.IsolationLevel;
 using TransactionStatus = GaussDB.Internal.TransactionStatus;
 

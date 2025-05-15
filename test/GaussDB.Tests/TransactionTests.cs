@@ -5,7 +5,7 @@ using HuaweiCloud.GaussDB.Internal;
 using HuaweiCloud.GaussDB.Tests.Support;
 using HuaweiCloud.GaussDB.Util;
 using NUnit.Framework;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 // ReSharper disable MethodHasAsyncOverload
 // ReSharper disable UseAwaitUsing

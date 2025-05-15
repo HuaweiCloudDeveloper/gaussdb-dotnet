@@ -12,7 +12,7 @@ using HuaweiCloud.GaussDB.Replication.PgOutput;
 using HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 using TruncateOptions = GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions;
 using ReplicaIdentitySetting = GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests.Replication;
 

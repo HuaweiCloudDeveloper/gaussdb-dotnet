@@ -3,7 +3,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 //todo: 不支持LISTEN、NOTIFY

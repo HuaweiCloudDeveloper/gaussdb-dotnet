@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using HuaweiCloud.GaussDB.Internal.ResolverFactories;
 using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 namespace HuaweiCloud.GaussDB.Tests.Types;
 

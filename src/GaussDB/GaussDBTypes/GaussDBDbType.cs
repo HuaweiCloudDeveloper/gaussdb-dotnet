@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using HuaweiCloud.GaussDB;
 using HuaweiCloud.GaussDB.Internal.Postgres;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 #pragma warning disable CA1720
 

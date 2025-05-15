@@ -19,7 +19,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using HuaweiCloud.GaussDB.BackendMessages;
 using HuaweiCloud.GaussDB.Util;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 using Microsoft.Extensions.Logging;
 using HuaweiCloud.GaussDB.Properties;
 

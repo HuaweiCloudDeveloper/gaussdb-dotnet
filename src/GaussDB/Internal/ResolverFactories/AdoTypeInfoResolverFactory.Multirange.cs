@@ -4,7 +4,7 @@ using HuaweiCloud.GaussDB.Internal.Converters;
 using HuaweiCloud.GaussDB.Internal.Postgres;
 using HuaweiCloud.GaussDB.Util;
 using HuaweiCloud.GaussDBTypes;
-using static GaussDB.Internal.PgConverterFactory;
+using static HuaweiCloud.GaussDB.Internal.PgConverterFactory;
 
 namespace HuaweiCloud.GaussDB.Internal.ResolverFactories;
 

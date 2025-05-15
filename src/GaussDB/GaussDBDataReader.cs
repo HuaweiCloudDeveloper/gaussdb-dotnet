@@ -19,7 +19,7 @@ using HuaweiCloud.GaussDB.Internal.Converters;
 using HuaweiCloud.GaussDB.PostgresTypes;
 using HuaweiCloud.GaussDB.Schema;
 using HuaweiCloud.GaussDBTypes;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 namespace HuaweiCloud.GaussDB;
 

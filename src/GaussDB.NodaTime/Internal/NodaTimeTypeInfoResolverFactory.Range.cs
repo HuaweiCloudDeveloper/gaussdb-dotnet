@@ -3,7 +3,7 @@ using NodaTime;
 using HuaweiCloud.GaussDB.Internal;
 using HuaweiCloud.GaussDB.Internal.Postgres;
 using HuaweiCloud.GaussDBTypes;
-using static GaussDB.Internal.PgConverterFactory;
+using static HuaweiCloud.GaussDB.Internal.PgConverterFactory;
 
 namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 

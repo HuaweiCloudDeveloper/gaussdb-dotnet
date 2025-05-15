@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using static GaussDB.Tests.TestUtil;
+using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests;
 

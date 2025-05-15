@@ -2,7 +2,7 @@ using System;
 using NodaTime;
 using HuaweiCloud.GaussDB.Internal;
 using HuaweiCloud.GaussDB.Internal.Postgres;
-using static GaussDB.NodaTime.Internal.NodaTimeUtils;
+using static HuaweiCloud.GaussDB.NodaTime.Internal.NodaTimeUtils;
 
 namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 

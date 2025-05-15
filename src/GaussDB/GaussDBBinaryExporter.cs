@@ -7,7 +7,7 @@ using HuaweiCloud.GaussDB.BackendMessages;
 using HuaweiCloud.GaussDB.Internal;
 using HuaweiCloud.GaussDB.Internal.Postgres;
 using HuaweiCloud.GaussDBTypes;
-using static GaussDB.Util.Statics;
+using static HuaweiCloud.GaussDB.Util.Statics;
 
 namespace HuaweiCloud.GaussDB;
 
