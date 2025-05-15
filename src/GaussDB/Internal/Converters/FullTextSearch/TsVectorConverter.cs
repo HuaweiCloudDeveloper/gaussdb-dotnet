@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class TsVectorConverter(Encoding encoding) : PgStreamingConverter<GaussDBTsVector>
 {

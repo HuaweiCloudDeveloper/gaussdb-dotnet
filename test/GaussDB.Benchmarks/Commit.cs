@@ -4,7 +4,7 @@ using BenchmarkDotNet.Configs;
 
 // ReSharper disable AssignNullToNotNullAttribute.Global
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 [Config(typeof(Config))]
 public class Commit

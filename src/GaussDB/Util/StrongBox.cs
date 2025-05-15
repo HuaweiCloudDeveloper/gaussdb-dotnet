@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 abstract class StrongBox
 {

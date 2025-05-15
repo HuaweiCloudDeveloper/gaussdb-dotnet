@@ -2,7 +2,7 @@
 
 using System;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides constants for PostgreSQL error codes.

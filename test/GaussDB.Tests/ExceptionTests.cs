@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class ExceptionTests : TestBase
 {

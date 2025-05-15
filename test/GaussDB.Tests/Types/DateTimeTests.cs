@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 // Since this test suite manipulates TimeZone, it is incompatible with multiplexing
 public class DateTimeTests : TestBase

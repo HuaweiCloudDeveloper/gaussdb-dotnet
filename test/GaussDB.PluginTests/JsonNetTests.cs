@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GaussDB.Tests;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using System;
 using System.Text;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable AccessToDisposedClosure
 
-/*namespace GaussDB.PluginTests;
+/*namespace HuaweiCloud.GaussDB.PluginTests;
 
 /// <summary>
 /// Tests for the GaussDB.Json.NET mapping plugin

@@ -13,15 +13,15 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Internal.Converters;
-using GaussDB.PostgresTypes;
-using GaussDB.Schema;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Schema;
+using HuaweiCloud.GaussDBTypes;
 using static GaussDB.Util.Statics;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Reads a forward-only stream of rows from a data source.

@@ -1,4 +1,4 @@
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Represents a PostgreSQL timeline history file

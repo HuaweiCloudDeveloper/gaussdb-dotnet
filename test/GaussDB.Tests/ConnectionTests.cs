@@ -11,14 +11,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.PostgresTypes;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

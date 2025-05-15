@@ -2,7 +2,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 #pragma warning disable CS0618 // Large object support is obsolete
 //todo: GaussDB 不支持Large object ，参考：https://bbs.huaweicloud.com/forum/thread-0211178941356334146-1-1.html

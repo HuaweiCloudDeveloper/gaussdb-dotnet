@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public class MultirangeTests : TestBase
 {

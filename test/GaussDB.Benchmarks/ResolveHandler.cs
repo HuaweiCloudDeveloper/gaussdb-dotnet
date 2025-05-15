@@ -1,8 +1,8 @@
 using BenchmarkDotNet.Attributes;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 [MemoryDiagnoser]
 public class ResolveHandler

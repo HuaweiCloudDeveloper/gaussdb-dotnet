@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 public class ReadColumns
 {

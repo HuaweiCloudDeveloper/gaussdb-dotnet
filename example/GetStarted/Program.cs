@@ -1,5 +1,5 @@
 using System.Data;
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 dotenv.net.DotEnv.Load();
 

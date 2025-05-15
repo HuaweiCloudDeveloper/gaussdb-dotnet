@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Running;
 using System.Reflection;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 class Program
 {

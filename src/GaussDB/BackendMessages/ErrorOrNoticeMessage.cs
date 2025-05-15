@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.BackendMessages;
+namespace HuaweiCloud.GaussDB.BackendMessages;
 
 [Serializable]
 sealed class ErrorOrNoticeMessage

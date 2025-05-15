@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <inheritdoc cref="DbBatchCommandCollection"/>
 public class GaussDBBatchCommandCollection : DbBatchCommandCollection, IList<GaussDBBatchCommand>

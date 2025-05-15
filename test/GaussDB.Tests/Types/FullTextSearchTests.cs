@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
 #pragma warning disable CS0618 // GaussDBTsVector.Parse is obsolete
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public class FullTextSearchTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

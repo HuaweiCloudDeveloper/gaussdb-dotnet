@@ -1,6 +1,6 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Contains server identification information returned from <see cref="ReplicationConnection.IdentifySystem"/>.

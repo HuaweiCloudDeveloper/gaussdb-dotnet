@@ -3,12 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using GaussDB.PostgresTypes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public class CompositeTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

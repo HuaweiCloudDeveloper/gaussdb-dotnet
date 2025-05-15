@@ -5,10 +5,10 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Represents a collection of parameters relevant to a <see cref="GaussDBCommand"/> as well as their respective mappings to columns in

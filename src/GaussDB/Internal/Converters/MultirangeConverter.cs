@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class MultirangeConverter<T, TRange> : PgStreamingConverter<T>
     where T : IList<TRange>

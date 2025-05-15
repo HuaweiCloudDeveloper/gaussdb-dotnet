@@ -1,9 +1,9 @@
 using BenchmarkDotNet.Attributes;
 using System.Collections.Generic;
 using System.Text;
-using GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Converters;
 
-namespace GaussDB.Benchmarks.TypeHandlers;
+namespace HuaweiCloud.GaussDB.Benchmarks.TypeHandlers;
 
 [Config(typeof(Config))]
 public class Text() : TypeHandlerBenchmarks<string>(new StringTextConverter(Encoding.UTF8))

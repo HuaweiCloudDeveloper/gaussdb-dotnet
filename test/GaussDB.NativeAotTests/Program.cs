@@ -1,5 +1,5 @@
 using System;
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 var connectionString = Environment.GetEnvironmentVariable("NPGSQL_TEST_DB")
                        ?? "Server=localhost;Username=gaussdb_tests;Password=gaussdb_tests;Database=gaussdb_tests;Timeout=0;Command Timeout=0";

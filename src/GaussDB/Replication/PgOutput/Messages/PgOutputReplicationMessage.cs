@@ -1,4 +1,4 @@
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// The base class of all Logical Replication Protocol Messages

@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
-using GaussDB.Replication.TestDecoding;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication;
+using HuaweiCloud.GaussDB.Replication.TestDecoding;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 [TestFixture(typeof(LogicalReplicationConnection))]
 [TestFixture(typeof(PhysicalReplicationConnection))]

@@ -6,11 +6,11 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.PostgresTypes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides the underlying mechanism for reading schema information.

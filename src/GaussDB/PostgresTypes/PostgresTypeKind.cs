@@ -1,4 +1,4 @@
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 enum PostgresTypeKind
 {

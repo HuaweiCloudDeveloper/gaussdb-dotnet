@@ -1,9 +1,9 @@
-using GaussDB.GeoJSON;
-using GaussDB.GeoJSON.Internal;
-using GaussDB.TypeMapping;
+using HuaweiCloud.GaussDB.GeoJSON;
+using HuaweiCloud.GaussDB.GeoJSON.Internal;
+using HuaweiCloud.GaussDB.TypeMapping;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Extension allowing adding the GeoJSON plugin to an GaussDB type mapper.

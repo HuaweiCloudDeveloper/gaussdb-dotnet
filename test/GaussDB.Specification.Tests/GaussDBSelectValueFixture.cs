@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using AdoNet.Specification.Tests;
 
-namespace GaussDB.Specification.Tests;
+namespace HuaweiCloud.GaussDB.Specification.Tests;
 
 public class GaussDBSelectValueFixture : GaussDBDbFactoryFixture, ISelectValueFixture, IDeleteFixture, IDisposable
 {

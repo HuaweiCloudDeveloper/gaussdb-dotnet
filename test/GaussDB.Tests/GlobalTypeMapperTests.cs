@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 #pragma warning disable CS0618 // GlobalTypeMapper is obsolete
 

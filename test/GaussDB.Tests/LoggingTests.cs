@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class LoggingTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

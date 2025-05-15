@@ -1,12 +1,12 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// Abstract base class for Logical Replication Protocol delete message types.

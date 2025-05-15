@@ -1,5 +1,5 @@
-using GaussDB;
-using GaussDB.Tests;
+using HuaweiCloud.GaussDB;
+using HuaweiCloud.GaussDB.Tests;
 using NUnit.Framework;
 using System;
 using System.Threading;

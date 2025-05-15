@@ -1,5 +1,5 @@
-using GaussDB.Internal;
-using GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.PostgresTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Reads a forward-only stream of rows from a nested data source.

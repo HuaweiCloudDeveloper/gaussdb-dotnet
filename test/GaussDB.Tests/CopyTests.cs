@@ -9,13 +9,13 @@ using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Tests.Support;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Tests.Support;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 //todo: 当前测试用例中大量使用到COPY和Reader，适配GaussDB效果不好重构需要重点关注
 public class CopyTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)

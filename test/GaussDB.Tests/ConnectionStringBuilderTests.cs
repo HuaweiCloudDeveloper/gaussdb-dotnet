@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 class ConnectionStringBuilderTests
 {

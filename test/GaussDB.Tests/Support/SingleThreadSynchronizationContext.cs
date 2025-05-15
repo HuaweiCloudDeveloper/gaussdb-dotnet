@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 
-namespace GaussDB.Tests.Support;
+namespace HuaweiCloud.GaussDB.Tests.Support;
 
 sealed class SingleThreadSynchronizationContext : SynchronizationContext, IDisposable
 {

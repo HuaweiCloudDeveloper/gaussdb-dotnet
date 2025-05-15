@@ -5,7 +5,7 @@ This package is an GaussDB plugin which allows you to interact with spatial data
 To use the NetTopologySuite plugin, add a dependency on this package and create a GaussDBDataSource.
 
 ```csharp
-using GaussDB;
+using HuaweiCloud.GaussDB;
 using NetTopologySuite.Geometries;
 
 var dataSourceBuilder = new GaussDBDataSourceBuilder(ConnectionString);

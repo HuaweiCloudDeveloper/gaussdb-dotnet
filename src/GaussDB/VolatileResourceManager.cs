@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Transactions;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 ///

@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel;
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks.Sources;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 sealed class ManualResetValueTaskSource<T> : IValueTaskSource<T>, IValueTaskSource
 {

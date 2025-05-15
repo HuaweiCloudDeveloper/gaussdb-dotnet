@@ -4,13 +4,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
 using static GaussDB.Util.Statics;
 
 #pragma warning disable 1591
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides an API for a raw binary COPY operation, a high-performance data import/export mechanism to

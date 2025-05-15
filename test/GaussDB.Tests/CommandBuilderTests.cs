@@ -1,12 +1,12 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using GaussDB.PostgresTypes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 class CommandBuilderTests : TestBase
 {

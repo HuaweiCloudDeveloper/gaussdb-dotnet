@@ -3,13 +3,13 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDBTypes;
 using static GaussDB.Util.Statics;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides an API for a binary COPY TO operation, a high-performance data export mechanism from

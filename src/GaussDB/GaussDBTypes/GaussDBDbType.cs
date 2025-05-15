@@ -1,13 +1,13 @@
 using System;
 using System.Data;
-using GaussDB;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using static GaussDB.Util.Statics;
 
 #pragma warning disable CA1720
 
 // ReSharper disable once CheckNamespace
-namespace GaussDBTypes;
+namespace HuaweiCloud.GaussDBTypes;
 
 /// <summary>
 /// Represents a PostgreSQL data type that can be written or read to the database.

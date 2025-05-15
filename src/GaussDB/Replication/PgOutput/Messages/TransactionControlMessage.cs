@@ -1,7 +1,7 @@
 using System;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// The common base class for all replication messages that set the transaction xid of a transaction

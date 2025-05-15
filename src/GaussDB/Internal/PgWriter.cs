@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 enum FlushMode
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.Internal.Converters.Internal;
+namespace HuaweiCloud.GaussDB.Internal.Converters.Internal;
 
 // Void is not a value so we read it as a null reference, not a DBNull.
 sealed class VoidConverter : PgBufferedConverter<object?>

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class MacaddrConverter(bool macaddr8) : PgBufferedConverter<PhysicalAddress>
 {

@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Replication.Internal;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication.TestDecoding;
+namespace HuaweiCloud.GaussDB.Replication.TestDecoding;
 
 sealed class TestDecodingAsyncEnumerable : IAsyncEnumerable<TestDecodingData>
 {

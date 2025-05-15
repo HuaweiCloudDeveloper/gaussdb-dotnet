@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 abstract class PgComposingConverterResolver<T> : PgConverterResolver<T>
 {

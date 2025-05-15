@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Attributes;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 public class ReadRows
 {

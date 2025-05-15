@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace GaussDB.SourceGenerators;
+namespace HuaweiCloud.GaussDB.SourceGenerators;
 
 static class EmbeddedResource
 {

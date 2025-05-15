@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.GeoJSON.Internal;
+namespace HuaweiCloud.GaussDB.GeoJSON.Internal;
 
 struct CrsMapBuilder
 {

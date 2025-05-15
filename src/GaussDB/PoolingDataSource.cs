@@ -7,10 +7,10 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 class PoolingDataSource : GaussDBDataSource
 {

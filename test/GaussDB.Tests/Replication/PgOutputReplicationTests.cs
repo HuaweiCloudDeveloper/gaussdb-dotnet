@@ -7,14 +7,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
-using GaussDB.Replication.PgOutput;
-using GaussDB.Replication.PgOutput.Messages;
+using HuaweiCloud.GaussDB.Replication;
+using HuaweiCloud.GaussDB.Replication.PgOutput;
+using HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 using TruncateOptions = GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions;
 using ReplicaIdentitySetting = GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 [TestFixture(PgOutputProtocolVersion.V1, ReplicationDataMode.DefaultReplicationDataMode, TransactionMode.DefaultTransactionMode)]
 [TestFixture(PgOutputProtocolVersion.V1, ReplicationDataMode.BinaryReplicationDataMode, TransactionMode.DefaultTransactionMode)]

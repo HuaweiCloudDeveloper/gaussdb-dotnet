@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
-using GaussDB.Replication.TestDecoding;
+using HuaweiCloud.GaussDB.Replication;
+using HuaweiCloud.GaussDB.Replication.TestDecoding;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 /// <summary>
 /// These tests are meant to run on PostgreSQL versions back to 9.4 where the

@@ -2,10 +2,10 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal.Postgres;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Internal.Composites;
+namespace HuaweiCloud.GaussDB.Internal.Composites;
 
 abstract class CompositeFieldInfo
 {

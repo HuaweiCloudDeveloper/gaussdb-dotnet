@@ -1,4 +1,4 @@
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// The kind of data transmitted for a tuple in a Logical Replication Protocol message.

@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 static class BenchmarkEnvironment
 {
@@ -19,5 +19,5 @@ static class BenchmarkEnvironment
         var conn = GetConnection();
         conn.Open();
         return conn;
-    } 
+    }
 }

@@ -6,10 +6,10 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using static GaussDB.Internal.Converters.BitStringHelpers;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 file static class BitStringHelpers
 {

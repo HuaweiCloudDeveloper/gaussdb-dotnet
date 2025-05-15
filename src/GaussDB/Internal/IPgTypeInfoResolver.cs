@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 /// <summary>
 /// An GaussDB resolver for type info. Used by GaussDB to read and write values to PostgreSQL.

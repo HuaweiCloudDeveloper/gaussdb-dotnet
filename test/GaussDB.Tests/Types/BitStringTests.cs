@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 /// <summary>
 /// Tests on the PostgreSQL BitString type

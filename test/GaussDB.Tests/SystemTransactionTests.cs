@@ -5,7 +5,7 @@ using System.Transactions;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 // This test suite contains ambient transaction tests, except those involving distributed transactions which are only
 // supported on .NET Framework / Windows. Distributed transaction tests are in DistributedTransactionTests.

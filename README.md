@@ -17,7 +17,7 @@ Before getting started, developers can download the [Open Source for Huawei Wiki
 Here's a basic code snippet to get you started:
 
 ```csharp
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 var connString = "Host=myserver;Username=mylogin;Password=mypass;Database=mydatabase";
 

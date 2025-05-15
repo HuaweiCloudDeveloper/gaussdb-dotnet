@@ -2,7 +2,7 @@ using System;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class PgPassEntryTests
 {

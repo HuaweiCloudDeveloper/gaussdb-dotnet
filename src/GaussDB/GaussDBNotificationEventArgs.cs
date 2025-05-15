@@ -1,7 +1,7 @@
 using System;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides information on a PostgreSQL notification. Notifications are sent when your connection has registered for

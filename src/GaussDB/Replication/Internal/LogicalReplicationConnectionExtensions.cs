@@ -1,4 +1,4 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Replication.Internal;
+namespace HuaweiCloud.GaussDB.Replication.Internal;
 
 /// <summary>
 /// This API is for internal use and for implementing logical replication plugins.

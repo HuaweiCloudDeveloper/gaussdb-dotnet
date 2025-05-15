@@ -2,12 +2,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using GaussDB.Internal;
-using GaussDB.NameTranslation;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.NameTranslation;
+using HuaweiCloud.GaussDBTypes;
 
 // ReSharper disable UnusedMember.Global
-namespace GaussDB.TypeMapping;
+namespace HuaweiCloud.GaussDB.TypeMapping;
 
 /// <summary>
 /// A type mapper, managing how to read and write CLR values to PostgreSQL data types.

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class PostgresMinimalDatabaseInfoFactory : IGaussDBDatabaseInfoFactory
 {

@@ -1,10 +1,10 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal.ResolverFactories;
+namespace HuaweiCloud.GaussDB.Internal.ResolverFactories;
 
 sealed class JsonTypeInfoResolverFactory(JsonSerializerOptions? serializerOptions = null) : PgTypeInfoResolverFactory
 {

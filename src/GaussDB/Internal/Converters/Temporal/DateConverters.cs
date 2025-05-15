@@ -1,8 +1,8 @@
 using System;
-using GaussDB.Properties;
+using HuaweiCloud.GaussDB.Properties;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class DateOnlyDateConverter(bool dateTimeInfinityConversions) : PgBufferedConverter<DateOnly>
 {

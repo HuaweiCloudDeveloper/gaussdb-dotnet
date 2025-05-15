@@ -1,16 +1,16 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Tests.Support;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Tests.Support;
+using HuaweiCloud.GaussDB.Util;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
 // ReSharper disable MethodHasAsyncOverload
 // ReSharper disable UseAwaitUsing
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class TransactionTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

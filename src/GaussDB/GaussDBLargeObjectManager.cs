@@ -1,11 +1,11 @@
 using System;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 using System.Data;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Large object manager. This class can be used to store very large files in a PostgreSQL database.

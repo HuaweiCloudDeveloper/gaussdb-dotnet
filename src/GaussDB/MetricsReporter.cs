@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 using System.Collections.Generic;
 using System.Diagnostics;

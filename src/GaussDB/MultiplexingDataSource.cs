@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class MultiplexingDataSource : PoolingDataSource
 {

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using GaussDB.BackendMessages;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Internally represents a statement has been prepared, is in the process of being prepared, or is a

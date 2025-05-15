@@ -2,9 +2,9 @@ using System;
 using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed record GaussDBDataSourceConfiguration(string? Name,
     GaussDBLoggingConfiguration LoggingConfiguration,

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 [Experimental(GaussDBDiagnostics.ConvertersExperimental)]
 public readonly struct ValueMetadata

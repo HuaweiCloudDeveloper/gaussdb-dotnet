@@ -1,6 +1,6 @@
 using AdoNet.Specification.Tests;
 
-namespace GaussDB.Specification.Tests;
+namespace HuaweiCloud.GaussDB.Specification.Tests;
 
 public static class Utility
 {

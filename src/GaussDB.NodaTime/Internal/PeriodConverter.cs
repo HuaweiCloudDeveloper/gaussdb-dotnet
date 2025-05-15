@@ -1,9 +1,9 @@
 using System;
 using NodaTime;
-using GaussDB.Internal;
-using GaussDB.NodaTime.Properties;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.NodaTime.Properties;
 
-namespace GaussDB.NodaTime.Internal;
+namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 
 sealed class PeriodConverter(bool dateTimeInfinityConversions) : PgBufferedConverter<Period>
 {

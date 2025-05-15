@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 struct PgTypeInfoResolverChainBuilder
 {

@@ -8,12 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.Internal.ResolverFactories;
-using GaussDB.Properties;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.ResolverFactories;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <inheritdoc />
 public abstract class GaussDBDataSource : DbDataSource

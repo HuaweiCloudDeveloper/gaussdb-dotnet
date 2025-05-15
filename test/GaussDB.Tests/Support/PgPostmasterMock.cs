@@ -6,9 +6,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Tests.Support;
+namespace HuaweiCloud.GaussDB.Tests.Support;
 
 class PgPostmasterMock : IAsyncDisposable
 {

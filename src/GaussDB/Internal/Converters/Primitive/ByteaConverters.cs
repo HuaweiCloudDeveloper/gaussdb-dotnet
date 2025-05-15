@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 abstract class ByteaConverters<T> : PgStreamingConverter<T>
 {

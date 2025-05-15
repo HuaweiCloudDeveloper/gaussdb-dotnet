@@ -1,6 +1,6 @@
 using System.Diagnostics.Tracing;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class GaussDBSqlEventSource : EventSource
 {

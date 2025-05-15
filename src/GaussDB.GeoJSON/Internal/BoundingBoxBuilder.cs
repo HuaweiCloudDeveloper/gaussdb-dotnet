@@ -1,6 +1,6 @@
 using GeoJSON.Net.Geometry;
 
-namespace GaussDB.GeoJSON.Internal;
+namespace HuaweiCloud.GaussDB.GeoJSON.Internal;
 
 sealed class BoundingBoxBuilder
 {

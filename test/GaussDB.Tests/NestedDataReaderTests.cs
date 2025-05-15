@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class NestedDataReaderTests : TestBase
 {

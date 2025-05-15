@@ -1,11 +1,11 @@
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using NUnit.Framework;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)] // Parallel access to a single buffer
 class ReadBufferTests

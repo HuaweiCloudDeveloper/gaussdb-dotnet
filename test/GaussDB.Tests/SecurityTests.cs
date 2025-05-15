@@ -4,11 +4,11 @@
 // using System.Security.Authentication;
 // using System.Threading;
 // using System.Threading.Tasks;
-// using GaussDB.Properties;
+// using HuaweiCloud.GaussDB.Properties;
 // using NUnit.Framework;
 // using static GaussDB.Tests.TestUtil;
 
-// namespace GaussDB.Tests;
+// namespace HuaweiCloud.GaussDB.Tests;
 
 // public class SecurityTests : TestBase
 // {

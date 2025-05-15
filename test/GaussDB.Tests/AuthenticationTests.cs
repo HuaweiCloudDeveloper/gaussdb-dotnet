@@ -4,12 +4,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDB.Tests.Support;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDB.Tests.Support;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class AuthenticationTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

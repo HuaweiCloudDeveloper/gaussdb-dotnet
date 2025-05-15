@@ -1,4 +1,4 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using System;
 using System.Data;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class AutoPrepareTests : TestBase
 {

@@ -1,10 +1,10 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// Logical Replication Protocol insert message

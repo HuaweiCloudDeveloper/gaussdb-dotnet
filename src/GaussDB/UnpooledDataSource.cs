@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class UnpooledDataSource(GaussDBConnectionStringBuilder settings, GaussDBDataSourceConfiguration dataSourceConfig)
     : GaussDBDataSource(settings, dataSourceConfig)

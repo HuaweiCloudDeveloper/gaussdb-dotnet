@@ -2,9 +2,9 @@ using System;
 using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal.Composites;
+using HuaweiCloud.GaussDB.Internal.Composites;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class CompositeConverter<T> : PgStreamingConverter<T> where T : notnull
 {

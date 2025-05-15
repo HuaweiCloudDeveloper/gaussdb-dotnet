@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal.Postgres;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 static class AdoSerializerHelpers
 {

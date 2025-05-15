@@ -1,7 +1,7 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// Logical Replication Protocol prepare message

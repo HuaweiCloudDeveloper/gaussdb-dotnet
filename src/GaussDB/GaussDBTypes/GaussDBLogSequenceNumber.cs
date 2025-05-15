@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDBTypes;
+namespace HuaweiCloud.GaussDBTypes;
 
 /// <summary>
 /// Wraps a PostgreSQL Write-Ahead Log Sequence Number (see: https://www.postgresql.org/docs/current/datatype-pg-lsn.html)

@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 /// <summary>
 /// Keep track of metrics related to performance.

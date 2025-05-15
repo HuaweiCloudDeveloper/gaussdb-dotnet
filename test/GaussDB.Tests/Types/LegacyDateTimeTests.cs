@@ -1,12 +1,12 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using GaussDB.Internal.ResolverFactories;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.ResolverFactories;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Util.Statics;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 // Since this test suite manipulates TimeZone, it is incompatible with multiplexing
 [NonParallelizable]

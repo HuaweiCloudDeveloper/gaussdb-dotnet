@@ -5,9 +5,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
+using HuaweiCloud.GaussDB.Replication;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 public abstract class SafeReplicationTestBase<TConnection> : TestBase
     where TConnection : ReplicationConnection, new()

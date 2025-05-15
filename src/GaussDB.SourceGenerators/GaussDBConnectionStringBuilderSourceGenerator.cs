@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Scriban;
 
-namespace GaussDB.SourceGenerators;
+namespace HuaweiCloud.GaussDB.SourceGenerators;
 
 [Generator]
 public class GaussDBConnectionStringBuilderSourceGenerator : ISourceGenerator

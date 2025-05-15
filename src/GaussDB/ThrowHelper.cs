@@ -1,10 +1,10 @@
-using GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.BackendMessages;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 static class ThrowHelper
 {

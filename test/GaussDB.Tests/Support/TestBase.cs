@@ -7,11 +7,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.Tests.Support;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests.Support;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public abstract class TestBase
 {

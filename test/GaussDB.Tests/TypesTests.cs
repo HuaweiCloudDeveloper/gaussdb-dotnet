@@ -1,9 +1,9 @@
 using System;
 using System.Net;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 /// <summary>
 /// Tests GaussDBTypes.* independent of a database

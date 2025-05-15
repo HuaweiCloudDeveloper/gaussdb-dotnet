@@ -8,7 +8,7 @@ using System.Transactions;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [NonParallelizable]
 public class DistributedTransactionTests : TestBase

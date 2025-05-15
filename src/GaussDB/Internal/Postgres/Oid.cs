@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace GaussDB.Internal.Postgres;
+namespace HuaweiCloud.GaussDB.Internal.Postgres;
 
 [Experimental(GaussDBDiagnostics.ConvertersExperimental)]
 public readonly struct Oid(uint value) : IEquatable<Oid>

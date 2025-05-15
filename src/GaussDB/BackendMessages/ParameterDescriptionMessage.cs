@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.BackendMessages;
+namespace HuaweiCloud.GaussDB.BackendMessages;
 
 sealed class ParameterDescriptionMessage : IBackendMessage
 {

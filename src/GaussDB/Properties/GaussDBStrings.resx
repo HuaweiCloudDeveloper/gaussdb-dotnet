@@ -73,7 +73,7 @@
         <value>ValidationRootCertificateCallback cannot be used in conjunction with SslClientAuthenticationOptionsCallback overwriting RemoteCertificateValidationCallback; when registering a validation callback, perform whatever validation you require in that callback.</value>
     </data>
     <data name="RecordsNotEnabled" xml:space="preserve">
-        <value>Could not read a PostgreSQL record. If you're attempting to read a record as a .NET tuple, call '{0}' on '{1}' or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/basic.html and the 8.0 release notes for more details). If you're reading a record as a .NET object array using GaussDBSlimDataSourceBuilder, call '{2}'.
+        <value>Could not read a PostgreSQL record. If you're attempting to read a record as a .NET tuple, call '{0}' on '{1}' or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/basic.html and the 8.0 release notes for more details). If you're reading a record as a .NET object array using HuaweiCloud.GaussDBSlimDataSourceBuilder, call '{2}'.
 </value>
     </data>
     <data name="FullTextSearchNotEnabled" xml:space="preserve">

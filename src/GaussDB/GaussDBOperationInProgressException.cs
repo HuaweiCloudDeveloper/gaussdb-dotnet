@@ -1,6 +1,6 @@
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Thrown when trying to use a connection that is already busy performing some other operation.

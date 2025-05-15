@@ -6,7 +6,7 @@ using Microsoft.Data.SqlClient;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 [Config(typeof(Config))]
 public class ConnectionOpenCloseBenchmarks

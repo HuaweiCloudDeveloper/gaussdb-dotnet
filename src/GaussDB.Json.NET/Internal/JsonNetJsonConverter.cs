@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
-namespace GaussDB.Json.NET.Internal;
+namespace HuaweiCloud.GaussDB.Json.NET.Internal;
 
 sealed class JsonNetJsonConverter<T>(bool jsonb, Encoding textEncoding, JsonSerializerSettings settings) : PgStreamingConverter<T?>
 {

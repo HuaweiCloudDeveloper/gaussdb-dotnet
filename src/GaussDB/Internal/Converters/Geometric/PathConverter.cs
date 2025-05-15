@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class PathConverter : PgStreamingConverter<GaussDBPath>
 {

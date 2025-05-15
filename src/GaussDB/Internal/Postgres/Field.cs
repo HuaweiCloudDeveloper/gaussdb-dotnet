@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace GaussDB.Internal.Postgres;
+namespace HuaweiCloud.GaussDB.Internal.Postgres;
 
 /// Base field type shared between tables and composites.
 [Experimental(GaussDBDiagnostics.ConvertersExperimental)]

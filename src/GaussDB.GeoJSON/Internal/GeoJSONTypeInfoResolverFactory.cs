@@ -1,10 +1,10 @@
 using System;
 using GeoJSON.Net;
 using GeoJSON.Net.Geometry;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.GeoJSON.Internal;
+namespace HuaweiCloud.GaussDB.GeoJSON.Internal;
 
 sealed class GeoJSONTypeInfoResolverFactory(GeoJSONOptions options, bool geographyAsDefault, CrsMap? crsMap = null)
     : PgTypeInfoResolverFactory

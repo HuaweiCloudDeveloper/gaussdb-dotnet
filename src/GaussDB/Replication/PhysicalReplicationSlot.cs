@@ -1,6 +1,6 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Wraps a replication slot that uses physical replication.

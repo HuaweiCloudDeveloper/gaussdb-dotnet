@@ -7,12 +7,12 @@ using GeoJSON.Net.Converters;
 using GeoJSON.Net.CoordinateReferenceSystem;
 using GeoJSON.Net.Geometry;
 using Newtonsoft.Json;
-using GaussDB.Tests;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.PluginTests;
+namespace HuaweiCloud.GaussDB.PluginTests;
 
 public class GeoJSONTests : TestBase
 {

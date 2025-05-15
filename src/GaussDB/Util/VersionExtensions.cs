@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 static class VersionExtensions
 {

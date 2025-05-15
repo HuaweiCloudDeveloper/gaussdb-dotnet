@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using GaussDB.Internal.Postgres;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class DateTimeConverterResolver<T> : PgConverterResolver<T>
 {

@@ -9,7 +9,7 @@ using static GaussDB.Tests.TestUtil;
 
 // ReSharper disable MethodHasAsyncOverload
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class DataSourceTests : TestBase
 {

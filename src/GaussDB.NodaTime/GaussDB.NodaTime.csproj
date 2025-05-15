@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <PackageId>HuaweiCloud.GaussDB.NodaTime</PackageId>
+    <RootNamespace>HuaweiCloud.GaussDB.NodaTime</RootNamespace>
     <Authors>Shay Rojansky</Authors>
     <Description>NodaTime plugin for GaussDB, allowing mapping of PostgreSQL date/time types to NodaTime types.</Description>
     <PackageTags>gaussdb;openguass;nodatime;date;time;ado;ado;net;database;sql</PackageTags>

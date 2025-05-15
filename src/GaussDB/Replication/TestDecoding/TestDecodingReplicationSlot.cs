@@ -1,6 +1,6 @@
-using GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDB.Replication.Internal;
 
-namespace GaussDB.Replication.TestDecoding;
+namespace HuaweiCloud.GaussDB.Replication.TestDecoding;
 
 /// <summary>
 /// Acts as a proxy for a logical replication slot

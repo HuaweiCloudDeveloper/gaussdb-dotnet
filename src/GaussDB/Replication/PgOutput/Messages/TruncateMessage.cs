@@ -1,8 +1,8 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 using System.Collections.Generic;
 
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// Logical Replication Protocol truncate message

@@ -1,4 +1,4 @@
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 static class GaussDBDiagnostics
 {

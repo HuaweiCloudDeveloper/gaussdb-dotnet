@@ -7,7 +7,7 @@ using BenchmarkDotNet.Attributes;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable AssignNullToNotNullAttribute.Global
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 public class Prepare
 {

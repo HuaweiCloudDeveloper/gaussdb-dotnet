@@ -8,14 +8,14 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.Internal.ResolverFactories;
-using GaussDB.NameTranslation;
-using GaussDB.Properties;
-using GaussDB.TypeMapping;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.ResolverFactories;
+using HuaweiCloud.GaussDB.NameTranslation;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDB.TypeMapping;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides a simple API for configuring and creating an <see cref="GaussDBDataSource" />, from which database connections can be obtained.

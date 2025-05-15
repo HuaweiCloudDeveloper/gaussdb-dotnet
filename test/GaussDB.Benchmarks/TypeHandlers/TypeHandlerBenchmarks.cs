@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
 #nullable disable
 
-namespace GaussDB.Benchmarks.TypeHandlers;
+namespace HuaweiCloud.GaussDB.Benchmarks.TypeHandlers;
 
 public abstract class TypeHandlerBenchmarks<T>
 {

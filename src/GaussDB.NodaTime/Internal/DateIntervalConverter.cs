@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using GaussDB.Internal;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.NodaTime.Internal;
+namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 
 public class DateIntervalConverter(PgConverter<GaussDBRange<LocalDate>> rangeConverter, bool dateTimeInfinityConversions)
     : PgStreamingConverter<DateInterval>

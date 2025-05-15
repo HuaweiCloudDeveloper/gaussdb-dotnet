@@ -1,4 +1,4 @@
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Decides what to do with the snapshot created during logical slot initialization.

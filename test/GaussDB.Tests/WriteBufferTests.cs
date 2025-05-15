@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)] // Parallel access to a single buffer
 class WriteBufferTests

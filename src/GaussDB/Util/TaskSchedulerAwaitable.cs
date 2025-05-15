@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 readonly struct TaskSchedulerAwaitable(TaskScheduler scheduler) : ICriticalNotifyCompletion
 {

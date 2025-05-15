@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDBTypes;
-using GaussDB.Replication.Internal;
-using GaussDB.Replication.PgOutput;
-using GaussDB.Replication.PgOutput.Messages;
+using HuaweiCloud.GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDB.Replication.PgOutput;
+using HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Extension methods to use <see cref="LogicalReplicationConnection"/> with the pg_output logical decoding plugin.

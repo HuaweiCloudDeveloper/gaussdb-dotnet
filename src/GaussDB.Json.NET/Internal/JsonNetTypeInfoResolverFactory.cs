@@ -1,10 +1,10 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Json.NET.Internal;
+namespace HuaweiCloud.GaussDB.Json.NET.Internal;
 
 sealed class JsonNetTypeInfoResolverFactory(JsonSerializerSettings? settings = null) : PgTypeInfoResolverFactory
 {

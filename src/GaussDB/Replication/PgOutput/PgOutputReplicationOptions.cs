@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// Options to be passed to the pgoutput plugin

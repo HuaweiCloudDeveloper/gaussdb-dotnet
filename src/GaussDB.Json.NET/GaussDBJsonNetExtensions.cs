@@ -1,12 +1,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.TypeMapping;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.TypeMapping;
+using HuaweiCloud.GaussDBTypes;
 using Newtonsoft.Json;
-using GaussDB.Json.NET.Internal;
+using HuaweiCloud.GaussDB.Json.NET.Internal;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Extension allowing adding the Json.NET plugin to an GaussDB type mapper.

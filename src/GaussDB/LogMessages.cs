@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Extensions.Logging;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable SYSLIB1015 // Argument is not referenced from the logging message

@@ -4,13 +4,13 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 class RangeTests : MultiplexingTestBase
 {

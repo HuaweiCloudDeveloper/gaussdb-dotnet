@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using GaussDB.Tests;
-using GaussDB.Tests.Support;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDB.Tests.Support;
 using NUnit.Framework;
 
-namespace GaussDB.DependencyInjection.Tests;
+namespace HuaweiCloud.GaussDB.DependencyInjection.Tests;
 
 [TestFixture(DataSourceMode.Standard)]
 [TestFixture(DataSourceMode.Slim)]

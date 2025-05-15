@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 public class UnixDomainSocket
 {

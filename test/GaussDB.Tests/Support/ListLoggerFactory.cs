@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace GaussDB.Tests.Support;
+namespace HuaweiCloud.GaussDB.Tests.Support;
 
 public class ListLoggerProvider : ILoggerProvider
 {

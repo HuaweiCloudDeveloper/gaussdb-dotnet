@@ -1,7 +1,7 @@
 using System;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDBTypes;
+namespace HuaweiCloud.GaussDBTypes;
 
 /// <summary>
 /// A raw representation of the PostgreSQL interval datatype. Use only when <see cref="TimeSpan" /> or NodaTime

@@ -1,10 +1,10 @@
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// An interface to remotely control the seekable stream for an opened large object on a PostgreSQL server.

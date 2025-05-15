@@ -1,7 +1,7 @@
 using System;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDBTypes;
+namespace HuaweiCloud.GaussDBTypes;
 
 /// <summary>
 /// Indicates that this property or field corresponds to a PostgreSQL field with the specified name

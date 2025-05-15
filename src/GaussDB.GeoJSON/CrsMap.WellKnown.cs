@@ -1,4 +1,4 @@
-namespace GaussDB.GeoJSON;
+namespace HuaweiCloud.GaussDB.GeoJSON;
 
 public partial class CrsMap
 {

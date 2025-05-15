@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public class LTreeTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

@@ -2,7 +2,7 @@ using System;
 using OpenTelemetry.Metrics;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Extension method for setting up GaussDB OpenTelemetry metrics.

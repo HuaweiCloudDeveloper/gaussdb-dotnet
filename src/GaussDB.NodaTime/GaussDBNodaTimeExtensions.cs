@@ -1,8 +1,8 @@
-using GaussDB.NodaTime.Internal;
-using GaussDB.TypeMapping;
+using HuaweiCloud.GaussDB.NodaTime.Internal;
+using HuaweiCloud.GaussDB.TypeMapping;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Extension adding the NodaTime plugin to an GaussDB type mapper.

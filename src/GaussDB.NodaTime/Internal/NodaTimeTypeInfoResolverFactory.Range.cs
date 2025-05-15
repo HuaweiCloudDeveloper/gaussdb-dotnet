@@ -1,11 +1,11 @@
 using System;
 using NodaTime;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDBTypes;
 using static GaussDB.Internal.PgConverterFactory;
 
-namespace GaussDB.NodaTime.Internal;
+namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 
 sealed partial class NodaTimeTypeInfoResolverFactory
 {

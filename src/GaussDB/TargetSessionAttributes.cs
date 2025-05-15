@@ -1,4 +1,4 @@
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 #pragma warning disable RS0016
 

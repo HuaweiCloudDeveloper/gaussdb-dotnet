@@ -1,7 +1,7 @@
 using System;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.BackendMessages;
+namespace HuaweiCloud.GaussDB.BackendMessages;
 
 abstract class AuthenticationRequestMessage : IBackendMessage
 {

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// Represents a streaming tuple containing <see cref="ReplicationValue"/>.

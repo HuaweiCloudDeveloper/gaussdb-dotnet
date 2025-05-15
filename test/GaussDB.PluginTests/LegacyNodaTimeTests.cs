@@ -2,12 +2,12 @@
 using System.Data;
 using System.Threading.Tasks;
 using NodaTime;
-using GaussDB.Tests;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
-using GaussDB.NodaTime.Internal;
+using HuaweiCloud.GaussDB.NodaTime.Internal;
 
-namespace GaussDB.PluginTests;
+namespace HuaweiCloud.GaussDB.PluginTests;
 
 [NonParallelizable] // Since this test suite manipulates an AppContext switch
 public class LegacyNodaTimeTests : TestBase, IDisposable

@@ -1,12 +1,12 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class GaussDBParameterTest : TestBase
 {

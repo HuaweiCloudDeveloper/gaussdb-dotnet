@@ -1,4 +1,4 @@
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Represents a logical replication connection to a PostgreSQL server.

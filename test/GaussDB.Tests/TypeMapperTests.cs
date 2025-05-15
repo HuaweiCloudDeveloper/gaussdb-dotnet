@@ -1,12 +1,12 @@
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class TypeMapperTests : TestBase
 {

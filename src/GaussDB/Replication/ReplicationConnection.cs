@@ -1,5 +1,5 @@
-using GaussDB.BackendMessages;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDBTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,11 +10,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using static GaussDB.Util.Statics;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Defines the core behavior of replication connections and provides the base class for

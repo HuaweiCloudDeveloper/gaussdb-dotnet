@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 sealed class TypeInfoCache<TPgTypeId>(PgSerializerOptions options, bool validatePgTypeIds = true)
     where TPgTypeId : struct

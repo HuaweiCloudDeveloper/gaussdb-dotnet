@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class SizeTests
 {

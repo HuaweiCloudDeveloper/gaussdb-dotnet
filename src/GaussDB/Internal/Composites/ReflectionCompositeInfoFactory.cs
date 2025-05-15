@@ -5,12 +5,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Internal.Composites;
+namespace HuaweiCloud.GaussDB.Internal.Composites;
 
 [RequiresDynamicCode("Serializing arbitrary types can require creating new generic types or methods. This may not work when AOT compiling.")]
 static class ReflectionCompositeInfoFactory

@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [NonParallelizable] // To make sure unobserved tasks from other tests do not leak
 public class TaskTimeoutAndCancellationTest : TestBase

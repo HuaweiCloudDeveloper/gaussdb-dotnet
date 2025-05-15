@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GaussDB.NameTranslation;
-using GaussDB.PostgresTypes;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.NameTranslation;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public class EnumTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase(multiplexingMode)
 {

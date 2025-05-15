@@ -5,14 +5,14 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Schema;
+namespace HuaweiCloud.GaussDB.Schema;
 
 sealed class DbColumnSchemaGenerator
 {

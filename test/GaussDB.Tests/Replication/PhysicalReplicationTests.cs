@@ -2,10 +2,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 [Explicit("Flakiness")]
 public class PhysicalReplicationTests : SafeReplicationTestBase<PhysicalReplicationConnection>

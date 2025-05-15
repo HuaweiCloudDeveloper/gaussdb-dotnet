@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class MoneyConverter<T> : PgBufferedConverter<T> where T : INumberBase<T>
 {

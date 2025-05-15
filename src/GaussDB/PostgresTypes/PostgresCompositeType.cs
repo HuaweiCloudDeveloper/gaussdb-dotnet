@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 /// <summary>
 /// Represents a PostgreSQL composite data type, which can hold multiple fields of varying types in a single column.

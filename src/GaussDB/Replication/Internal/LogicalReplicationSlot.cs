@@ -1,7 +1,7 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 
-namespace GaussDB.Replication.Internal;
+namespace HuaweiCloud.GaussDB.Replication.Internal;
 
 /// <summary>
 /// Contains information about a newly-created logical replication slot.

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDB.Internal.ResolverFactories;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.ResolverFactories;
 
-namespace GaussDB.TypeMapping;
+namespace HuaweiCloud.GaussDB.TypeMapping;
 
 /// <inheritdoc />
 sealed class GlobalTypeMapper : IGaussDBTypeMapper

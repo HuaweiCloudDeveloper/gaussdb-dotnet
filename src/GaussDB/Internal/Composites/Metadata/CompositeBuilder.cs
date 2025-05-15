@@ -1,9 +1,9 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Internal.Composites;
+namespace HuaweiCloud.GaussDB.Internal.Composites;
 
 abstract class CompositeBuilder(StrongBox[] tempBoxes, IReadOnlyList<CompositeFieldInfo> fields)
 {

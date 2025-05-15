@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.BackendMessages;
+namespace HuaweiCloud.GaussDB.BackendMessages;
 
 abstract class CopyResponseMessageBase : IBackendMessage
 {

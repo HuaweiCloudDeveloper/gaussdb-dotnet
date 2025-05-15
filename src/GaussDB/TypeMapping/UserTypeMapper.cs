@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using GaussDB.Internal;
-using GaussDB.Internal.Composites;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
-using GaussDB.NameTranslation;
-using GaussDB.PostgresTypes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Composites;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.NameTranslation;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.TypeMapping;
+namespace HuaweiCloud.GaussDB.TypeMapping;
 
 /// <summary>
 /// The base class for user type mappings.

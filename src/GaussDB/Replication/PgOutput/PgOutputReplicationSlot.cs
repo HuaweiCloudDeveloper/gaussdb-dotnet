@@ -1,6 +1,6 @@
-using GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDB.Replication.Internal;
 
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// Acts as a proxy for a logical replication slot initialized for for the logical streaming replication protocol

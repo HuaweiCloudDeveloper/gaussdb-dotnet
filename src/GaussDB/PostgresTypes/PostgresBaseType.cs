@@ -1,7 +1,7 @@
 
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 /// <summary>
 /// Represents a PostgreSQL base data type, which is a simple scalar value.

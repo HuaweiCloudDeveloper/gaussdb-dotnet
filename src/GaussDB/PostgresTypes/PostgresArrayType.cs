@@ -1,6 +1,6 @@
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 /// <summary>
 /// Represents a PostgreSQL array data type, which can hold several multiple values in a single column.

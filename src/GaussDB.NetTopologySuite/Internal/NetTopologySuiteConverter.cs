@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.NetTopologySuite.Internal;
+namespace HuaweiCloud.GaussDB.NetTopologySuite.Internal;
 
 sealed class NetTopologySuiteConverter<T> : PgStreamingConverter<T>
     where T : Geometry

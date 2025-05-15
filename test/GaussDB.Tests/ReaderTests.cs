@@ -8,17 +8,17 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
-using GaussDB.Tests.Support;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Tests.Support;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [TestFixture(MultiplexingMode.NonMultiplexing, CommandBehavior.Default)]
 [TestFixture(MultiplexingMode.Multiplexing, CommandBehavior.Default)]

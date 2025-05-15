@@ -1,7 +1,7 @@
 using System;
 using System.Data.Common;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// A factory to create instances of various GaussDB objects.

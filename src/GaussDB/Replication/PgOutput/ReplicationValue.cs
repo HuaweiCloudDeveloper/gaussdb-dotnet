@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.PostgresTypes;
 
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// Represents a column value in a logical replication session.

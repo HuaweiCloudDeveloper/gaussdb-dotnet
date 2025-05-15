@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using GaussDB.GeoJSON.Internal;
+using HuaweiCloud.GaussDB.GeoJSON.Internal;
 
-namespace GaussDB.GeoJSON;
+namespace HuaweiCloud.GaussDB.GeoJSON;
 
 /// <summary>
 /// Extensions for getting a CrsMap from a database.

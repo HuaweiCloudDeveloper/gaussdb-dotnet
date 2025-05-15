@@ -1,5 +1,5 @@
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class UInt32Converter : PgBufferedConverter<uint>
 {

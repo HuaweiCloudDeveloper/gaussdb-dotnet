@@ -8,14 +8,14 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
-using GaussDB.TypeMapping;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.TypeMapping;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 ///<summary>
 /// This class represents a parameter to a command that will be sent to server

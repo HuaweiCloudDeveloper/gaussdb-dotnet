@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class IPAddressConverter : PgBufferedConverter<IPAddress>
 {

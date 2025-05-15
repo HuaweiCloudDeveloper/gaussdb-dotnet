@@ -1,11 +1,11 @@
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 static class GaussDBActivitySource
 {

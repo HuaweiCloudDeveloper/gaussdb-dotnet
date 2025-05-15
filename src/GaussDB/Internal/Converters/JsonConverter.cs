@@ -9,7 +9,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class JsonConverter<T, TBase> : PgStreamingConverter<T?> where T: TBase?
 {

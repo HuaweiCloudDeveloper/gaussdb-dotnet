@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDBTypes;
-using GaussDB.Replication.Internal;
-using GaussDB.Replication.TestDecoding;
+using HuaweiCloud.GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDB.Replication.TestDecoding;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Extension methods to use <see cref="LogicalReplicationConnection"/> with the

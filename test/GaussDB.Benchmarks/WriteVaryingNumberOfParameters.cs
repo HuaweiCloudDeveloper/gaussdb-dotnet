@@ -1,8 +1,8 @@
 using System.Linq;
 using BenchmarkDotNet.Attributes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Benchmarks.Types;
+namespace HuaweiCloud.GaussDB.Benchmarks.Types;
 
 public class WriteVaryingNumberOfParameters
 {

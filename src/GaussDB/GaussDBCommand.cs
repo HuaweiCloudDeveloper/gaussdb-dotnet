@@ -8,18 +8,18 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using static GaussDB.Util.Statics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.Properties;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Properties;
 using System.Collections;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Represents a SQL statement or function (stored procedure) to execute

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GaussDB.Replication.TestDecoding;
+namespace HuaweiCloud.GaussDB.Replication.TestDecoding;
 
 /// <summary>
 /// Options to be passed to the test_decoding plugin

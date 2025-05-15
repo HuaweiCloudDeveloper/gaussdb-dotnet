@@ -2,10 +2,10 @@ using System;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.NetTopologySuite.Internal;
+namespace HuaweiCloud.GaussDB.NetTopologySuite.Internal;
 
 sealed class NetTopologySuiteTypeInfoResolverFactory(
     CoordinateSequenceFactory? coordinateSequenceFactory,

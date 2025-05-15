@@ -1,4 +1,4 @@
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// A component which translates a CLR name (e.g. SomeClass) into a database name (e.g. some_class)

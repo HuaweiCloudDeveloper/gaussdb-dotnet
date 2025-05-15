@@ -1,7 +1,7 @@
 using NodaTime;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.NodaTime.Internal;
+namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 
 sealed class LocalTimeConverter : PgBufferedConverter<LocalTime>
 {

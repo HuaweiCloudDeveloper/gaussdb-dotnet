@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal.Postgres;
-using GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.PostgresTypes;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 [Experimental(GaussDBDiagnostics.ConvertersExperimental)]
 #if NET9_0_OR_GREATER

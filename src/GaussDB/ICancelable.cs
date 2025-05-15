@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 interface ICancelable : IDisposable, IAsyncDisposable
 {

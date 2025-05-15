@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using GeoJSON.Net;
 using GeoJSON.Net.CoordinateReferenceSystem;
 using GeoJSON.Net.Geometry;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.GeoJSON.Internal;
+namespace HuaweiCloud.GaussDB.GeoJSON.Internal;
 
 sealed class GeoJSONConverter<T> : PgStreamingConverter<T> where T : IGeoJSONObject
 {

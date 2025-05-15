@@ -2,9 +2,9 @@ using System;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Properties;
+using HuaweiCloud.GaussDB.Properties;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class GaussDBDataSourceBatch : GaussDBBatch
 {

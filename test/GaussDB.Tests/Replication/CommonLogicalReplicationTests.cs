@@ -2,11 +2,11 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using GaussDB.Replication;
-using GaussDB.Replication.Internal;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Replication;
+using HuaweiCloud.GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Tests.Replication;
+namespace HuaweiCloud.GaussDB.Tests.Replication;
 
 /// <summary>
 /// Tests for common logical replication functionality.

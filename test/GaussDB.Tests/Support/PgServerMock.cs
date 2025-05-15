@@ -5,12 +5,12 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using NUnit.Framework;
 
-namespace GaussDB.Tests.Support;
+namespace HuaweiCloud.GaussDB.Tests.Support;
 
 class PgServerMock : IDisposable
 {

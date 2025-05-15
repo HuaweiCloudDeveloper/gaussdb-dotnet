@@ -1,5 +1,5 @@
-using GaussDB.Internal;
-using GaussDB.Tests.Support;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Tests.Support;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using GaussDB.Properties;
+using HuaweiCloud.GaussDB.Properties;
 using static GaussDB.Tests.Support.MockState;
 using static GaussDB.Tests.TestUtil;
 using IsolationLevel = System.Transactions.IsolationLevel;
 using TransactionStatus = GaussDB.Internal.TransactionStatus;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 #pragma warning disable CS0618
 

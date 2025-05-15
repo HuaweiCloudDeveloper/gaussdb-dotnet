@@ -2,12 +2,12 @@
 using System.Data;
 using System.Threading.Tasks;
 using NodaTime;
-using GaussDB.Tests;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 
-namespace GaussDB.PluginTests;
+namespace HuaweiCloud.GaussDB.PluginTests;
 
 [TestFixture(false)]
 #if DEBUG

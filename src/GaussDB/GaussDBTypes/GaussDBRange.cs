@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDBTypes;
+namespace HuaweiCloud.GaussDBTypes;
 
 /// <summary>
 /// Represents a PostgreSQL range type.

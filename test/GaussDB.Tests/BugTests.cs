@@ -1,6 +1,6 @@
-using GaussDB.BackendMessages;
-using GaussDB.Tests.Support;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Tests.Support;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using System;
 using System.Data;
@@ -8,10 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class BugTests : TestBase
 {

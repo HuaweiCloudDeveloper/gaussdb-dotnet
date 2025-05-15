@@ -1,7 +1,7 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// The common base class for all streaming replication messages
@@ -22,7 +22,7 @@ public abstract class ReplicationMessage
     /// The server's system clock at the time this message was transmitted, as microseconds since midnight on 2000-01-01.
     /// </summary>
     /// <remarks>
-    /// Since the client using GaussDB and the server may be located in different time zones,
+    /// Since the client using HuaweiCloud.GaussDB and the server may be located in different time zones,
     /// as of GaussDB 7.0 this value is no longer converted to local time but keeps its original value in UTC.
     /// You can check <see cref="DateTime.Kind"/> if you don't want to introduce behavior depending on GaussDB versions.
     /// </remarks>

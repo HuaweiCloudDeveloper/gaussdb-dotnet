@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal.ResolverFactories;
+namespace HuaweiCloud.GaussDB.Internal.ResolverFactories;
 
 [RequiresUnreferencedCode("Tupled record resolver may perform reflection on trimmed tuple types.")]
 [RequiresDynamicCode("Tupled records need to construct a generic converter for a statically unknown (value)tuple type.")]

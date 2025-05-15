@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <PackageId>HuaweiCloud.GaussDB.NetTopologySuite</PackageId>
+    <RootNamespace>HuaweiCloud.GaussDB.NetTopologySuite</RootNamespace>
     <Authors>gaussdb-dotnet team</Authors>
     <Description>NetTopologySuite plugin for GaussDB, allowing mapping of PostGIS geometry types to NetTopologySuite types.</Description>
     <PackageTags>gaussdb;openguass;postgis;spatial;nettopologysuite;nts;ado;ado.net;database;sql</PackageTags>

@@ -1,4 +1,4 @@
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// Contains information about a newly-created replication slot.

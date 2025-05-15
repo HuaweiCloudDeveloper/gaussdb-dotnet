@@ -1,9 +1,9 @@
 using System;
 using System.Data.Common;
-using GaussDB.PostgresTypes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Schema;
+namespace HuaweiCloud.GaussDB.Schema;
 
 /// <summary>
 /// Provides schema information about a column.

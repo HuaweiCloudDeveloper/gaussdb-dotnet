@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Internal.Composites;
+namespace HuaweiCloud.GaussDB.Internal.Composites;
 
 sealed class CompositeInfo<T>
 {

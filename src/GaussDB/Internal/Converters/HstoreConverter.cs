@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class HstoreConverter<T>(Encoding encoding, Func<ICollection<KeyValuePair<string, string?>>, T>? convert = null)
     : PgStreamingConverter<T>

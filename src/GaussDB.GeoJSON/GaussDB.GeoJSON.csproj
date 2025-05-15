@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <PackageId>HuaweiCloud.GaussDB.GeoJSON</PackageId>
+    <RootNamespace>HuaweiCloud.GaussDB.GeoJSON</RootNamespace>
     <Authors>gaussdb-dotnet team</Authors>
     <Description>GeoJSON plugin for GaussDB, allowing mapping of PostGIS geometry types to GeoJSON types.</Description>
     <PackageTags>gaussdb;openguass;postgis;geojson;spatial;ado;ado.net;database;sql</PackageTags>

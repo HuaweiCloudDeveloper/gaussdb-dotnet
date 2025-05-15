@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 readonly struct PostgresFacets : IEquatable<PostgresFacets>
 {

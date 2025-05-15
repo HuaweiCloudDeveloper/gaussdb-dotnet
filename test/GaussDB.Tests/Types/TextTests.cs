@@ -3,11 +3,11 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 /// <summary>
 /// Tests on PostgreSQL text

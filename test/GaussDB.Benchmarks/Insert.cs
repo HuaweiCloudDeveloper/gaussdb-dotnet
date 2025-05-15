@@ -1,8 +1,8 @@
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 public class Insert
 {

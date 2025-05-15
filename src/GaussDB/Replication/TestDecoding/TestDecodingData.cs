@@ -1,7 +1,7 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using System;
 
-namespace GaussDB.Replication.TestDecoding;
+namespace HuaweiCloud.GaussDB.Replication.TestDecoding;
 
 /// <summary>
 /// Text representations of PostgreSQL WAL operations decoded by the "test_decoding" plugin. See

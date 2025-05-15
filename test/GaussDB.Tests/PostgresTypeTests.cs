@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class PostgresTypeTests : TestBase
 {

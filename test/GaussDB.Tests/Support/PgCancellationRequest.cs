@@ -1,7 +1,7 @@
 using System.IO;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Tests.Support;
+namespace HuaweiCloud.GaussDB.Tests.Support;
 
 class PgCancellationRequest(GaussDBReadBuffer readBuffer, GaussDBWriteBuffer writeBuffer, Stream stream, int processId, int secret)
 {

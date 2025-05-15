@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Diagnostics.Tracing;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class GaussDBEventSource : EventSource
 {

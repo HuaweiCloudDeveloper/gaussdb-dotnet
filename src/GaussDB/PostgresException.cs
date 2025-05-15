@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// The exception that is thrown when the PostgreSQL backend reports errors (e.g. query

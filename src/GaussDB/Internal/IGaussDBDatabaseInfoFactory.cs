@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 /// <summary>
 /// A factory which get generate instances of <see cref="GaussDBDatabaseInfo"/>, which describe a database

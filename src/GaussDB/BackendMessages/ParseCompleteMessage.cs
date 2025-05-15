@@ -1,4 +1,4 @@
-namespace GaussDB.BackendMessages;
+namespace HuaweiCloud.GaussDB.BackendMessages;
 
 sealed class ParseCompleteMessage : IBackendMessage
 {

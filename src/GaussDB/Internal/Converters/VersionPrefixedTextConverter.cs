@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 sealed class VersionPrefixedTextConverter<T>(byte versionPrefix, PgConverter<T> textConverter)
     : PgStreamingConverter<T>(textConverter.DbNullPredicateKind is DbNullPredicate.Custom)

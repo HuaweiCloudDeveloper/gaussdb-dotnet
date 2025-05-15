@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 /// <summary>
 /// A message representing a section of the WAL data stream.

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Options for configuring GaussDB type loading.

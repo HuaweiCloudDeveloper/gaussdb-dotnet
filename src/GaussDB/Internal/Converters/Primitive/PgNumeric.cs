@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using static GaussDB.Internal.Converters.PgNumeric.Builder;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 readonly struct PgNumeric(ArraySegment<short> digits, short weight, short sign, short scale)
 {

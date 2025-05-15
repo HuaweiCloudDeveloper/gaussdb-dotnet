@@ -1,9 +1,9 @@
 using System;
 using NodaTime;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 using static GaussDB.NodaTime.Internal.NodaTimeUtils;
 
-namespace GaussDB.NodaTime.Internal;
+namespace HuaweiCloud.GaussDB.NodaTime.Internal;
 
 sealed class InstantConverter(bool dateTimeInfinityConversions) : PgBufferedConverter<Instant>
 {

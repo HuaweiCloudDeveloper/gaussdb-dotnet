@@ -6,12 +6,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GaussDB.Internal.Converters;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 

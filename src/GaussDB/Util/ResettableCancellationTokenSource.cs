@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using static System.Threading.Timeout;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 /// <summary>
 /// A wrapper around <see cref="CancellationTokenSource"/> to simplify reset management.

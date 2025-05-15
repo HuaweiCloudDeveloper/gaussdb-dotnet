@@ -3,7 +3,7 @@ using System.Data;
 using System.Linq;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 class SqlQueryParserTests
 {

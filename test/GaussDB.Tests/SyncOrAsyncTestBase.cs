@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 [TestFixture(SyncOrAsync.Sync)]
 [TestFixture(SyncOrAsync.Async)]

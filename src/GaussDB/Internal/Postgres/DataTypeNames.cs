@@ -1,6 +1,6 @@
 using static GaussDB.Internal.Postgres.DataTypeName;
 
-namespace GaussDB.Internal.Postgres;
+namespace HuaweiCloud.GaussDB.Internal.Postgres;
 
 /// <summary>
 /// Well-known PostgreSQL data type names.

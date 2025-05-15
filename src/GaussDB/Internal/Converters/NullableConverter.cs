@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 // NULL writing is always responsibility of the caller writing the length, so there is not much we do here.
 /// Special value converter to be able to use struct converters as System.Nullable converters, it delegates all behavior to the effective converter.

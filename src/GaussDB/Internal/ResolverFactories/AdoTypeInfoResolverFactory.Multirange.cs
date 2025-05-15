@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
-using GaussDB.Util;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Util;
+using HuaweiCloud.GaussDBTypes;
 using static GaussDB.Internal.PgConverterFactory;
 
-namespace GaussDB.Internal.ResolverFactories;
+namespace HuaweiCloud.GaussDB.Internal.ResolverFactories;
 
 sealed partial class AdoTypeInfoResolverFactory
 {

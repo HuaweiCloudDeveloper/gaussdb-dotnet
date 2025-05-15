@@ -1,5 +1,5 @@
 
-namespace GaussDB.GeoJSON;
+namespace HuaweiCloud.GaussDB.GeoJSON;
 
 /// <summary>
 /// A map of entries that map the authority to the inclusive range of SRID.

@@ -2,7 +2,7 @@ using System;
 using System.Data.Common;
 using AdoNet.Specification.Tests;
 
-namespace GaussDB.Specification.Tests;
+namespace HuaweiCloud.GaussDB.Specification.Tests;
 
 public class GaussDBDbFactoryFixture : IDbFactoryFixture
 {

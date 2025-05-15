@@ -1,7 +1,7 @@
 using System;
-using GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Internal.Postgres;
 
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 /// <summary>
 /// Represents a PostgreSQL data type, such as int4 or text, as discovered from pg_type.

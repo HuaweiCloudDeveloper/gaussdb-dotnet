@@ -2,16 +2,16 @@
 using System.Data;
 using System.Threading.Tasks;
 using NodaTime;
-using GaussDB.NodaTime.Properties;
-using GaussDB.Tests;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.NodaTime.Properties;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable AccessToDisposedClosure
 
-namespace GaussDB.PluginTests;
+namespace HuaweiCloud.GaussDB.PluginTests;
 
 public class NodaTimeTests : MultiplexingTestBase, IDisposable
 {

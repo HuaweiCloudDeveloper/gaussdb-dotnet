@@ -1,9 +1,9 @@
 using NetTopologySuite.Geometries;
-using GaussDB.NetTopologySuite.Internal;
-using GaussDB.TypeMapping;
+using HuaweiCloud.GaussDB.NetTopologySuite.Internal;
+using HuaweiCloud.GaussDB.TypeMapping;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Extension allowing adding the NetTopologySuite plugin to an GaussDB type mapper.

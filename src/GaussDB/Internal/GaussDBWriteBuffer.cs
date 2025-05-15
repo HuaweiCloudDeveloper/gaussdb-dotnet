@@ -7,10 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Util;
 using static System.Threading.Timeout;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 /// <summary>
 /// A buffer used by GaussDB to write data to the socket efficiently.

@@ -6,10 +6,10 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using GaussDB.Internal;
-using GaussDB.Replication;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Replication;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides a simple way to create and manage the contents of connection strings used by

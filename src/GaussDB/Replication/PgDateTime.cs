@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.Replication;
+namespace HuaweiCloud.GaussDB.Replication;
 
 static class PgDateTime
 {

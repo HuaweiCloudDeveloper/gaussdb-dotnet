@@ -1,7 +1,7 @@
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 
 // ReSharper disable once CheckNamespace
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 #pragma warning disable CS0618 // GaussDBCidr is obsolete
 sealed class GaussDBCidrConverter : PgBufferedConverter<GaussDBCidr>

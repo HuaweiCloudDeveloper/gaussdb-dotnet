@@ -17,13 +17,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Util;
 using static GaussDB.Util.Statics;
 using Microsoft.Extensions.Logging;
-using GaussDB.Properties;
+using HuaweiCloud.GaussDB.Properties;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 /// <summary>
 /// Represents a connection to a PostgreSQL backend. Unlike GaussDBConnection objects, which are

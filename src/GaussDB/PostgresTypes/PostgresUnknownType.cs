@@ -1,4 +1,4 @@
-namespace GaussDB.PostgresTypes;
+namespace HuaweiCloud.GaussDB.PostgresTypes;
 
 /// <summary>
 /// Represents a PostgreSQL data type that isn't known to GaussDB and cannot be handled.

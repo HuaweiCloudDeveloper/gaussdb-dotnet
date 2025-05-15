@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 //todo: 不支持LISTEN、NOTIFY
 /*public class NotificationTests : TestBase
 {

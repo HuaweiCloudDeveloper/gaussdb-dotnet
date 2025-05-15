@@ -2,7 +2,7 @@
 
 /* Disabling for now: unmapped composite support is probably going away, and there's a good chance this
  * class can be simplified to a certain extent
-namespace GaussDB.Benchmarks.TypeHandlers
+namespace HuaweiCloud.GaussDB.Benchmarks.TypeHandlers
 {
     public abstract class Composite<T> : TypeHandlerBenchmarks<T>
     {

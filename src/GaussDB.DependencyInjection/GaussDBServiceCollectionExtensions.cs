@@ -2,7 +2,7 @@ using System;
 using System.Data.Common;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

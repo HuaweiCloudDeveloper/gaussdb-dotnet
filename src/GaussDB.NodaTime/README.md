@@ -5,7 +5,7 @@ This package is an GaussDB plugin which allows you to use the [NodaTime](https:/
 To use the NodaTime plugin, add a dependency on this package and create a GaussDBDataSource. Once this is done, you can use NodaTime types when interacting with PostgreSQL, just as you would use e.g. `DateTime`:
 
 ```csharp
-using GaussDB;
+using HuaweiCloud.GaussDB;
 
 var dataSourceBuilder = new GaussDBDataSourceBuilder(ConnectionString);
 

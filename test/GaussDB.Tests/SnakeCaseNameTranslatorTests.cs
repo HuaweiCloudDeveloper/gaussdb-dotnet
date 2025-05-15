@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using GaussDB.NameTranslation;
+using HuaweiCloud.GaussDB.NameTranslation;
 using NUnit.Framework;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 public class SnakeCaseNameTranslatorTests
 {

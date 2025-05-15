@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <PackageId>HuaweiCloud.GaussDB.JSON.NET</PackageId>
+    <RootNamespace>HuaweiCloud.GaussDB.JSON.NET</RootNamespace>
     <Authors>gaussdb-dotnet team</Authors>
     <Description>Json.NET plugin for GaussDB, allowing transparent serialization/deserialization of JSON objects directly to and from the database.</Description>
     <PackageTags>gaussdb;openguass;json;postgres;ado;ado.net;database;sql</PackageTags>

@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.Internal.Converters;
+namespace HuaweiCloud.GaussDB.Internal.Converters;
 
 static class PgTimestamp
 {

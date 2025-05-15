@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.Replication.Internal;
-using GaussDB.Replication.PgOutput.Messages;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Replication.Internal;
+using HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 sealed class PgOutputAsyncEnumerable : IAsyncEnumerable<PgOutputReplicationMessage>
 {

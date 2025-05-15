@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using GaussDB.NameTranslation;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.NameTranslation;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 public partial class CompositeHandlerTests : TestBase
 {

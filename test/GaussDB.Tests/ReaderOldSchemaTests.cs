@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.Tests;
+namespace HuaweiCloud.GaussDB.Tests;
 
 /// <summary>
 /// This tests the .NET Framework DbDataReader schema/metadata API, which returns DataTable.

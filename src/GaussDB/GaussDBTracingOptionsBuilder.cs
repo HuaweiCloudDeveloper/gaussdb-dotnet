@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// A builder to configure GaussDB's support for OpenTelemetry tracing.

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Geometries.Implementation;
-using GaussDB.Tests;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Tests;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Tests.TestUtil;
 
-namespace GaussDB.PluginTests;
+namespace HuaweiCloud.GaussDB.PluginTests;
 
 public class NetTopologySuiteTests : TestBase
 {

@@ -14,12 +14,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.Extensions.Logging;
-using GaussDB.Internal;
-using GaussDB.TypeMapping;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.TypeMapping;
+using HuaweiCloud.GaussDB.Util;
 using IsolationLevel = System.Data.IsolationLevel;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// This class represents a connection to a PostgreSQL server.

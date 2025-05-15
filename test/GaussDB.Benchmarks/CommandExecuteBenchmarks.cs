@@ -6,7 +6,7 @@ using BenchmarkDotNet.Configs;
 
 // ReSharper disable UnusedMember.Global
 
-namespace GaussDB.Benchmarks;
+namespace HuaweiCloud.GaussDB.Benchmarks;
 
 [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 [Config(typeof(Config))]

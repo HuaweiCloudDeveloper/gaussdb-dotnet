@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// Provides lookup for a pool based on a connection string.

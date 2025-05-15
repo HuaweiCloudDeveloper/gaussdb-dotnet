@@ -5,10 +5,10 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <inheritdoc/>
 public sealed class GaussDBBatchCommand : DbBatchCommand

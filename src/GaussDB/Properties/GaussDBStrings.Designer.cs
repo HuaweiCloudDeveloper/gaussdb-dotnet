@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GaussDB.Properties {
+namespace HuaweiCloud.GaussDB.Properties {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,15 +22,15 @@ namespace GaussDB.Properties {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class GaussDBStrings {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal GaussDBStrings() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -44,7 +44,7 @@ namespace GaussDB.Properties {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -58,7 +58,7 @@ namespace GaussDB.Properties {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; must be positive..
         /// </summary>
@@ -67,7 +67,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("ArgumentMustBePositive", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Arrays aren&apos;t enabled; please call {0} on {1} to enable arrays..
         /// </summary>
@@ -76,7 +76,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("ArraysNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot read infinity value since GaussDB.DisableDateTimeInfinityConversions is enabled..
         /// </summary>
@@ -85,7 +85,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotReadInfinityValue", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot read interval values with non-zero months as TimeSpan, since that type doesn&apos;t support months. Consider using NodaTime Period which better corresponds to PostgreSQL interval, or read the value as GaussDBInterval, or transform the interval to not contain months or years in PostgreSQL before reading it..
         /// </summary>
@@ -94,7 +94,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotReadIntervalWithMonthsAsTimeSpan", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to When registering a password provider, a password or password file may not be set..
         /// </summary>
@@ -103,7 +103,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotSetBothPasswordProviderAndPassword", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Multiple kinds of password providers were found, only one kind may be configured per DbDataSource..
         /// </summary>
@@ -112,7 +112,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotSetMultiplePasswordProviderKinds", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to When creating a multi-host data source, TargetSessionAttributes cannot be specified. Create without TargetSessionAttributes, and then obtain DataSource wrappers from it. Consult the docs for more information..
         /// </summary>
@@ -121,7 +121,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotSpecifyTargetSessionAttributes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to RootCertificate cannot be used in conjunction with SslClientAuthenticationOptionsCallback overwriting RemoteCertificateValidationCallback; when registering a validation callback, perform whatever validation you require in that callback..
         /// </summary>
@@ -130,7 +130,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotUseSslRootCertificateWithCustomValidationCallback", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to SslMode.{0} cannot be used in conjunction with SslClientAuthenticationOptionsCallback overwriting RemoteCertificateValidationCallback; when registering a validation callback, perform whatever validation you require in that callback..
         /// </summary>
@@ -139,7 +139,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotUseSslVerifyWithCustomValidationCallback", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ValidationRootCertificateCallback cannot be used in conjunction with SslClientAuthenticationOptionsCallback overwriting RemoteCertificateValidationCallback; when registering a validation callback, perform whatever validation you require in that callback..
         /// </summary>
@@ -148,7 +148,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("CannotUseValidationRootCertificateCallbackWithCustomValidationCallback", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Type &apos;{0}&apos; required dynamic JSON serialization, which requires an explicit opt-in; call &apos;{1}&apos; on &apos;{2}&apos; or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/json.html and the 8.0 release notes for more details). Alternatively, if you meant to use Newtonsoft JSON.NET instead of System.Text.Json, call UseJsonNet() instead.
         ///.
@@ -158,7 +158,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("DynamicJsonNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Full-text search isn&apos;t enabled; please call {0} on {1} to enable full-text search..
         /// </summary>
@@ -167,7 +167,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("FullTextSearchNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Integrated security hasn&apos;t been enabled; please call {0} on GaussDBSlimDataSourceBuilder to enable it..
         /// </summary>
@@ -176,7 +176,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("IntegratedSecurityDisabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Ltree isn&apos;t enabled; please call {0} on {1} to enable LTree..
         /// </summary>
@@ -185,7 +185,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("LTreeNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Multiranges aren&apos;t enabled; please call {0} on {1} to enable multiranges..
         /// </summary>
@@ -194,7 +194,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("MultirangesNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No multirange type could be found in the database for subtype {0}..
         /// </summary>
@@ -203,7 +203,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("NoMultirangeTypeFound", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connection and transaction access is not supported on batches created from DbDataSource..
         /// </summary>
@@ -212,7 +212,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("NotSupportedOnDataSourceBatch", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connection and transaction access is not supported on commands created from DbDataSource..
         /// </summary>
@@ -221,7 +221,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("NotSupportedOnDataSourceCommand", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The right type of password provider (sync or async) was not found..
         /// </summary>
@@ -230,7 +230,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("PasswordProviderMissing", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to When using CommandType.StoredProcedure, all positional parameters must come before named parameters..
         /// </summary>
@@ -239,7 +239,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("PositionalParameterAfterNamed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Ranges aren&apos;t enabled; please call {0} on {1} to enable ranges..
         /// </summary>
@@ -248,9 +248,9 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("RangesNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Could not read a PostgreSQL record. If you&apos;re attempting to read a record as a .NET tuple, call &apos;{0}&apos; on &apos;{1}&apos; or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/basic.html and the 8.0 release notes for more details). If you&apos;re reading a record as a .NET object array using GaussDBSlimDataSourceBuilder, call &apos;{2}&apos;.
+        ///   Looks up a localized string similar to Could not read a PostgreSQL record. If you&apos;re attempting to read a record as a .NET tuple, call &apos;{0}&apos; on &apos;{1}&apos; or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/basic.html and the 8.0 release notes for more details). If you&apos;re reading a record as a .NET object array using HuaweiCloud.GaussDBSlimDataSourceBuilder, call &apos;{2}&apos;.
         ///.
         /// </summary>
         internal static string RecordsNotEnabled {
@@ -258,7 +258,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("RecordsNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to SslClientAuthenticationOptionsCallback is not supported together with UserCertificateValidationCallback and ClientCertificatesCallback.
         /// </summary>
@@ -267,7 +267,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("SslClientAuthenticationOptionsCallbackWithOtherCallbacksNotSupported", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Both sync and async connection initializers must be provided..
         /// </summary>
@@ -276,7 +276,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("SyncAndAsyncConnectionInitializersRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Both sync and async password providers must be provided..
         /// </summary>
@@ -285,7 +285,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("SyncAndAsyncPasswordProvidersRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot write DateTime with Kind=UTC to PostgreSQL type &apos;{0}&apos;, consider using &apos;{1}&apos;. Note that it&apos;s not possible to mix DateTimes with different Kinds in an array, range, or multirange..
         /// </summary>
@@ -294,7 +294,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("TimestampNoDateTimeUtc", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot write DateTime with Kind={0} to PostgreSQL type &apos;{1}&apos;, only UTC is supported. Note that it&apos;s not possible to mix DateTimes with different Kinds in an array, range, or multirange..
         /// </summary>
@@ -303,7 +303,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("TimestampTzNoDateTimeUnspecified", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Transport security hasn&apos;t been enabled; please call {0} on GaussDBSlimDataSourceBuilder to enable it..
         /// </summary>
@@ -312,7 +312,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("TransportSecurityDisabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reading and writing unmapped enums requires an explicit opt-in; call &apos;{0}&apos; on &apos;{1}&apos; or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/enums_and_composites.html and the 8.0 release notes for more details)..
         /// </summary>
@@ -321,7 +321,7 @@ namespace GaussDB.Properties {
                 return ResourceManager.GetString("UnmappedEnumsNotEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reading and writing unmapped ranges and multiranges requires an explicit opt-in; call &apos;{0}&apos; on &apos;{1}&apos; or GaussDBConnection.GlobalTypeMapper (see https://www.gaussdb.org/doc/types/ranges.html and the 8.0 release notes for more details)..
         /// </summary>

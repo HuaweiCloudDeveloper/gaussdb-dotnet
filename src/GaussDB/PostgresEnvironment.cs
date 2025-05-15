@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 static class PostgresEnvironment
 {

@@ -1,4 +1,4 @@
-namespace GaussDB.Replication.PgOutput.Messages;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
 
 /// <summary>
 /// Represents a column in a Logical Replication Protocol relation message

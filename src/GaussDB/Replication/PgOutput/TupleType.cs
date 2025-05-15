@@ -1,4 +1,4 @@
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 enum TupleType : byte
 {

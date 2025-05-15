@@ -1,6 +1,6 @@
 using System;
 
-namespace GaussDB.NameTranslation;
+namespace HuaweiCloud.GaussDB.NameTranslation;
 
 /// <summary>
 /// A name translator which preserves CLR names (e.g. SomeClass) when mapping names to the database.

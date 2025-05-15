@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
-using GaussDB.Internal;
+using HuaweiCloud.GaussDB.Internal;
 
-namespace GaussDB.Util;
+namespace HuaweiCloud.GaussDB.Util;
 
 /// <summary>
 /// Represents a timeout that will expire at some point.

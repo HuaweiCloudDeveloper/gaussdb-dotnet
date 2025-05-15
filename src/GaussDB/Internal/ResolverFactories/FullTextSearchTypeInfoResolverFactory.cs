@@ -1,10 +1,10 @@
 using System;
-using GaussDB.Internal.Converters;
-using GaussDB.Internal.Postgres;
-using GaussDB.Properties;
-using GaussDBTypes;
+using HuaweiCloud.GaussDB.Internal.Converters;
+using HuaweiCloud.GaussDB.Internal.Postgres;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDBTypes;
 
-namespace GaussDB.Internal.ResolverFactories;
+namespace HuaweiCloud.GaussDB.Internal.ResolverFactories;
 
 sealed class FullTextSearchTypeInfoResolverFactory : PgTypeInfoResolverFactory
 {

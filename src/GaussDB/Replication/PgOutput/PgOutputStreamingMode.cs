@@ -1,4 +1,4 @@
-namespace GaussDB.Replication.PgOutput;
+namespace HuaweiCloud.GaussDB.Replication.PgOutput;
 
 /// <summary>
 /// Option to enable streaming of in-progress transactions.

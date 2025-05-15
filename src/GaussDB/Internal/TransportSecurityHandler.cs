@@ -2,10 +2,10 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using GaussDB.Properties;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Properties;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB.Internal;
+namespace HuaweiCloud.GaussDB.Internal;
 
 class TransportSecurityHandler
 {

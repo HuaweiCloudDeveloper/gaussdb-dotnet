@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 sealed class SqlQueryParser
 {

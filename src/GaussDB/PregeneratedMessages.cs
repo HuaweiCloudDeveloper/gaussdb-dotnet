@@ -1,9 +1,9 @@
 using System.IO;
 using System.Text;
-using GaussDB.Internal;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Util;
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 static class PregeneratedMessages
 {

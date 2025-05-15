@@ -1,11 +1,11 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using GaussDBTypes;
+using HuaweiCloud.GaussDBTypes;
 using NUnit.Framework;
 using static GaussDB.Util.Statics;
 
-namespace GaussDB.Tests.Types;
+namespace HuaweiCloud.GaussDB.Tests.Types;
 
 [TestFixture(true)]
 #if DEBUG

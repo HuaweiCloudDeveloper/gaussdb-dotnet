@@ -6,16 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using GaussDB.BackendMessages;
-using GaussDB.Internal;
-using GaussDB.PostgresTypes;
-using GaussDB.Util;
+using HuaweiCloud.GaussDB.BackendMessages;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.PostgresTypes;
+using HuaweiCloud.GaussDB.Util;
 using static GaussDB.Util.Statics;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
 
-namespace GaussDB;
+namespace HuaweiCloud.GaussDB;
 
 /// <summary>
 /// The default implementation of <see cref="IGaussDBDatabaseInfoFactory"/>, for standard PostgreSQL databases..
