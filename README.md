@@ -1,16 +1,14 @@
 # GaussDB Driver
 
+[![HuaweiCloud.Driver.GaussDB Latest Preview](https://img.shields.io/nuget/vpre/HuaweiCloud.Driver.GaussDB)](https://www.nuget.org/packages/HuaweiCloud.Driver.GaussDB/absoluteLatest)
+
 [![PostgreSQL License](https://img.shields.io/badge/License-PostgreSQL-blue.svg)](https://opensource.org/licenses/PostgreSQL)
-
-
 
 ## What is GaussDB ?
 
 GuassDB is an open-source database driver led by Huawei's open-source community and refactored based on npgsql. It is compatible with openGauss and Guass databases. [Open Source for Huawei](https://developer.huaweicloud.com/programs/opensource/contributing/) revolves around Huawei's technology ecosystems including Kunpeng, Ascend, HarmonyOS, and Huawei Cloud. Through collaboration with developers from enterprises, universities, and the open-source community, it enables adaptation development and solution validation for open-source software, ensuring smoother and more efficient operation on Huawei Cloud.  
 
 Before getting started, developers can download the [Open Source for Huawei Wiki](https://gitcode.com/HuaweiCloudDeveloper/OpenSourceForHuaweiWiki) to access detailed development procedures, technical preparations, and various resources required throughout the development process. If you have any questions during use, please visit the [GaussDB forum](https://bbs.huaweicloud.com/forum/forum-1350-1.html) for discussion.
-
-
 
 ## Quick start
 
@@ -40,9 +38,6 @@ await using (var reader = await cmd.ExecuteReaderAsync())
 }
 ```
 
-
-
-
-
 ## License
+
 This project is released under of the [PostgreSQL License](https://opensource.org/license/PostgreSQL).

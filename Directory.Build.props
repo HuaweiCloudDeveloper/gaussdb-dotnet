@@ -13,7 +13,7 @@
     <Copyright>Copyright 2025 © The GaussDB Development Team</Copyright>
     <PackageLicenseExpression>PostgreSQL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/HuaweiCloudDeveloper/gaussdb-dotnet</PackageProjectUrl>
-    <PackageIcon>postgresql.png</PackageIcon>
+    <PackageIcon>gaussdb.png</PackageIcon>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)postgresql.png" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)gaussdb.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
