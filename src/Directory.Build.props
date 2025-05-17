@@ -11,7 +11,7 @@
     <AssemblyName>$(PackagePrefix)$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>$(NamespacePrefix)$(MSBuildProjectName)</RootNamespace>
     <PackageId>HuaweiCloud.Driver.$(MSBuildProjectName)</PackageId>
-    <PackageTags>gaussdb;openguass;;ado;ado.net;database;sql</PackageTags>
+    <PackageTags>gaussdb;openguass;ado;ado.net;database;sql</PackageTags>
   </PropertyGroup>
 
 </Project>
