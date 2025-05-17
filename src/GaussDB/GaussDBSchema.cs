@@ -722,7 +722,7 @@ FROM pg_constraint c
             normalizedVersion += $".{version.Build:00}";
 
         row["CompositeIdentifierSeparatorPattern"] = @"\.";
-        row["DataSourceProductName"] = "GaussDB";
+        row["DataSourceProductName"] = "HuaweiCloud.GaussDB";
         row["DataSourceProductVersion"] = version.ToString();
         row["DataSourceProductVersionNormalized"] = normalizedVersion;
         row["GroupByBehavior"] = GroupByBehavior.Unrelated;

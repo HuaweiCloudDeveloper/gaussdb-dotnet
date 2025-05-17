@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageId>HuaweiCloud.GaussDB.OpenTelemetry</PackageId>
-        <RootNamespace>HuaweiCloud.GaussDB.OpenTelemetry</RootNamespace>
-        <Authors>gaussdb-dotnet team</Authors>
+        <IsPackable>false</IsPackable>
+        <Description>OpenTelemetry instrumentation for GaussDB.</Description>
         <TargetFramework>net8.0</TargetFramework>
-        <PackageTags>gaussdb;openguass;ado;ado.net;database;sql;opentelemetry;tracing;diagnostics;instrumentation</PackageTags>
+        <PackageTags>$(PackageTags);opentelemetry;tracing;diagnostics;instrumentation</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

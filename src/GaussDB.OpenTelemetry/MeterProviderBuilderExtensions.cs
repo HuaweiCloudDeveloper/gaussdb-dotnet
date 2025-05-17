@@ -15,5 +15,5 @@ public static class MeterProviderBuilderExtensions
     public static MeterProviderBuilder AddGaussDBInstrumentation(
         this MeterProviderBuilder builder,
         Action<GaussDBMetricsOptions>? options = null)
-        => builder.AddMeter("GaussDB");
+        => builder.AddMeter("HuaweiCloud.GaussDB");
 }

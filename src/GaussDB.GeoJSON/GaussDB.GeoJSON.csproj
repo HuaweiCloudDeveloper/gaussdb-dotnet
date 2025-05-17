@@ -1,10 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>HuaweiCloud.GaussDB.GeoJSON</PackageId>
-    <RootNamespace>HuaweiCloud.GaussDB.GeoJSON</RootNamespace>
-    <Authors>gaussdb-dotnet team</Authors>
+    <IsPackable>false</IsPackable>
     <Description>GeoJSON plugin for GaussDB, allowing mapping of PostGIS geometry types to GeoJSON types.</Description>
-    <PackageTags>gaussdb;openguass;postgis;geojson;spatial;ado;ado.net;database;sql</PackageTags>
+    <PackageTags>$(PackageTags);postgis;geojson;spatial</PackageTags>
     <TargetFramework>net8.0</TargetFramework>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->
   </PropertyGroup>

@@ -116,7 +116,7 @@ public class SchemaTests(SyncOrAsync syncOrAsync) : SyncOrAsyncTestBase(syncOrAs
         var dataSourceInfo = await GetSchema(conn, DbMetaDataCollectionNames.DataSourceInformation);
         var row = dataSourceInfo.Rows.Cast<DataRow>().Single();
 
-        Assert.That(row["DataSourceProductName"], Is.EqualTo("GaussDB"));
+        Assert.That(row["DataSourceProductName"], Is.EqualTo("HuaweiCloud.GaussDB"));
 
         var pgVersion = conn.PostgreSqlVersion;
         Assert.That(row["DataSourceProductVersion"], Is.EqualTo(pgVersion.ToString()));

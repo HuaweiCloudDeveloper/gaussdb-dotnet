@@ -10,7 +10,7 @@ sealed class GaussDBEventSource : EventSource
 {
     public static readonly GaussDBEventSource Log = new();
 
-    const string EventSourceName = "GaussDB";
+    const string EventSourceName = "HuaweiCloud.GaussDB";
 
     internal const int CommandStartId = 3;
     internal const int CommandStopId = 4;

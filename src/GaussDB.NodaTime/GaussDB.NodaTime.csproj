@@ -1,10 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>HuaweiCloud.GaussDB.NodaTime</PackageId>
-    <RootNamespace>HuaweiCloud.GaussDB.NodaTime</RootNamespace>
-    <Authors>Shay Rojansky</Authors>
+    <IsPackable>false</IsPackable>
     <Description>NodaTime plugin for GaussDB, allowing mapping of PostgreSQL date/time types to NodaTime types.</Description>
-    <PackageTags>gaussdb;openguass;nodatime;date;time;ado;ado;net;database;sql</PackageTags>
+    <PackageTags>$(PackageTags);nodatime;date;time;</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <TargetFramework>net8.0</TargetFramework>
     <NoWarn>$(NoWarn);NPG9001</NoWarn> <!-- Converter-related APIs are experimental -->

@@ -13,5 +13,5 @@ public static class TracerProviderBuilderExtensions
     /// Subscribes to the GaussDB activity source to enable OpenTelemetry tracing.
     /// </summary>
     public static TracerProviderBuilder AddGaussDB(this TracerProviderBuilder builder)
-        => builder.AddSource("GaussDB");
+        => builder.AddSource("HuaweiCloud.GaussDB");
 }

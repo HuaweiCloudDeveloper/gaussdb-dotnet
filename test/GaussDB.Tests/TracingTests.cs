@@ -19,7 +19,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var activities = new List<Activity>();
 
         using var activityListener = new ActivityListener();
-        activityListener.ShouldListenTo = source => source.Name == "GaussDB";
+        activityListener.ShouldListenTo = source => source.Name == "HuaweiCloud.GaussDB";
         activityListener.Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded;
         activityListener.ActivityStopped = activity => activities.Add(activity);
         ActivitySource.AddActivityListener(activityListener);
@@ -99,7 +99,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var activities = new List<Activity>();
 
         using var activityListener = new ActivityListener();
-        activityListener.ShouldListenTo = source => source.Name == "GaussDB";
+        activityListener.ShouldListenTo = source => source.Name == "HuaweiCloud.GaussDB";
         activityListener.Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded;
         activityListener.ActivityStopped = activity => activities.Add(activity);
         ActivitySource.AddActivityListener(activityListener);
@@ -159,7 +159,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var activities = new List<Activity>();
 
         using var activityListener = new ActivityListener();
-        activityListener.ShouldListenTo = source => source.Name == "GaussDB";
+        activityListener.ShouldListenTo = source => source.Name == "HuaweiCloud.GaussDB";
         activityListener.Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded;
         activityListener.ActivityStopped = activity => activities.Add(activity);
         ActivitySource.AddActivityListener(activityListener);
@@ -215,7 +215,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var activities = new List<Activity>();
 
         using var activityListener = new ActivityListener();
-        activityListener.ShouldListenTo = source => source.Name == "GaussDB";
+        activityListener.ShouldListenTo = source => source.Name == "HuaweiCloud.GaussDB";
         activityListener.Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded;
         activityListener.ActivityStopped = activity => activities.Add(activity);
         ActivitySource.AddActivityListener(activityListener);
@@ -290,7 +290,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var activities = new List<Activity>();
 
         using var activityListener = new ActivityListener();
-        activityListener.ShouldListenTo = source => source.Name == "GaussDB";
+        activityListener.ShouldListenTo = source => source.Name == "HuaweiCloud.GaussDB";
         activityListener.Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded;
         activityListener.ActivityStopped = activity => activities.Add(activity);
         ActivitySource.AddActivityListener(activityListener);

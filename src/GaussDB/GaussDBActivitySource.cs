@@ -9,7 +9,7 @@ namespace HuaweiCloud.GaussDB;
 
 static class GaussDBActivitySource
 {
-    static readonly ActivitySource Source = new("GaussDB", "0.2.0");
+    static readonly ActivitySource Source = new("HuaweiCloud.GaussDB", "0.1.0");
 
     internal static bool IsEnabled => Source.HasListeners();
 

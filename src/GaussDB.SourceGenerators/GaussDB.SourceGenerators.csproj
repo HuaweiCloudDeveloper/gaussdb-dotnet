@@ -6,6 +6,7 @@
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
         <IsPackable>false</IsPackable>
+        <AssemblyName>HuaweiCloud.GaussDB.SourceGenerators</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

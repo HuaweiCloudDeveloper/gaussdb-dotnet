@@ -45,7 +45,7 @@ sealed class MetricsReporter : IDisposable
 
     static MetricsReporter()
     {
-        Meter = new("GaussDB", Version);
+        Meter = new("HuaweiCloud.GaussDB", Version);
 
         CommandsExecuting = Meter.CreateUpDownCounter<int>(
             "db.client.commands.executing",
