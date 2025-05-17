@@ -49,8 +49,8 @@ jobs:
         include:
           - config: Release
             test_tfm: net8.0
-          # - config: Release
-          #   test_tfm: net9.0
+          - config: Release
+            test_tfm: net9.0
 
     steps:
       - name: Update DB configuration
