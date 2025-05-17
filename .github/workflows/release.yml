@@ -25,14 +25,15 @@ jobs:
       run: dotnet build -c Release
 
     - name: Pack NuGet package
-      run: dotnet pack -c Release -o ./nupkgs
-
-    - name: Push prelease package to nuget.org
-      if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/preview'
-      run: |
-        dotnet nuget push "./nupkgs/*.nupkg" -p VersionSuffix='$(preview-[System.DateTime]::UtcNow.ToString("yyyyMMdd"))' -k ${{ secrets.NUGET_API_KEY }}
-
-    - name: Push to nuget.org
       if: startsWith(github.ref, 'refs/tags/')
       run: |
-        dotnet nuget push "./nupkgs/*.nupkg" -p Version='${GITHUB_REF_NAME#v}' -k ${{ secrets.NUGET_API_KEY }}
+        dotnet pack ./src/GaussDB/GaussDB.csproj -c Release -o ./artifacts/nupkgs -p VersionPrefix='${GITHUB_REF_NAME#v}'
+
+    - name: Pack Preview NuGet package
+      if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/preview'
+      run: |
+        dotnet pack ./src/GaussDB/GaussDB.csproj -c Release -o ./artifacts/nupkgs -p VersionSuffix='$(preview-[System.DateTime]::UtcNow.ToString("yyyyMMdd"))'
+
+    - name: Push to nuget.org
+      run: |
+        dotnet nuget push "./nupkgs/*.nupkg" -k ${{ secrets.NUGET_API_KEY }}
