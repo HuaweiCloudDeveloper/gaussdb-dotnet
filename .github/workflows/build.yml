@@ -25,7 +25,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        config: [Release]
         test_tfm: [net8.0, net9.0]
 
     steps:
@@ -38,11 +37,11 @@ jobs:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Build.targets') }}
           restore-keys: |
-            ${{ runner.os }}-nuget-
+            ${{ runner.os }}-nuget
 
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4.3.1
 
       - name: Build
-        run: dotnet build -c ${{ matrix.config }}
+        run: bash ./build.sh --target build
         shell: bash
