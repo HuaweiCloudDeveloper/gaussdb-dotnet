@@ -21,23 +21,19 @@ jobs:
           8.0.x
           9.0.x          
 
-    - name: Build project
-      run: dotnet build -c Release
-
     - name: Set Package
       if: startsWith(github.ref, 'refs/tags/')
       run: |
-        VERSION_PREFIX=${GITHUB_REF_NAME#v}
-        echo "VERSION_PREFIX=$VERSION_PREFIX"
-        dotnet pack ./src/GaussDB/GaussDB.csproj -c Release -o ./artifacts/nupkgs -p VersionPrefix=$VERSION_PREFIX
+        VERSION=${GITHUB_REF_NAME#v}
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Set Preview Package
       if: github.event_name == 'workflow_dispatch'
       run: |
-        VERSION_SUFFIX=preview-$(date -u +"%Y%m%d%H%M")
-        echo $VERSION_SUFFIX
-        dotnet pack ./src/GaussDB/GaussDB.csproj -c Release -o ./artifacts/nupkgs -p VersionSuffix=$VERSION_SUFFIX
+        echo "stable=false" >> $GITHUB_ENV
 
-    - name: Push to nuget.org
+    - name: Pack nuget package
       run: |
-        dotnet nuget push "./artifacts/nupkgs/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        bash ./build.sh
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
