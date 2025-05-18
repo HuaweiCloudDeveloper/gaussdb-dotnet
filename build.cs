@@ -67,7 +67,7 @@ await new BuildProcessBuilder()
             {
                 if (!string.IsNullOrEmpty(version))
                 {
-                    packOptions = $" -o ./artifacts/packages --version-prefix {version}";
+                    packOptions += $" -p VersionPrefix={version}";
                 }
             }
             else
