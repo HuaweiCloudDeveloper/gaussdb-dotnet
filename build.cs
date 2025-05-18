@@ -1,8 +1,8 @@
 var target = CommandLineParser.Val(args, "target", "Default");
 var apiKey = CommandLineParser.Val(args, "apiKey");
-var stable = CommandLineParser.BooleanVal(args, "stable");
 var noPush = CommandLineParser.BooleanVal(args, "noPush");
 var version = CommandLineParser.Val(args, "VERSION");
+var stable = CommandLineParser.BooleanVal(args, "stable") || !string.IsNullOrEmpty(version);
 var runningOnGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 
 Console.WriteLine($$"""
@@ -19,6 +19,10 @@ args:
 var solutionPath = "./GaussDB.slnx";
 string[] srcProjects = [
     "./src/GaussDB/GaussDB.csproj"
+];
+string[] testProjects = [
+    "./test/GaussDB.Tests/GaussDB.Tests.csproj",
+    "./test/GaussDB.GaussDB.DependencyInjection.Tests/GaussDB.GaussDB.DependencyInjection.Tests.csproj"
 ];
 
 await new BuildProcessBuilder()
@@ -53,7 +57,9 @@ await new BuildProcessBuilder()
             })
             ;
     })
-    .WithTask("pack", b => b.WithDescription("dotnet pack")
+    .WithTask("pack", b => b
+        .WithDescription("dotnet pack")
+        .WithDependency("build")
         .WithExecution(async cancellationToken =>
         {
             var packOptions = " -o ./artifacts/packages";
