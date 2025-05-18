@@ -26,12 +26,7 @@ jobs:
       run: |
         VERSION=${GITHUB_REF_NAME#v}
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Set Preview Package
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        echo "stable=false" >> $GITHUB_ENV
-
+  
     - name: Pack nuget package
       run: |
         bash ./build.sh
