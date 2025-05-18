@@ -105,7 +105,7 @@ await new BuildProcessBuilder()
                 await RetryHelper.TryInvokeAsync(() => ExecuteCommandAsync($"dotnet nuget push {file} -s https://api.nuget.org/v3/index.json -k {apiKey} --skip-duplicate", cancellationToken), cancellationToken: cancellationToken);
             }
         }))
-    .WithTask("Default", b => WithDependency("pack"))
+    .WithTask("Default", b => b.WithDependency("pack"))
     .Build()
     .ExecuteAsync(target, ApplicationHelper.ExitToken);
 
