@@ -1,7 +1,7 @@
 var target = CommandLineParser.Val(args, "target", "Default");
 var apiKey = CommandLineParser.Val(args, "apiKey");
 var noPush = CommandLineParser.BooleanVal(args, "noPush");
-var version = CommandLineParser.Val(args, "VERSION");
+var version = Environment.GetEnvironmentVariable("VERSION");
 var stable = CommandLineParser.BooleanVal(args, "stable") || !string.IsNullOrEmpty(version);
 var runningOnGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 
