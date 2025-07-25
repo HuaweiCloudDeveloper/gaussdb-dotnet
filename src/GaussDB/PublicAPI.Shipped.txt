@@ -1,7 +1,7 @@
 #nullable enable
 abstract HuaweiCloud.GaussDB.Replication.PgOutput.Messages.UpdateMessage.NewRow.get -> HuaweiCloud.GaussDB.Replication.PgOutput.ReplicationTuple!
 abstract HuaweiCloud.GaussDBTypes.GaussDBTsQuery.Equals(HuaweiCloud.GaussDBTypes.GaussDBTsQuery? other) -> bool
-const HuaweiCloud.GaussDB.GaussDBConnection.DefaultPort = 5432 -> int
+const HuaweiCloud.GaussDB.GaussDBConnection.DefaultPort = 8000 -> int
 const HuaweiCloud.GaussDB.PostgresErrorCodes.ActiveSqlTransaction = "25001" -> string!
 const HuaweiCloud.GaussDB.PostgresErrorCodes.AdminShutdown = "57P01" -> string!
 const HuaweiCloud.GaussDB.PostgresErrorCodes.AmbiguousAlias = "42P09" -> string!

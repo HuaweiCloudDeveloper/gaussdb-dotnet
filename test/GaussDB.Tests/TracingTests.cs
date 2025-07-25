@@ -62,7 +62,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
             //Assert.That(activity.Events.Count(), Is.EqualTo(0));
 
             //todo: activity.TagObjects.Count()的值需要跟据实际值动态对比，有可能大于9
-            //var expectedTagCount = conn.Settings.Port == 5432 ? 9 : 10;
+            //var expectedTagCount = conn.Settings.Port == 8000 ? 9 : 10;
             //Assert.That(activity.TagObjects.Count(), Is.EqualTo(expectedTagCount));
 
             //todo: activity.TagObjects会包含"db.statement"
@@ -123,7 +123,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var firstResponseEvent = activity.Events.First();
         Assert.That(firstResponseEvent.Name, Is.EqualTo("received-first-response"));
 
-        var expectedTagCount = conn.Settings.Port == 5432 ? 9 : 10;
+        var expectedTagCount = conn.Settings.Port == 8000 ? 9 : 10;
         Assert.That(activity.TagObjects.Count(), Is.EqualTo(expectedTagCount));
 
         var queryTag = activity.TagObjects.First(x => x.Key == "db.statement");
@@ -254,7 +254,7 @@ public class TracingTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
         var exceptionEscapedTag = exceptionEvent.Tags.First(x => x.Key == "exception.escaped");
         Assert.That(exceptionEscapedTag.Value, Is.True);
 
-        var expectedTagCount = conn.Settings.Port == 5432 ? 9 : 10;
+        var expectedTagCount = conn.Settings.Port == 8000 ? 9 : 10;
         Assert.That(activity.TagObjects.Count(), Is.EqualTo(expectedTagCount));
 
         var queryTag = activity.TagObjects.First(x => x.Key == "db.statement");

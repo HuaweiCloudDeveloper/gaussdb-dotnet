@@ -396,23 +396,23 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
 
     #region ConnectionString - Host
 
-    [TestCase("127.0.0.1", ExpectedResult = new [] { "127.0.0.1:5432" })]
-    [TestCase("127.0.0.1:5432", ExpectedResult = new [] { "127.0.0.1:5432" })]
-    [TestCase("::1", ExpectedResult = new [] { "::1:5432" })]
-    [TestCase("[::1]", ExpectedResult = new [] { "[::1]:5432" })]
-    [TestCase("[::1]:5432", ExpectedResult = new [] { "[::1]:5432" })]
-    [TestCase("localhost", ExpectedResult = new [] { "localhost:5432" })]
-    [TestCase("localhost:5432", ExpectedResult = new [] { "localhost:5432" })]
-    [TestCase("127.0.0.1,127.0.0.1:5432,::1,[::1],[::1]:5432,localhost,localhost:5432",
+    [TestCase("127.0.0.1", ExpectedResult = new [] { "127.0.0.1:8000" })]
+    [TestCase("127.0.0.1:8000", ExpectedResult = new [] { "127.0.0.1:8000" })]
+    [TestCase("::1", ExpectedResult = new [] { "::1:8000" })]
+    [TestCase("[::1]", ExpectedResult = new [] { "[::1]:8000" })]
+    [TestCase("[::1]:8000", ExpectedResult = new [] { "[::1]:8000" })]
+    [TestCase("localhost", ExpectedResult = new [] { "localhost:8000" })]
+    [TestCase("localhost:8000", ExpectedResult = new [] { "localhost:8000" })]
+    [TestCase("127.0.0.1,127.0.0.1:8000,::1,[::1],[::1]:8000,localhost,localhost:8000",
         ExpectedResult = new []
         {
-            "127.0.0.1:5432",
-            "127.0.0.1:5432",
-            "::1:5432",
-            "[::1]:5432",
-            "[::1]:5432",
-            "localhost:5432",
-            "localhost:5432"
+            "127.0.0.1:8000",
+            "127.0.0.1:8000",
+            "::1:8000",
+            "[::1]:8000",
+            "[::1]:8000",
+            "localhost:8000",
+            "localhost:8000"
         })]
     [Test, IssueLink("https://github.com/npgsql/npgsql/issues/3802")]
     public string[] ConnectionString_Host(string host)
@@ -894,7 +894,7 @@ public class ConnectionTests(MultiplexingMode multiplexingMode) : MultiplexingTe
     {
         //[#1011001] Bug in GaussDBConnectionStringBuilder affects on cache and connection pool
 
-        var csb1 = new GaussDBConnectionStringBuilder(@"Server=server;Port=5432;User Id=user;Password=passwor;Database=database;");
+        var csb1 = new GaussDBConnectionStringBuilder(@"Server=server;Port=8000;User Id=user;Password=passwor;Database=database;");
         var cs1 = csb1.ToString();
         var csb2 = new GaussDBConnectionStringBuilder(cs1);
         var cs2 = csb2.ToString();

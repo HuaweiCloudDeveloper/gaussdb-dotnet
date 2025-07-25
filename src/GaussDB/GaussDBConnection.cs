@@ -95,7 +95,7 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
     /// <summary>
     /// The default TCP/IP port for PostgreSQL.
     /// </summary>
-    public const int DefaultPort = 5432;
+    public const int DefaultPort = 8000;
 
     /// <summary>
     /// Maximum value for connection timeout.
