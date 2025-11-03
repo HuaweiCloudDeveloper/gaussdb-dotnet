@@ -152,4 +152,88 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
             Assert.AreEqual(testArr2[i], arr2[i]);
         }
     }
+
+    [Test, Description("Tests VARCHAR2 and NVARCHAR2 column types with table creation and insert/query operations")]
+    public async Task Varchar2_and_nvarchar2_table_operations()
+    {
+        await using var conn = await OpenConnectionAsync();
+        var tableName = await GetTempTableName(conn);
+
+        try
+        {
+            // Create table with VARCHAR2 and NVARCHAR2 columns
+            await conn.ExecuteNonQueryAsync($@"
+                CREATE TABLE {tableName} (
+                    id INT PRIMARY KEY,
+                    name VARCHAR2(100),
+                    description NVARCHAR2(200)
+                )");
+
+            // Insert data
+            await using (var cmd = new GaussDBCommand($@"
+                INSERT INTO {tableName} (id, name, description) 
+                VALUES (@id, @name, @description)", conn))
+            {
+                cmd.Parameters.AddWithValue("id", 1);
+                cmd.Parameters.AddWithValue("name", "Test Name");
+                cmd.Parameters.AddWithValue("description", "Test Description");
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Insert data with longer strings
+            await using (var cmd = new GaussDBCommand($@"
+                INSERT INTO {tableName} (id, name, description) 
+                VALUES (@id, @name, @description)", conn))
+            {
+                cmd.Parameters.AddWithValue("id", 2);
+                cmd.Parameters.AddWithValue("name", "Another Test Name");
+                cmd.Parameters.AddWithValue("description", "A much longer description to test NVARCHAR2 column handling");
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Query data and verify
+            await using (var cmd = new GaussDBCommand($"SELECT id, name, description FROM {tableName} ORDER BY id", conn))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                // First row
+                Assert.That(await reader.ReadAsync(), Is.True);
+                Assert.That(reader.GetInt32(0), Is.EqualTo(1));
+                Assert.That(reader.GetString(1), Is.EqualTo("Test Name"));
+                Assert.That(reader.GetString(2), Is.EqualTo("Test Description"));
+
+                // Second row
+                Assert.That(await reader.ReadAsync(), Is.True);
+                Assert.That(reader.GetInt32(0), Is.EqualTo(2));
+                Assert.That(reader.GetString(1), Is.EqualTo("Another Test Name"));
+                Assert.That(reader.GetString(2), Is.EqualTo("A much longer description to test NVARCHAR2 column handling"));
+
+                Assert.That(await reader.ReadAsync(), Is.False);
+            }
+
+            // Test NULL values
+            await using (var cmd = new GaussDBCommand($@"
+                INSERT INTO {tableName} (id, name, description) 
+                VALUES (@id, @name, @description)", conn))
+            {
+                cmd.Parameters.AddWithValue("id", 3);
+                cmd.Parameters.AddWithValue("name", DBNull.Value);
+                cmd.Parameters.AddWithValue("description", DBNull.Value);
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Verify NULL values
+            await using (var cmd = new GaussDBCommand($"SELECT name, description FROM {tableName} WHERE id = 3", conn))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                Assert.That(await reader.ReadAsync(), Is.True);
+                Assert.That(reader.IsDBNull(0), Is.True);
+                Assert.That(reader.IsDBNull(1), Is.True);
+            }
+        }
+        finally
+        {
+            // Clean up
+            await conn.ExecuteNonQueryAsync($"DROP TABLE IF EXISTS {tableName}");
+        }
+    }
 }
