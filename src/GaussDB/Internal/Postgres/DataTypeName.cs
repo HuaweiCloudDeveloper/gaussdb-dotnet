@@ -178,8 +178,8 @@ public readonly struct DataTypeName : IEquatable<DataTypeName>
                 "timestamp with time zone" => "timestamptz",
                 "bit varying" => "varbit",
                 "character varying" => "varchar",
-                "varchar2" => "varchar",
-                "nvarchar2" => "varchar",
+                "varchar2" => "varchar2",
+                "nvarchar2" => "nvarchar2",
                 var value => value
             };
         }
