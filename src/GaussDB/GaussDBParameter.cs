@@ -645,7 +645,7 @@ public class GaussDBParameter : DbParameter, IDbDataParameter, ICloneable
                 return;
 
             var dataTypeName = TypeInfo!.Options.GetDataTypeName(PgTypeId);
-            if (dataTypeName == DataTypeNames.Text || dataTypeName == DataTypeNames.Varchar || dataTypeName == DataTypeNames.Bpchar)
+            if (dataTypeName == DataTypeNames.Text || dataTypeName == DataTypeNames.Varchar || dataTypeName == DataTypeNames.Varchar2 || dataTypeName == DataTypeNames.Nvarchar2 || dataTypeName == DataTypeNames.Bpchar)
             {
                 if (value is string s && s.Length > _size)
                     Value = s.Substring(0, _size);

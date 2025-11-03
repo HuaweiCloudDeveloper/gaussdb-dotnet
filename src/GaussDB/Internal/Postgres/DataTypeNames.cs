@@ -34,6 +34,8 @@ static class DataTypeNames
     public static DataTypeName Bpchar => ValidatedName("pg_catalog.bpchar");
     public static DataTypeName Text => ValidatedName("pg_catalog.text");
     public static DataTypeName Varchar => ValidatedName("pg_catalog.varchar");
+    public static DataTypeName Varchar2 => ValidatedName("pg_catalog.varchar2");
+    public static DataTypeName Nvarchar2 => ValidatedName("pg_catalog.nvarchar2");
     public static DataTypeName Char => ValidatedName("pg_catalog.char");
     public static DataTypeName Name => ValidatedName("pg_catalog.name");
     public static DataTypeName Bytea => ValidatedName("pg_catalog.bytea");

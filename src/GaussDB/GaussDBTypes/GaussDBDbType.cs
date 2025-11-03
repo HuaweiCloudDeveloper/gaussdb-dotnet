@@ -890,6 +890,8 @@ static class GaussDBDbTypeExtensions
                 "text" => GaussDBDbType.Text,
                 "xml" => GaussDBDbType.Xml,
                 "varchar" => GaussDBDbType.Varchar,
+                "varchar2" => GaussDBDbType.Varchar,
+                "nvarchar2" => GaussDBDbType.Varchar,
                 "bpchar" => GaussDBDbType.Char,
                 "name" => GaussDBDbType.Name,
                 "refcursor" => GaussDBDbType.Refcursor,
