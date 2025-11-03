@@ -105,8 +105,8 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
 
     [Test, Description("Tests some types which are aliased to strings")]
     [TestCase("character varying", GaussDBDbType.Varchar)]
-    [TestCase("varchar2", GaussDBDbType.Varchar)]
-    [TestCase("nvarchar2", GaussDBDbType.Varchar)]
+    [TestCase("varchar2", GaussDBDbType.Varchar2)]
+    [TestCase("nvarchar2", GaussDBDbType.Nvarchar2)]
     [TestCase("name", GaussDBDbType.Name)]
     public Task Aliased_postgres_types(string pgTypeName, GaussDBDbType gaussdbDbType)
         => AssertType("foo", "foo", pgTypeName, gaussdbDbType, inferredDbType: DbType.String, isDefaultForWriting: false);
@@ -171,7 +171,7 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
 
             // Insert data
             await using (var cmd = new GaussDBCommand($@"
-                INSERT INTO {tableName} (id, name, description) 
+                INSERT INTO {tableName} (id, name, description)
                 VALUES (@id, @name, @description)", conn))
             {
                 cmd.Parameters.AddWithValue("id", 1);
@@ -182,7 +182,7 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
 
             // Insert data with longer strings
             await using (var cmd = new GaussDBCommand($@"
-                INSERT INTO {tableName} (id, name, description) 
+                INSERT INTO {tableName} (id, name, description)
                 VALUES (@id, @name, @description)", conn))
             {
                 cmd.Parameters.AddWithValue("id", 2);
@@ -212,7 +212,7 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
 
             // Test NULL values
             await using (var cmd = new GaussDBCommand($@"
-                INSERT INTO {tableName} (id, name, description) 
+                INSERT INTO {tableName} (id, name, description)
                 VALUES (@id, @name, @description)", conn))
             {
                 cmd.Parameters.AddWithValue("id", 3);
