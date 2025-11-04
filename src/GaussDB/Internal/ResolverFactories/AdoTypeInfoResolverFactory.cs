@@ -98,7 +98,7 @@ sealed partial class AdoTypeInfoResolverFactory : PgTypeInfoResolverFactory
                 MatchRequirement.DataTypeName);
 
             // Alternative text types
-            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.Nvarchar2,
+            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.NVarchar2,
                         DataTypeNames.Bpchar, DataTypeNames.Json,
                         DataTypeNames.Xml, DataTypeNames.Name, DataTypeNames.RefCursor })
             {
@@ -375,7 +375,7 @@ sealed partial class AdoTypeInfoResolverFactory : PgTypeInfoResolverFactory
             mappings.AddArrayType<Stream>(DataTypeNames.Text);
 
             // Alternative text types
-            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.Nvarchar2,
+            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.NVarchar2,
                         DataTypeNames.Bpchar, DataTypeNames.Json,
                         DataTypeNames.Xml, DataTypeNames.Name, DataTypeNames.RefCursor })
             {

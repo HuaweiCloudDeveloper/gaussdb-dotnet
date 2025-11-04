@@ -113,7 +113,7 @@ sealed class ExtraConversionResolverFactory : PgTypeInfoResolverFactory
                 static (options, mapping, _) => mapping.CreateInfo(options, new CharArraySegmentTextConverter(options.TextEncoding), preferredFormat: DataFormat.Text));
 
             // Alternative text types
-            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.Nvarchar2,
+            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.NVarchar2,
                         DataTypeNames.Bpchar, DataTypeNames.Json,
                         DataTypeNames.Xml, DataTypeNames.Name, DataTypeNames.RefCursor })
             {
@@ -211,7 +211,7 @@ sealed class ExtraConversionResolverFactory : PgTypeInfoResolverFactory
             mappings.AddStructArrayType<ArraySegment<char>>(DataTypeNames.Text);
 
             // Alternative text types
-            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.Nvarchar2,
+            foreach(var dataTypeName in new[] { "citext", DataTypeNames.Varchar, DataTypeNames.Varchar2, DataTypeNames.NVarchar2,
                         DataTypeNames.Bpchar, DataTypeNames.Json,
                         DataTypeNames.Xml, DataTypeNames.Name, DataTypeNames.RefCursor })
             {

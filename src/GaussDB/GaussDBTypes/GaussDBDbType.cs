@@ -146,14 +146,14 @@ public enum GaussDBDbType
     Varchar = 22,
 
     /// <summary>
-    /// Variable-length string. It is the alias of the NVARCHAR2(n) type.
+    /// Variable-length string. For Oracle compatibility.
     /// </summary>
     Varchar2 = 2223,
 
     /// <summary>
-    /// Variable-length string.
+    /// Variable-length string. For Oracle compatibility.
     /// </summary>
-    Nvarchar2 = 2224,
+    NVarchar2 = 2224,
 
     /// <summary>
     /// Corresponds to the PostgreSQL internal "name" type.
@@ -635,7 +635,7 @@ static class GaussDBDbTypeExtensions
             GaussDBDbType.Xml => DbType.Xml,
             GaussDBDbType.Varchar => DbType.String,
             GaussDBDbType.Varchar2 => DbType.String,
-            GaussDBDbType.Nvarchar2 => DbType.String,
+            GaussDBDbType.NVarchar2 => DbType.String,
             GaussDBDbType.Char => DbType.String,
             GaussDBDbType.Name => DbType.String,
             GaussDBDbType.Citext => DbType.String,
@@ -678,7 +678,7 @@ static class GaussDBDbTypeExtensions
             GaussDBDbType.Xml       => "xml",
             GaussDBDbType.Varchar   => "varchar",
             GaussDBDbType.Varchar2   => "varchar2",
-            GaussDBDbType.Nvarchar2  => "nvarchar2",
+            GaussDBDbType.NVarchar2  => "nvarchar2",
             GaussDBDbType.Char      => "bpchar",
             GaussDBDbType.Name      => "name",
             GaussDBDbType.Refcursor => "refcursor",
@@ -797,7 +797,7 @@ static class GaussDBDbTypeExtensions
             GaussDBDbType.Xml => DataTypeNames.Xml,
             GaussDBDbType.Varchar => DataTypeNames.Varchar,
             GaussDBDbType.Varchar2 => DataTypeNames.Varchar2,
-            GaussDBDbType.Nvarchar2 => DataTypeNames.Nvarchar2,
+            GaussDBDbType.NVarchar2 => DataTypeNames.NVarchar2,
             GaussDBDbType.Char => DataTypeNames.Bpchar,
             GaussDBDbType.Name => DataTypeNames.Name,
             GaussDBDbType.Refcursor => DataTypeNames.RefCursor,
@@ -907,7 +907,7 @@ static class GaussDBDbTypeExtensions
                 "xml" => GaussDBDbType.Xml,
                 "varchar" => GaussDBDbType.Varchar,
                 "varchar2" => GaussDBDbType.Varchar2,
-                "nvarchar2" => GaussDBDbType.Nvarchar2,
+                "nvarchar2" => GaussDBDbType.NVarchar2,
                 "bpchar" => GaussDBDbType.Char,
                 "name" => GaussDBDbType.Name,
                 "refcursor" => GaussDBDbType.Refcursor,
