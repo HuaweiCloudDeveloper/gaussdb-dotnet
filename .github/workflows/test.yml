@@ -26,7 +26,7 @@ jobs:
       opengauss:
         image: opengauss/opengauss:5.0.0
         env:
-          GS_USERNAME: gaussdb # by default
+          # GS_USERNAME: gaussdb # by default
           GS_PASSWORD: Password@1234
           GS_DB: gaussdb_tests
         ports:
