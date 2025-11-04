@@ -86,4 +86,4 @@ jobs:
       
       - name: Tests
         run: |
-          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.Tests --logger "GitHubActions;report-warnings=false"
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.Tests --logger "GitHubActions;report-warnings=false" -- NUnit.NumberOfTestWorkers=1
