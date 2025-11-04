@@ -10,10 +10,6 @@ on:
       - '*'
   pull_request:
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
-
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
@@ -44,6 +40,7 @@ jobs:
           --health-retries 10
 
     strategy:
+      max-parallel: 1
       matrix:
         include:
           - config: Release
