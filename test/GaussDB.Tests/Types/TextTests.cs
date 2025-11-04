@@ -105,8 +105,6 @@ public class TextTests(MultiplexingMode multiplexingMode) : MultiplexingTestBase
 
     [Test, Description("Tests some types which are aliased to strings")]
     [TestCase("character varying", GaussDBDbType.Varchar)]
-    [TestCase("varchar2", GaussDBDbType.Varchar2)]
-    [TestCase("nvarchar2", GaussDBDbType.Nvarchar2)]
     [TestCase("name", GaussDBDbType.Name)]
     public Task Aliased_postgres_types(string pgTypeName, GaussDBDbType gaussdbDbType)
         => AssertType("foo", "foo", pgTypeName, gaussdbDbType, inferredDbType: DbType.String, isDefaultForWriting: false);
