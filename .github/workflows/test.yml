@@ -17,7 +17,8 @@ jobs:
   test:
     runs-on: "ubuntu-latest"
     env:
-      NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests" # do not specify IncludeErrorDetail=true directly, it would affect the unit tests
+      # do not specify IncludeErrorDetail=true in connection string directly, it would affect the unit tests
+      NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests;"
 
     # Service containers to run with `container-job`
     # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
@@ -86,4 +87,4 @@ jobs:
       
       - name: Tests
         run: |
-          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.Tests --logger "GitHubActions;report-warnings=false" -- NUnit.NumberOfTestWorkers=1
+          dotnet test -c ${{ matrix.config }} -f ${{ matrix.test_tfm }} test/GaussDB.Tests --logger "GitHubActions;report-warnings=false"
