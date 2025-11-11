@@ -945,6 +945,8 @@ FROM pg_constraint c
         switch (type.Name)
         {
         case "varchar":
+        case "varchar2":
+        case "nvarchar2":
         case "char":
             row["DataType"] = "String";
             row["IsBestMatch"] = false;

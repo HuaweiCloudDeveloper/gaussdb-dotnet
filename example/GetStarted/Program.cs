@@ -17,18 +17,18 @@ Console.WriteLine($@"Connection state: {conn.State}");
 
 await ConnectionTest();
 
-var tableName = "employees";
-// id int, name varchar(128), age int
+var tableName = $"employees_{Guid.NewGuid():N}";
+
 {
     await ExecuteTableScript(async () =>
     {
         // insert
         {
             var insertSql = $"""
-                             INSERT INTO {tableName} (id, name, age) VALUES
-                             (1, 'John', 30),
-                             (2, 'Alice', 16),
-                             (3, 'Mike', 24)
+                             INSERT INTO {tableName} (id, name, age, bio, description) VALUES
+                             (1, 'John', 30, 'j', 'Manager'),
+                             (2, 'Alice', 16, 'a', 'Intern'),
+                             (3, 'Mike', 24, 'm', 'Developer')
                              """;
             await using var cmd = new GaussDBCommand(insertSql, conn);
             await cmd.ExecuteNonQueryAsync();
@@ -99,6 +99,8 @@ async Task ExecuteTableScript(Func<Task> func)
                (
                    id INT PRIMARY KEY,
                    name VARCHAR(128),
+                   bio VARCHAR2(512),
+                   description NVARCHAR2(1024),
                    age INT
                );
                """;
@@ -108,6 +110,7 @@ async Task ExecuteTableScript(Func<Task> func)
     {
         await using var createTableCommand = new GaussDBCommand(createTableSql, conn);
         await createTableCommand.ExecuteNonQueryAsync();
+        Console.WriteLine($@"Table {tableName} created");
 
         await func();
     }
@@ -121,6 +124,7 @@ async Task ExecuteTableScript(Func<Task> func)
         {
             await using var dropTableCommand = new GaussDBCommand(dropTableSql, conn);
             await dropTableCommand.ExecuteNonQueryAsync();
+            Console.WriteLine($@"Table {tableName} dropped");
         }
         catch (Exception e)
         {
@@ -146,8 +150,10 @@ async Task QueryTest(string? condition = null)
             var id = reader.GetInt32("id");
             var name = reader.GetString("name");
             var age = reader.GetInt32("age");
+            var bio = reader.GetString("bio");
+            var description = reader.GetString("description");
 
-            Console.WriteLine($@"ID: {id}, Name: {name}, Age: {age}");
+            Console.WriteLine($@"ID: {id}, Name: {name}, Age: {age}, Bio: {bio}, Description: {description}");
         }
     }
 }

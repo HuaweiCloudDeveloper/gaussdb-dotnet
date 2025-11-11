@@ -22,6 +22,7 @@ jobs:
   test:
     runs-on: "ubuntu-latest"
     env:
+      # do not specify IncludeErrorDetail=true in connection string directly, it would affect the unit tests
       NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests;"
 
     # Service containers to run with `container-job`
@@ -45,6 +46,7 @@ jobs:
           --health-retries 10
 
     strategy:
+      max-parallel: 1
       matrix:
         include:
           - config: Release
