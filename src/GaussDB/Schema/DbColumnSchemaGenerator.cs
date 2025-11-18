@@ -36,10 +36,7 @@ sealed class DbColumnSchemaGenerator
      {(pgVersion.IsGreaterOrEqual(10) ? "attidentity != ''" : "FALSE")} AS isidentity,
      CASE WHEN typ.typtype = 'd' THEN typ.typtypmod ELSE atttypmod END AS typmod,
      CASE WHEN atthasdef THEN (SELECT pg_get_expr(adbin, cls.oid) FROM pg_attrdef WHERE adrelid = cls.oid AND adnum = attr.attnum) ELSE NULL END AS default,
-     CASE WHEN ((cls.relkind = ANY (ARRAY['r'::""char"", 'p'::""char""]))
-               OR ((cls.relkind = ANY (ARRAY['v'::""char"", 'f'::""char""]))
-               AND pg_column_is_updatable((cls.oid)::regclass, attr.attnum, false)))
-  	           -- 移除attidentity条件，或替换为GaussDB支持的逻辑
+     CASE WHEN (cls.relkind = ANY (ARRAY['r'::""char"", 'p'::""char""]))
                THEN 'true'::boolean
                ELSE 'false'::boolean
                END AS is_updatable,
