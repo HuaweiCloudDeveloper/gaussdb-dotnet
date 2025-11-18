@@ -220,6 +220,8 @@ public class AuthenticationTests(MultiplexingMode multiplexingMode) : Multiplexi
     }
 
     [Test]
+    // GaussDB 云数据库不支持操作服务器文件目录
+    [Ignore("huawei cloud db does not support operating server file directory")]
     [NonParallelizable] // Sets environment variable
     public async Task Use_pgpass_from_homedir()
     {

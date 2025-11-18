@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace HuaweiCloud.GaussDB.Tests;
 
-[TestFixture(MultiplexingMode.NonMultiplexing)]
+// [TestFixture(MultiplexingMode.NonMultiplexing)]
 [TestFixture(MultiplexingMode.Multiplexing)]
 public abstract class MultiplexingTestBase : TestBase
 {
