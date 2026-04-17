@@ -118,4 +118,82 @@ class ConnectionStringBuilderTests
         Assert.That(() => builder.ConnectionString = "Server=127.0.0.1;User Id=gaussdb_tests;Pooling:false",
             Throws.Exception.TypeOf<ArgumentException>());
     }
+
+    [Test]
+    public void Ha_options_default_values()
+    {
+        var builder = new GaussDBConnectionStringBuilder();
+        Assert.That(builder.PriorityServers, Is.EqualTo(0));
+        Assert.That(builder.AutoBalance, Is.Null);
+        Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(10));
+        Assert.That(builder.UsingEip, Is.True);
+        Assert.That(builder.AutoReconnect, Is.False);
+        Assert.That(builder.MaxReconnects, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void Ha_options_parse_from_connection_string()
+    {
+        var builder = new GaussDBConnectionStringBuilder(
+            "Host=a,b,c,d;priorityServers=2;autoBalance=shufflePriority4;refreshCNIpListTime=30;usingEip=false;autoReconnect=true;maxReconnects=5");
+
+        Assert.That(builder.PriorityServers, Is.EqualTo(2));
+        Assert.That(builder.AutoBalance, Is.EqualTo("shufflePriority4"));
+        Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(30));
+        Assert.That(builder.UsingEip, Is.False);
+        Assert.That(builder.AutoReconnect, Is.True);
+        Assert.That(builder.MaxReconnects, Is.EqualTo(5));
+    }
+
+    [Test]
+    public void AutoBalance_invalid_numeric_throws()
+        => Assert.That(
+            () => new GaussDBConnectionStringBuilder("Host=a,b;AutoBalance=3"),
+            Throws.Exception.TypeOf<ArgumentException>().With.Message.Contains("AutoBalance"));
+
+    [Test]
+    public void PriorityServers_invalid_split_throws()
+    {
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = "a,b",
+            PriorityServers = 2
+        };
+
+        Assert.That(
+            () => builder.PostProcessAndValidate(),
+            Throws.Exception.TypeOf<ArgumentException>().With.Message.Contains("PriorityServers"));
+    }
+
+    [Test]
+    public void Priority_auto_balance_caps_to_selected_cluster_size()
+    {
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = "a,b,c,d",
+            PriorityServers = 2,
+            AutoBalance = "priority5"
+        };
+
+        builder.PostProcessAndValidate();
+
+        Assert.That(builder.GetEffectivePriorityHostCount(2), Is.EqualTo(2));
+        Assert.That(builder.GetEffectivePriorityHostCount(3), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void RefreshCNIpListTime_invalid_throws()
+        => Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new GaussDBConnectionStringBuilder
+            {
+                RefreshCNIpListTime = 0
+            });
+
+    [Test]
+    public void MaxReconnects_invalid_throws()
+        => Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new GaussDBConnectionStringBuilder
+            {
+                MaxReconnects = 0
+            });
 }

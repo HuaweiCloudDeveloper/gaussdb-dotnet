@@ -25,3 +25,39 @@ await using (var reader = await cmd.ExecuteReaderAsync())
     Console.WriteLine(reader.GetString(0));
 }
 ```
+
+## Distributed HA options
+
+The driver also supports JDBC-aligned distributed GaussDB HA routing options on top of the existing multi-host support:
+
+- `PriorityServers`: splits the seed host list into preferred and fallback AZ clusters.
+- `AutoBalance`: reorders coordinator nodes only inside the selected cluster. Supported values include `shuffle`, `roundrobin`, `priorityN`, and `shufflePriorityN`.
+- `RefreshCNIpListTime`: throttles coordinator discovery from `pgxc_node`.
+- `UsingEip`: selects `node_host1/node_port1` instead of `node_host/node_port` during coordinator refresh.
+- `AutoReconnect`: enables bounded reconnect for eligible disconnect and failover errors.
+- `MaxReconnects`: caps the reconnect attempt count.
+
+Example:
+
+```csharp
+var csb = new GaussDBConnectionStringBuilder
+{
+    Host = "cn1:8000,cn2:8000,cn3:8000,cn4:8000",
+    PriorityServers = 2,
+    AutoBalance = "priority2",
+    RefreshCNIpListTime = 10,
+    UsingEip = true,
+    AutoReconnect = true,
+    MaxReconnects = 3
+};
+
+await using var dataSource = new GaussDBDataSourceBuilder(csb.ConnectionString)
+    .BuildMultiHost();
+await using var conn = await dataSource
+    .WithTargetSession(TargetSessionAttributes.Primary)
+    .OpenConnectionAsync();
+```
+
+`PriorityServers` and `AutoBalance` work at different layers: `PriorityServers` picks which AZ cluster is tried first, while `AutoBalance` only changes coordinator ordering inside that selected cluster.
+
+Automatic reconnect is intentionally conservative. It retries eligible disconnect and failover errors by reopening through the latest routing state, but it does not transparently replay explicit transactions, COPY operations, or active streaming readers. This keeps the behavior close to JDBC's HA intent without introducing unsafe generic statement replay in .NET.
