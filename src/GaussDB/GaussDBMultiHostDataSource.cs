@@ -169,6 +169,12 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         return state != DatabaseState.Offline;
     }
 
+    static bool IsPreferredOrOffline(DatabaseState state, TargetSessionAttributes preferredType)
+        => state == DatabaseState.Offline || IsPreferred(state, preferredType);
+
+    static bool IsOnlineOrOffline(DatabaseState state, TargetSessionAttributes preferredType)
+        => state == DatabaseState.Offline || IsOnline(state, preferredType);
+
     async ValueTask<GaussDBConnector?> TryGetIdleOrNew(
         IReadOnlyList<GaussDBDataSource> pools,
         GaussDBConnection conn,
@@ -304,14 +310,33 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         if (!Settings.UsesHaRouting)
         {
             var candidatePools = GetLegacyPools(conn.Settings.LoadBalanceHosts);
-            var legacyConnector = await TryGetIdleOrNew(candidatePools, conn, timeoutPerHost, async, preferredType, IsPreferred, exceptions, cancellationToken).ConfigureAwait(false) ??
-                                  (checkUnpreferred
-                                      ? await TryGetIdleOrNew(candidatePools, conn, timeoutPerHost, async, preferredType, IsOnline, exceptions, cancellationToken).ConfigureAwait(false)
-                                      : null) ??
-                                  await TryGet(candidatePools, conn, timeoutPerHost, async, preferredType, IsPreferred, exceptions, cancellationToken).ConfigureAwait(false) ??
-                                  (checkUnpreferred
-                                      ? await TryGet(candidatePools, conn, timeoutPerHost, async, preferredType, IsOnline, exceptions, cancellationToken).ConfigureAwait(false)
-                                      : null);
+            var legacyConnector = await TryConnectPools(
+                    candidatePools,
+                    conn,
+                    timeoutPerHost,
+                    async,
+                    preferredType,
+                    checkUnpreferred,
+                    exceptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (legacyConnector is null && candidatePools.All(static pool => pool.GetDatabaseState() == DatabaseState.Offline))
+            {
+                // 对齐 JDBC：如果状态缓存把所有 host 都过滤空了，就忽略 Offline 再探测一轮，
+                // 让刚恢复的节点有机会在本次连接里被重新命中，而不是死等 HostRecheckSeconds 到期。
+                legacyConnector = await TryConnectPools(
+                        candidatePools,
+                        conn,
+                        timeoutPerHost,
+                        async,
+                        preferredType,
+                        checkUnpreferred,
+                        exceptions,
+                        cancellationToken,
+                        allowOffline: true)
+                    .ConfigureAwait(false);
+            }
 
             return legacyConnector ?? throw NoSuitableHostsException(exceptions);
         }
@@ -322,14 +347,17 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             if (clusterPlan.Pools.Length == 0)
                 continue;
 
-            var connector = await TryGetIdleOrNew(clusterPlan.Pools, conn, timeoutPerHost, async, preferredType, IsPreferred, exceptions, cancellationToken).ConfigureAwait(false) ??
-                            (checkUnpreferred
-                                ? await TryGetIdleOrNew(clusterPlan.Pools, conn, timeoutPerHost, async, preferredType, IsOnline, exceptions, cancellationToken).ConfigureAwait(false)
-                                : null) ??
-                            await TryGet(clusterPlan.Pools, conn, timeoutPerHost, async, preferredType, IsPreferred, exceptions, cancellationToken).ConfigureAwait(false) ??
-                            (checkUnpreferred
-                                ? await TryGet(clusterPlan.Pools, conn, timeoutPerHost, async, preferredType, IsOnline, exceptions, cancellationToken).ConfigureAwait(false)
-                                : null);
+            var connector = await TryConnectPools(
+                    clusterPlan.Pools,
+                    conn,
+                    timeoutPerHost,
+                    async,
+                    preferredType,
+                    checkUnpreferred,
+                    exceptions,
+                    cancellationToken,
+                    allowOffline: clusterPlan.AllowOffline)
+                .ConfigureAwait(false);
 
             if (connector is not null)
             {
@@ -341,6 +369,30 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         }
 
         throw NoSuitableHostsException(exceptions);
+    }
+
+    async ValueTask<GaussDBConnector?> TryConnectPools(
+        IReadOnlyList<GaussDBDataSource> pools,
+        GaussDBConnection conn,
+        TimeSpan timeoutPerHost,
+        bool async,
+        TargetSessionAttributes preferredType,
+        bool checkUnpreferred,
+        IList<Exception> exceptions,
+        CancellationToken cancellationToken,
+        bool allowOffline = false)
+    {
+        Func<DatabaseState, TargetSessionAttributes, bool> preferredValidator = allowOffline ? IsPreferredOrOffline : IsPreferred;
+        Func<DatabaseState, TargetSessionAttributes, bool> onlineValidator = allowOffline ? IsOnlineOrOffline : IsOnline;
+
+        return await TryGetIdleOrNew(pools, conn, timeoutPerHost, async, preferredType, preferredValidator, exceptions, cancellationToken).ConfigureAwait(false) ??
+               (checkUnpreferred
+                   ? await TryGetIdleOrNew(pools, conn, timeoutPerHost, async, preferredType, onlineValidator, exceptions, cancellationToken).ConfigureAwait(false)
+                   : null) ??
+               await TryGet(pools, conn, timeoutPerHost, async, preferredType, preferredValidator, exceptions, cancellationToken).ConfigureAwait(false) ??
+               (checkUnpreferred
+                   ? await TryGet(pools, conn, timeoutPerHost, async, preferredType, onlineValidator, exceptions, cancellationToken).ConfigureAwait(false)
+                   : null);
     }
 
     GaussDBDataSource[] GetLegacyPools(bool loadBalanceHosts)
@@ -368,25 +420,39 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         var preferredClusterKey = Settings.PriorityServers > 0
             ? GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(_urlKey)
             : null;
-        var plans = new List<ClusterRoutingPlan>(orderedClusters.Length * 2);
+        var filteredPlans = new List<ClusterRoutingPlan>(orderedClusters.Length * 2);
+        var fallbackPlans = new List<ClusterRoutingPlan>(orderedClusters.Length * 2);
+        var hasFilteredCandidate = false;
         foreach (var cluster in orderedClusters)
         {
             var endpoints = await ResolveClusterEndpoints(cluster, preferredClusterKey, cancellationToken).ConfigureAwait(false);
             var orderedEndpoints = OrderClusterEndpoints(conn.Settings, cluster, endpoints);
-            plans.Add(new(cluster.Key, orderedEndpoints.Select(GetOrAddEndpointPool)
+            var clusterPools = orderedEndpoints.Select(GetOrAddEndpointPool).ToArray();
+            var filteredClusterPools = clusterPools
                 .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
-                .ToArray()));
+                .ToArray();
+            filteredPlans.Add(new(cluster.Key, filteredClusterPools, AllowOffline: false));
+            fallbackPlans.Add(new(cluster.Key, clusterPools, AllowOffline: true));
+            hasFilteredCandidate |= filteredClusterPools.Length > 0;
 
             if (ShouldAppendSeedFallbackPlan(cluster, endpoints))
             {
                 var orderedSeedEndpoints = OrderClusterEndpoints(conn.Settings, cluster, cluster.SeedEndpoints);
-                plans.Add(new(cluster.Key, orderedSeedEndpoints.Select(GetOrAddEndpointPool)
+                var seedFallbackPools = orderedSeedEndpoints.Select(GetOrAddEndpointPool).ToArray();
+                var filteredSeedFallbackPools = seedFallbackPools
                     .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
-                    .ToArray()));
+                    .ToArray();
+                filteredPlans.Add(new(cluster.Key, filteredSeedFallbackPools, AllowOffline: false));
+                fallbackPlans.Add(new(cluster.Key, seedFallbackPools, AllowOffline: true));
+                hasFilteredCandidate |= filteredSeedFallbackPools.Length > 0;
             }
         }
 
-        return plans.ToArray();
+        if (hasFilteredCandidate)
+            return filteredPlans.ToArray();
+
+        // 对齐 JDBC：如果状态缓存把整轮候选都裁空了，则按原有簇顺序忽略 Offline 再扫一遍。
+        return fallbackPlans.ToArray();
     }
 
     SeedCluster[] OrderClusters()
@@ -750,5 +816,5 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         => string.Join(",", endpoints.Select(static endpoint => endpoint.Key).OrderBy(static endpoint => endpoint, StringComparer.Ordinal));
 
     readonly record struct SeedCluster(string Key, HaEndpoint[] SeedEndpoints);
-    readonly record struct ClusterRoutingPlan(string ClusterKey, GaussDBDataSource[] Pools);
+    readonly record struct ClusterRoutingPlan(string ClusterKey, GaussDBDataSource[] Pools, bool AllowOffline);
 }
