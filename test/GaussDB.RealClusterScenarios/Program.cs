@@ -572,7 +572,8 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
     {
         try
         {
-            client.Client.LingerState = new LingerOption(true, 0);
+            if (client.Client is { } socket)
+                socket.LingerState = new LingerOption(true, 0);
         }
         catch
         {
