@@ -26,6 +26,9 @@ case "explicit-tx-admin-shutdown-no-replay":
 case "active-reader-disconnect-no-replay":
     await RunScenarioAsync("active-reader-disconnect-no-replay", () => ActiveReaderNoReplayAsync(options));
     return;
+case "active-reader-second-command-in-progress":
+    await RunScenarioAsync("active-reader-second-command-in-progress", () => ActiveReaderSecondCommandInProgressAsync(options));
+    return;
 case "timeout-no-replay":
     await RunScenarioAsync("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options));
     return;
@@ -45,6 +48,7 @@ static void PrintScenarioList()
     Console.WriteLine("proxy-disconnect-no-replay");
     Console.WriteLine("explicit-tx-admin-shutdown-no-replay");
     Console.WriteLine("active-reader-disconnect-no-replay");
+    Console.WriteLine("active-reader-second-command-in-progress");
     Console.WriteLine("timeout-no-replay");
     Console.WriteLine("matrix");
 }
@@ -58,6 +62,7 @@ static async Task RunMatrixAsync(Options options)
         ("proxy-disconnect-no-replay", () => ProxyDisconnectNoReplayAsync(options)),
         ("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options)),
         ("active-reader-disconnect-no-replay", () => ActiveReaderNoReplayAsync(options)),
+        ("active-reader-second-command-in-progress", () => ActiveReaderSecondCommandInProgressAsync(options)),
         ("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options))
     };
 
@@ -291,6 +296,65 @@ static async Task ActiveReaderNoReplayAsync(Options options)
         throw captured;
 
     Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+}
+
+static async Task ActiveReaderSecondCommandInProgressAsync(Options options)
+{
+    var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+
+    await using (var activeReaderCommand = conn.CreateCommand())
+    {
+        activeReaderCommand.CommandText = """
+SELECT i, repeat('x', 8192)
+FROM generate_series(1, 100000) AS s(i);
+""";
+
+        await using var activeReader = await activeReaderCommand.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+        if (!await activeReader.ReadAsync())
+            throw new InvalidOperationException("Active reader scenario did not return the first row.");
+
+        var firstRow = activeReader.GetInt32(0);
+        using var textReader = activeReader.GetTextReader(1);
+        var buffer = new char[256];
+        var firstRead = await textReader.ReadAsync(buffer, 0, buffer.Length);
+        Console.WriteLine($"active-reader-first-row={firstRow} first-read={firstRead}");
+        if (firstRow != 1 || firstRead <= 0)
+            throw new InvalidOperationException("Active reader scenario did not keep the first reader alive as expected.");
+
+        await using var secondCommand = conn.CreateCommand();
+        secondCommand.CommandText = "SELECT 1;";
+
+        Exception? captured = null;
+        try
+        {
+            await secondCommand.ExecuteReaderAsync();
+            throw new InvalidOperationException("Second command unexpectedly succeeded while the first reader was still active.");
+        }
+        catch (Exception ex)
+        {
+            captured = ex;
+        }
+
+        if (captured is InvalidOperationException invalidOperationException &&
+            invalidOperationException.Message.StartsWith("Second command unexpectedly succeeded", StringComparison.Ordinal))
+            throw captured;
+
+        if (captured is not GaussDBOperationInProgressException)
+            throw new InvalidOperationException(
+                $"Expected {nameof(GaussDBOperationInProgressException)} but captured {captured!.GetType().Name}: {captured.Message}",
+                captured);
+
+        Console.WriteLine($"captured={captured.GetType().Name}: {captured.Message}");
+    }
+
+    var postCheck = await ExecuteScalarLongAsync(conn, "SELECT 1;");
+    Console.WriteLine($"post-check={postCheck}");
+    if (postCheck != 1)
+        throw new InvalidOperationException($"Unexpected post-check result {postCheck}.");
 }
 
 static async Task CommandTimeoutNoReplayAsync(Options options)
