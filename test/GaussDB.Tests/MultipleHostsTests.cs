@@ -1446,6 +1446,7 @@ public class MultipleHostsTests : TestBase
         {
             Host = MultipleHosts(az1First, az1Second, az2First, az2Second),
             PriorityServers = 2,
+            RefreshCNIpListTime = 30,
             Pooling = false,
             ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
         };
@@ -1966,6 +1967,7 @@ public class MultipleHostsTests : TestBase
             Host = MultipleHosts(az1First, az1Second, az2First, az2Second),
             PriorityServers = 2,
             AutoBalance = "priority2",
+            RefreshCNIpListTime = 30,
             Pooling = false,
             ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
         };
@@ -2006,6 +2008,7 @@ public class MultipleHostsTests : TestBase
         {
             Host = MultipleHosts(first, second, third),
             AutoBalance = "priority2",
+            RefreshCNIpListTime = 30,
             Pooling = false,
             ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
         };
@@ -2029,7 +2032,7 @@ public class MultipleHostsTests : TestBase
 
         var refreshAttempts = 0;
 
-        async ValueTask<HaEndpoint[]?> Refresh(CancellationToken cancellationToken)
+        async ValueTask<HaCoordinatorNode[]?> Refresh(CancellationToken cancellationToken)
         {
             refreshAttempts++;
             await Task.CompletedTask;
@@ -2055,6 +2058,177 @@ public class MultipleHostsTests : TestBase
         Assert.That(first, Is.Null);
         Assert.That(second, Is.Null);
         Assert.That(refreshAttempts, Is.EqualTo(1));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task Dynamic_endpoint_is_preferred_before_seed_for_same_node()
+    {
+        GaussDBCoordinatorListTracker.Reset();
+
+        await using var seed = PgPostmasterMock.Start(state: Primary);
+        await using var dynamic = PgPostmasterMock.Start(state: Primary);
+
+        GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
+            ClusterKey(seed),
+            CoordinatorNode("cn_1", seed, dynamic));
+
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = MultipleHosts(seed),
+            AutoBalance = "shuffle",
+            RefreshCNIpListTime = 30,
+            UsingEip = true,
+            Pooling = false,
+            ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
+        };
+
+        await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
+        await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        Assert.That(connection.Port, Is.EqualTo(dynamic.Port));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task Dynamic_endpoint_failure_falls_back_to_seed_for_same_node()
+    {
+        GaussDBCoordinatorListTracker.Reset();
+
+        await using var seed = PgPostmasterMock.Start(state: Primary);
+        var unreachable = GetUnreachableEndpoint();
+
+        GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
+            ClusterKey(seed),
+            new HaCoordinatorNode("cn_1", new HaEndpoint(seed.Host, seed.Port), unreachable));
+
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = MultipleHosts(seed),
+            AutoBalance = "shuffle",
+            RefreshCNIpListTime = 30,
+            UsingEip = true,
+            Pooling = false,
+            ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
+        };
+
+        await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
+        await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        Assert.That(connection.Port, Is.EqualTo(seed.Port));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task Unknown_discovered_node_is_added_to_refreshing_cluster()
+    {
+        GaussDBCoordinatorListTracker.Reset();
+
+        var seedEndpoint = GetUnreachableEndpoint();
+        await using var expanded = PgPostmasterMock.Start(state: Primary);
+        var expandedEndpoint = new HaEndpoint(expanded.Host, expanded.Port);
+
+        GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
+            seedEndpoint.Key,
+            new HaCoordinatorNode("cn_seed", seedEndpoint, seedEndpoint),
+            new HaCoordinatorNode("cn_expanded", expandedEndpoint, expandedEndpoint));
+
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = seedEndpoint.Key,
+            AutoBalance = "roundrobin",
+            RefreshCNIpListTime = 30,
+            Pooling = false,
+            ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
+        };
+
+        await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
+        await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        Assert.That(connection.Port, Is.EqualTo(expanded.Port));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task Refreshing_primary_cluster_updates_other_cluster_dynamic_endpoint_without_joining_current_cluster()
+    {
+        GaussDBGlobalClusterStatusTracker.Reset();
+        GaussDBCoordinatorListTracker.Reset();
+
+        await using var az2Seed = PgPostmasterMock.Start(state: Primary);
+        await using var az2Dynamic = PgPostmasterMock.Start(state: Primary);
+        var az1Seed = GetUnreachableEndpoint();
+
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = $"{az1Seed.Key},{az2Seed.Host}:{az2Seed.Port}",
+            PriorityServers = 1,
+            AutoBalance = "shuffle",
+            RefreshCNIpListTime = 30,
+            UsingEip = true,
+            Pooling = false,
+            ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
+        };
+
+        var urlKey = string.Join(",", new[] { az1Seed.Key, $"{az2Seed.Host}:{az2Seed.Port}" }.OrderBy(static x => x, StringComparer.Ordinal));
+        var az1ClusterKey = az1Seed.Key;
+        var az2ClusterKey = ClusterKey(az2Seed);
+        GaussDBGlobalClusterStatusTracker.ReportPrimary(urlKey, az1ClusterKey);
+        GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
+            az1ClusterKey,
+            new HaCoordinatorNode("cn_1", az1Seed, az1Seed),
+            CoordinatorNode("cn_2", az2Seed, az2Dynamic));
+
+        await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
+        await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        Assert.That(connection.Port, Is.EqualTo(az2Dynamic.Port));
+        Assert.That(GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(urlKey), Is.EqualTo(az2ClusterKey));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task Preferred_cluster_uses_same_node_seed_fallback_before_secondary_cluster_when_seed_binding_comes_from_get_nodename()
+    {
+        GaussDBGlobalClusterStatusTracker.Reset();
+        GaussDBCoordinatorListTracker.Reset();
+
+        await using var az1First = PgPostmasterMock.Start(state: Primary);
+        await using var az1Second = PgPostmasterMock.Start(state: Primary);
+        await using var az2First = PgPostmasterMock.Start(state: Primary);
+
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            Host = MultipleHosts(az1First, az1Second, az2First),
+            PriorityServers = 2,
+            AutoBalance = "priority2",
+            RefreshCNIpListTime = 30,
+            UsingEip = true,
+            Pooling = false,
+            ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
+        };
+
+        var az1ClusterKey = ClusterKey(az1First, az1Second);
+        var urlKey = ClusterKey(az1First, az1Second, az2First);
+        GaussDBGlobalClusterStatusTracker.ReportPrimary(urlKey, az1ClusterKey);
+
+        GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
+            az1ClusterKey,
+            new HaCoordinatorNode("cn_5001", GetUnreachableEndpoint(), GetUnreachableEndpoint()),
+            new HaCoordinatorNode("cn_5002", GetUnreachableEndpoint(), GetUnreachableEndpoint()),
+            new HaCoordinatorNode("cn_5003", GetUnreachableEndpoint(), GetUnreachableEndpoint()));
+
+        await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
+
+        var seedProbe1 = RespondToGetNodeName(az1First, "cn_5001");
+        var seedProbe2 = RespondToGetNodeName(az1Second, "cn_5002");
+        var seedProbe3 = RespondToGetNodeName(az2First, "cn_5003");
+
+        await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        Assert.That(new[] { az1First.Port, az1Second.Port }, Contains.Item(connection.Port));
+
+        await Task.WhenAll(seedProbe1, seedProbe2, seedProbe3);
     }
 
     [Test]
@@ -2212,6 +2386,19 @@ public class MultipleHostsTests : TestBase
         => GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             ClusterKey(postmasters),
             postmasters.Select(p => new HaEndpoint(p.Host, p.Port)).ToArray());
+
+    static HaCoordinatorNode CoordinatorNode(string nodeName, PgPostmasterMock hostEndpoint, PgPostmasterMock eipEndpoint)
+        => new(
+            nodeName,
+            new HaEndpoint(hostEndpoint.Host, hostEndpoint.Port),
+            new HaEndpoint(eipEndpoint.Host, eipEndpoint.Port));
+
+    static async Task RespondToGetNodeName(PgPostmasterMock postmaster, string nodeName)
+    {
+        var server = await postmaster.WaitForServerConnection();
+        await server.ExpectExtendedQuery();
+        await server.WriteScalarResponseAndFlush(nodeName);
+    }
 
     static HaEndpoint GetUnreachableEndpoint()
     {

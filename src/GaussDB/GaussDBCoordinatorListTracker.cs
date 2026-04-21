@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,16 +12,16 @@ static class GaussDBCoordinatorListTracker
     {
         // 同一个簇的 CN 刷新要做单飞控制，避免并发建连时同时打爆 pgxc_node。
         internal readonly SemaphoreSlim Semaphore = new(1, 1);
-        internal volatile HaEndpoint[]? Snapshot;
+        internal volatile HaCoordinatorNode[]? Snapshot;
         internal long LastAttemptTicks;
     }
 
     static readonly ConcurrentDictionary<string, Entry> Entries = new();
 
-    internal static ValueTask<HaEndpoint[]?> GetSnapshotAsync(
+    internal static ValueTask<HaCoordinatorNode[]?> GetSnapshotAsync(
         string clusterKey,
         TimeSpan refreshInterval,
-        Func<CancellationToken, ValueTask<HaEndpoint[]?>> refreshFactory,
+        Func<CancellationToken, ValueTask<HaCoordinatorNode[]?>> refreshFactory,
         bool async,
         CancellationToken cancellationToken)
     {
@@ -34,16 +35,21 @@ static class GaussDBCoordinatorListTracker
     }
 
     internal static void SeedSnapshotForTesting(string clusterKey, params HaEndpoint[] endpoints)
+        => SeedSnapshotForTesting(
+            clusterKey,
+            endpoints.Select(static (endpoint, index) => new HaCoordinatorNode($"seed_{index}", endpoint, endpoint)).ToArray());
+
+    internal static void SeedSnapshotForTesting(string clusterKey, params HaCoordinatorNode[] nodes)
     {
         var entry = Entries.GetOrAdd(clusterKey, static _ => new Entry());
-        entry.Snapshot = endpoints.Length == 0 ? null : endpoints;
+        entry.Snapshot = nodes.Length == 0 ? null : nodes;
         entry.LastAttemptTicks = DateTime.UtcNow.Ticks;
     }
 
     internal static void Reset()
         => Entries.Clear();
 
-    static bool TryGetFreshSnapshot(Entry entry, TimeSpan refreshInterval, out HaEndpoint[]? snapshot)
+    static bool TryGetFreshSnapshot(Entry entry, TimeSpan refreshInterval, out HaCoordinatorNode[]? snapshot)
     {
         snapshot = entry.Snapshot;
         var lastAttemptTicks = entry.LastAttemptTicks;
@@ -54,10 +60,10 @@ static class GaussDBCoordinatorListTracker
         return lastAttemptUtc >= DateTime.UtcNow - refreshInterval;
     }
 
-    static async ValueTask<HaEndpoint[]?> RefreshAsync(
+    static async ValueTask<HaCoordinatorNode[]?> RefreshAsync(
         Entry entry,
         TimeSpan refreshInterval,
-        Func<CancellationToken, ValueTask<HaEndpoint[]?>> refreshFactory,
+        Func<CancellationToken, ValueTask<HaCoordinatorNode[]?>> refreshFactory,
         CancellationToken cancellationToken)
     {
         await entry.Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);

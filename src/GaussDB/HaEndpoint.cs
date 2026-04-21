@@ -11,3 +11,12 @@ readonly record struct HaEndpoint(string Host, int Port)
 
     public override string ToString() => Key;
 }
+
+readonly record struct HaCoordinatorNode(string NodeName, HaEndpoint HostEndpoint, HaEndpoint EipEndpoint)
+{
+    internal HaEndpoint GetPreferredEndpoint(bool usingEip)
+        => usingEip ? EipEndpoint : HostEndpoint;
+
+    internal bool Matches(HaEndpoint endpoint)
+        => HostEndpoint.Key == endpoint.Key || EipEndpoint.Key == endpoint.Key;
+}

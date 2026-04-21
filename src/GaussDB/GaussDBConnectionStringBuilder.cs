@@ -1090,16 +1090,16 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     [Category("Failover and load balancing")]
     [Description("Controls how often the driver refreshes coordinator endpoints from metadata.")]
     [DisplayName("Refresh CN IP List Time")]
-    [DefaultValue(10)]
+    [DefaultValue(0)]
     [GaussDBConnectionStringProperty]
     public int RefreshCNIpListTime
     {
         get => _refreshCNIpListTime;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
             if (value > 9999)
-                throw new ArgumentOutOfRangeException(nameof(value), value, "RefreshCNIpListTime must be between 1 and 9999 seconds.");
+                throw new ArgumentOutOfRangeException(nameof(value), value, "RefreshCNIpListTime must be between 0 and 9999 seconds.");
 
             _refreshCNIpListTime = value;
             SetValue(nameof(RefreshCNIpListTime), value);

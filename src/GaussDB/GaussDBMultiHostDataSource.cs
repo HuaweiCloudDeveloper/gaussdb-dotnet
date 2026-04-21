@@ -27,12 +27,15 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     readonly ConcurrentDictionary<string, GaussDBDataSource> _endpointPools = new(StringComparer.Ordinal);
     readonly SeedCluster[] _seedClusters;
     readonly string _urlKey;
+    readonly ConcurrentDictionary<string, SeedBinding> _seedBindings = new(StringComparer.Ordinal);
+    readonly ConcurrentDictionary<string, LogicalNodeRecord> _logicalNodes = new(StringComparer.Ordinal);
 
     internal GaussDBDataSource[] Pools => _pools;
 
     readonly MultiHostDataSourceWrapper[] _wrappers;
 
     volatile int _roundRobinIndex = -1;
+    int _logicalNodeOrder;
 
     internal GaussDBMultiHostDataSource(GaussDBConnectionStringBuilder settings, GaussDBDataSourceConfiguration dataSourceConfig)
         : base(settings, dataSourceConfig)
@@ -65,6 +68,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
         _seedClusters = BuildSeedClusters(settings, seedEndpoints);
         _urlKey = CreateKey(seedEndpoints);
+        _logicalNodeOrder = seedEndpoints.Length;
 
         var targetSessionAttributeValues = Enum.GetValues<TargetSessionAttributes>().ToArray();
         var highestValue = 0;
@@ -426,8 +430,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         foreach (var cluster in orderedClusters)
         {
             var endpoints = await ResolveClusterEndpoints(cluster, preferredClusterKey, cancellationToken).ConfigureAwait(false);
-            var orderedEndpoints = OrderClusterEndpoints(conn.Settings, cluster, endpoints);
-            var clusterPools = orderedEndpoints.Select(GetOrAddEndpointPool).ToArray();
+            var clusterPools = endpoints.Select(GetOrAddEndpointPool).ToArray();
             var filteredClusterPools = clusterPools
                 .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
                 .ToArray();
@@ -437,8 +440,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
             if (ShouldAppendSeedFallbackPlan(cluster, endpoints))
             {
-                var orderedSeedEndpoints = OrderClusterEndpoints(conn.Settings, cluster, cluster.SeedEndpoints);
-                var seedFallbackPools = orderedSeedEndpoints.Select(GetOrAddEndpointPool).ToArray();
+                var seedFallbackPools = cluster.SeedEndpoints.Select(GetOrAddEndpointPool).ToArray();
                 var filteredSeedFallbackPools = seedFallbackPools
                     .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
                     .ToArray();
@@ -472,14 +474,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     async ValueTask<HaEndpoint[]> ResolveClusterEndpoints(SeedCluster cluster, string? preferredClusterKey, CancellationToken cancellationToken)
     {
-        // 尽量贴近 JDBC：
-        // 1. 未开启 AutoBalance 时，不使用 pgxc_node 刷新的 CN 列表。
-        // 2. 双 AZ 场景下，只有“当前已知主簇”才使用刷新后的 CN 列表，其余簇继续保留原始 seed hosts，
-        //    这样当前主簇刷出不可达地址时，仍然可以退回到备用簇的公网 seed hosts。
         if (!ShouldUseCoordinatorSnapshot(cluster.Key, preferredClusterKey))
-            return cluster.SeedEndpoints;
+            return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: true);
 
-        // 优先使用最近一次刷新到的 CN 快照；刷新失败或没有快照时，回退到原始 seed hosts。
         var snapshot = await GaussDBCoordinatorListTracker.GetSnapshotAsync(
                 cluster.Key,
                 TimeSpan.FromSeconds(Settings.RefreshCNIpListTime),
@@ -488,13 +485,20 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 cancellationToken)
             .ConfigureAwait(false);
 
-        return snapshot is { Length: > 0 }
-            ? snapshot
-            : cluster.SeedEndpoints;
+        if (snapshot is { Length: > 0 })
+        {
+            await EnsureSeedBindingsAsync(snapshot, cancellationToken).ConfigureAwait(false);
+            MergeDiscoveredNodes(cluster, snapshot);
+        }
+
+        return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: false);
     }
 
     bool ShouldUseCoordinatorSnapshot(string clusterKey, string? preferredClusterKey)
     {
+        if (Settings.RefreshCNIpListTime <= 0)
+            return false;
+
         if (Settings.AutoBalanceModeParsed == HaAutoBalanceMode.Disabled)
             return false;
 
@@ -509,17 +513,14 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         if (Settings.PriorityServers > 0 || Settings.AutoBalanceModeParsed == HaAutoBalanceMode.Disabled)
             return false;
 
-        if (resolvedEndpoints.Count != cluster.SeedEndpoints.Length)
-            return true;
-
-        foreach (var endpoint in resolvedEndpoints)
-            if (!cluster.SeedEndpoints.Any(seed => seed.Key == endpoint.Key))
+        foreach (var seed in cluster.SeedEndpoints)
+            if (!resolvedEndpoints.Any(endpoint => endpoint.Key == seed.Key))
                 return true;
 
         return false;
     }
 
-    async ValueTask<HaEndpoint[]?> RefreshCoordinatorEndpoints(SeedCluster cluster, CancellationToken cancellationToken)
+    async ValueTask<HaCoordinatorNode[]?> RefreshCoordinatorEndpoints(SeedCluster cluster, CancellationToken cancellationToken)
     {
         // 只要该簇里有一个可达 seed CN，就用它查询 pgxc_node，拿到当前有效的 CN 列表。
         foreach (var endpoint in cluster.SeedEndpoints)
@@ -531,18 +532,21 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 await using (connection.ConfigureAwait(false))
                 {
                     using var command = connection.CreateCommand();
-                    command.CommandText = Settings.UsingEip
-                        ? "select node_host1,node_port1 from pgxc_node where node_type='C' and nodeis_active = true order by node_host1;"
-                        : "select node_host,node_port from pgxc_node where node_type='C' and nodeis_active = true order by node_host;";
+                    command.CommandText =
+                        "select node_name,node_host,node_port,node_host1,node_port1 " +
+                        "from pgxc_node where node_type='C' and nodeis_active = true order by node_name;";
 
                     var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
                     await using (reader.ConfigureAwait(false))
                     {
-                        var refreshedEndpoints = new List<HaEndpoint>();
+                        var refreshedNodes = new List<HaCoordinatorNode>();
                         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                            refreshedEndpoints.Add(new(reader.GetString(0), reader.GetInt32(1)));
+                            refreshedNodes.Add(new(
+                                reader.GetString(0),
+                                new HaEndpoint(reader.GetString(1), reader.GetInt32(2)),
+                                new HaEndpoint(reader.GetString(3), reader.GetInt32(4))));
 
-                        return refreshedEndpoints.Count == 0 ? null : refreshedEndpoints.ToArray();
+                        return refreshedNodes.Count == 0 ? null : refreshedNodes.ToArray();
                     }
                 }
             }
@@ -555,10 +559,191 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         return null;
     }
 
-    HaEndpoint[] OrderClusterEndpoints(
+    async ValueTask EnsureSeedBindingsAsync(IReadOnlyList<HaCoordinatorNode> snapshot, CancellationToken cancellationToken)
+    {
+        foreach (var cluster in _seedClusters)
+        {
+            for (var i = 0; i < cluster.SeedEndpoints.Length; i++)
+            {
+                var seedEndpoint = cluster.SeedEndpoints[i];
+                if (_seedBindings.ContainsKey(seedEndpoint.Key))
+                    continue;
+
+                var match = FindUniqueMatchingNode(snapshot, seedEndpoint) ??
+                            await IdentifySeedNodeAsync(seedEndpoint, snapshot, cancellationToken).ConfigureAwait(false);
+                if (match is null)
+                    continue;
+
+                TryBindSeedEndpoint(cluster, i, seedEndpoint, match.Value.NodeName);
+            }
+        }
+    }
+
+    async ValueTask<HaCoordinatorNode?> IdentifySeedNodeAsync(
+        HaEndpoint seedEndpoint,
+        IReadOnlyList<HaCoordinatorNode> snapshot,
+        CancellationToken cancellationToken)
+    {
+        var probeSettings = Settings.Clone();
+        probeSettings.Host = seedEndpoint.Host;
+        probeSettings.Port = seedEndpoint.Port;
+        probeSettings.Pooling = false;
+        probeSettings.LoadBalanceHosts = false;
+        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.PriorityServers));
+        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.AutoBalance));
+        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.RefreshCNIpListTime));
+        probeSettings.Timeout = probeSettings.Timeout == 0 ? 2 : Math.Min(probeSettings.Timeout, 2);
+        probeSettings.CommandTimeout = probeSettings.CommandTimeout == 0 ? 2 : Math.Min(probeSettings.CommandTimeout, 2);
+
+        try
+        {
+            var connection = new GaussDBConnection(probeSettings.ConnectionString);
+            await using (connection.ConfigureAwait(false))
+            {
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                using var command = connection.CreateCommand();
+                command.CommandText = "select get_nodename();";
+
+                var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                await using (reader.ConfigureAwait(false))
+                {
+                    if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                        return null;
+
+                    var nodeName = reader.GetString(0);
+                    for (var i = 0; i < snapshot.Count; i++)
+                    {
+                        var discovered = snapshot[i];
+                        if (discovered.NodeName == nodeName)
+                            return discovered;
+                    }
+
+                    return null;
+                }
+            }
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    static HaCoordinatorNode? FindUniqueMatchingNode(IReadOnlyList<HaCoordinatorNode> snapshot, HaEndpoint endpoint)
+    {
+        HaCoordinatorNode? match = null;
+        for (var i = 0; i < snapshot.Count; i++)
+        {
+            var discovered = snapshot[i];
+            if (!discovered.Matches(endpoint))
+                continue;
+
+            if (match is not null)
+                return null;
+
+            match = discovered;
+        }
+
+        return match;
+    }
+
+    void TryBindSeedEndpoint(SeedCluster cluster, int seedIndex, HaEndpoint seedEndpoint, string nodeName)
+    {
+        if (_logicalNodes.TryGetValue(nodeName, out var existing) && existing.ClusterKey != cluster.Key)
+            return;
+
+        var seedOrder = GetSeedOrder(cluster, seedIndex);
+        var record = _logicalNodes.GetOrAdd(
+            nodeName,
+            static (name, state) => new LogicalNodeRecord(name, state.ClusterKey, state.SeedEndpoint, state.SeedOrder),
+            (ClusterKey: cluster.Key, SeedEndpoint: seedEndpoint, SeedOrder: seedOrder));
+
+        if (record.ClusterKey != cluster.Key)
+            return;
+
+        record.SetSeedEndpoint(seedEndpoint, seedOrder);
+        _seedBindings.TryAdd(seedEndpoint.Key, new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder));
+    }
+
+    void MergeDiscoveredNodes(SeedCluster cluster, IReadOnlyList<HaCoordinatorNode> snapshot)
+    {
+        if (!ClusterHasConfirmedSeedBinding(cluster))
+            return;
+
+        for (var i = 0; i < snapshot.Count; i++)
+        {
+            var discovered = snapshot[i];
+            var preferredEndpoint = discovered.GetPreferredEndpoint(Settings.UsingEip);
+            if (_logicalNodes.TryGetValue(discovered.NodeName, out var existing))
+            {
+                existing.UpdateDynamicEndpoint(preferredEndpoint);
+                continue;
+            }
+
+            var order = Interlocked.Increment(ref _logicalNodeOrder);
+            var created = new LogicalNodeRecord(discovered.NodeName, cluster.Key, null, order);
+            created.UpdateDynamicEndpoint(preferredEndpoint);
+            _logicalNodes.TryAdd(discovered.NodeName, created);
+        }
+    }
+
+    bool ClusterHasConfirmedSeedBinding(SeedCluster cluster)
+        => cluster.SeedEndpoints.Any(seed => _seedBindings.ContainsKey(seed.Key));
+
+    HaEndpoint[] BuildLogicalCandidates(SeedCluster cluster, bool includeUnboundSeedEndpoints)
+    {
+        var candidates = new List<LogicalNodeCandidate>(cluster.SeedEndpoints.Length + _logicalNodes.Count);
+        var seenNodeNames = new HashSet<string>(StringComparer.Ordinal);
+
+        for (var i = 0; i < cluster.SeedEndpoints.Length; i++)
+        {
+            var seedEndpoint = cluster.SeedEndpoints[i];
+            if (_seedBindings.TryGetValue(seedEndpoint.Key, out var binding) &&
+                _logicalNodes.TryGetValue(binding.NodeName, out var node) &&
+                node.ClusterKey == cluster.Key)
+            {
+                candidates.Add(new(node.NodeName, node.SeedEndpoint, node.GetDynamicEndpoint(), node.Order));
+                seenNodeNames.Add(node.NodeName);
+                continue;
+            }
+
+            if (includeUnboundSeedEndpoints)
+                candidates.Add(new(null, seedEndpoint, null, GetSeedOrder(cluster, i)));
+        }
+
+        foreach (var node in _logicalNodes.Values
+                     .Where(node => node.ClusterKey == cluster.Key && !seenNodeNames.Contains(node.NodeName))
+                     .OrderBy(node => node.Order))
+        {
+            candidates.Add(new(node.NodeName, node.SeedEndpoint, node.GetDynamicEndpoint(), node.Order));
+        }
+
+        var orderedCandidates = OrderClusterEndpoints(Settings, cluster, candidates);
+        var flattened = new List<HaEndpoint>(orderedCandidates.Length * 2);
+        var seenEndpoints = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var candidate in orderedCandidates)
+        {
+            var dynamicEndpoint = candidate.DynamicEndpoint;
+            if (dynamicEndpoint is not null && seenEndpoints.Add(dynamicEndpoint.Value.Key))
+                flattened.Add(dynamicEndpoint.Value);
+
+            var seedEndpoint = candidate.SeedEndpoint;
+            if (seedEndpoint is not null && seenEndpoints.Add(seedEndpoint.Value.Key))
+                flattened.Add(seedEndpoint.Value);
+        }
+
+        if (flattened.Count > 0)
+            return flattened.ToArray();
+
+        return includeUnboundSeedEndpoints
+            ? cluster.SeedEndpoints
+            : [];
+    }
+
+    LogicalNodeCandidate[] OrderClusterEndpoints(
         GaussDBConnectionStringBuilder settings,
         SeedCluster cluster,
-        IReadOnlyList<HaEndpoint> resolvedEndpoints)
+        IReadOnlyList<LogicalNodeCandidate> resolvedEndpoints)
     {
         if (resolvedEndpoints.Count <= 1)
             return resolvedEndpoints.ToArray();
@@ -566,13 +751,13 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         var allEndpoints = resolvedEndpoints.ToList();
         var priorityCount = settings.GetEffectivePriorityHostCount(cluster.SeedEndpoints.Length);
 
-        List<HaEndpoint> priorityEndpoints;
-        List<HaEndpoint> nonPriorityEndpoints;
+        List<LogicalNodeCandidate> priorityEndpoints;
+        List<LogicalNodeCandidate> nonPriorityEndpoints;
         if (priorityCount > 0)
         {
             var priorityKeys = new HashSet<string>(cluster.SeedEndpoints.Take(priorityCount).Select(static endpoint => endpoint.Key), StringComparer.Ordinal);
-            priorityEndpoints = allEndpoints.Where(endpoint => priorityKeys.Contains(endpoint.Key)).ToList();
-            nonPriorityEndpoints = allEndpoints.Where(endpoint => !priorityKeys.Contains(endpoint.Key)).ToList();
+            priorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is not null && priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
+            nonPriorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is null || !priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
         }
         else
         {
@@ -614,6 +799,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 : allEndpoints.ToArray();
         }
     }
+
+    static int GetSeedOrder(SeedCluster cluster, int index)
+        => index;
 
     GaussDBDataSource GetOrAddEndpointPool(HaEndpoint endpoint)
         => _endpointPools.GetOrAdd(endpoint.Key, _ =>
@@ -815,6 +1003,66 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     static string CreateKey(IReadOnlyCollection<HaEndpoint> endpoints)
         => string.Join(",", endpoints.Select(static endpoint => endpoint.Key).OrderBy(static endpoint => endpoint, StringComparer.Ordinal));
 
+    sealed class LogicalNodeRecord
+    {
+        readonly object _sync = new();
+        HaEndpoint? _seedEndpoint;
+        HaEndpoint? _dynamicEndpoint;
+        int _order;
+
+        internal LogicalNodeRecord(string nodeName, string clusterKey, HaEndpoint? seedEndpoint, int order)
+        {
+            NodeName = nodeName;
+            ClusterKey = clusterKey;
+            _seedEndpoint = seedEndpoint;
+            _order = order;
+        }
+
+        internal string NodeName { get; }
+        internal string ClusterKey { get; }
+
+        internal HaEndpoint? SeedEndpoint
+        {
+            get
+            {
+                lock (_sync)
+                    return _seedEndpoint;
+            }
+        }
+
+        internal int Order
+        {
+            get
+            {
+                lock (_sync)
+                    return _order;
+            }
+        }
+
+        internal void SetSeedEndpoint(HaEndpoint seedEndpoint, int order)
+        {
+            lock (_sync)
+            {
+                _seedEndpoint ??= seedEndpoint;
+                _order = Math.Min(_order, order);
+            }
+        }
+
+        internal void UpdateDynamicEndpoint(HaEndpoint endpoint)
+        {
+            lock (_sync)
+                _dynamicEndpoint = endpoint;
+        }
+
+        internal HaEndpoint? GetDynamicEndpoint()
+        {
+            lock (_sync)
+                return _dynamicEndpoint;
+        }
+    }
+
+    readonly record struct SeedBinding(HaEndpoint SeedEndpoint, string NodeName, string ClusterKey, int SeedOrder);
+    readonly record struct LogicalNodeCandidate(string? NodeName, HaEndpoint? SeedEndpoint, HaEndpoint? DynamicEndpoint, int Order);
     readonly record struct SeedCluster(string Key, HaEndpoint[] SeedEndpoints);
     readonly record struct ClusterRoutingPlan(string ClusterKey, GaussDBDataSource[] Pools, bool AllowOffline);
 }

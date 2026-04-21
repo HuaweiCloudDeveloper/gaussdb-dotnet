@@ -125,7 +125,7 @@ class ConnectionStringBuilderTests
         var builder = new GaussDBConnectionStringBuilder();
         Assert.That(builder.PriorityServers, Is.EqualTo(0));
         Assert.That(builder.AutoBalance, Is.Null);
-        Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(10));
+        Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(0));
         Assert.That(builder.UsingEip, Is.True);
         Assert.That(builder.AutoReconnect, Is.False);
         Assert.That(builder.MaxReconnects, Is.EqualTo(3));
@@ -182,12 +182,45 @@ class ConnectionStringBuilderTests
     }
 
     [Test]
-    public void RefreshCNIpListTime_invalid_throws()
+    public void RefreshCNIpListTime_zero_is_allowed()
+    {
+        var builder = new GaussDBConnectionStringBuilder
+        {
+            RefreshCNIpListTime = 0
+        };
+
+        Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void RefreshCNIpListTime_negative_throws()
         => Assert.Throws<ArgumentOutOfRangeException>(() =>
             new GaussDBConnectionStringBuilder
             {
-                RefreshCNIpListTime = 0
+                RefreshCNIpListTime = -1
             });
+
+    [Test]
+    public void Removing_ha_options_from_clone_allows_single_host_probe_connection_string()
+    {
+        var probeBuilder = new GaussDBConnectionStringBuilder
+        {
+            Host = "host1,host2,host3",
+            PriorityServers = 2,
+            AutoBalance = "priority2",
+            RefreshCNIpListTime = 30,
+            Username = "user",
+            Password = "password",
+            Database = "postgres"
+        }.Clone();
+
+        probeBuilder.Host = "host1";
+        probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.PriorityServers));
+        probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.AutoBalance));
+        probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.RefreshCNIpListTime));
+
+        Assert.DoesNotThrow(() => new GaussDBConnectionStringBuilder(probeBuilder.ConnectionString).PostProcessAndValidate());
+    }
 
     [Test]
     public void MaxReconnects_invalid_throws()
