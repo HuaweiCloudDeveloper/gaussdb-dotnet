@@ -1093,7 +1093,7 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task AutoReconnect_proxy_disconnect_reconnects_to_failover_host()
+    public async Task AutoReconnect_proxy_disconnect_does_not_replay_current_command()
     {
         await using var firstPostmaster = PgPostmasterMock.Start(state: Primary);
         await using var secondPostmaster = PgPostmasterMock.Start(state: Standby);
@@ -1119,20 +1119,17 @@ public class MultipleHostsTests : TestBase
         firstPostmaster.State = Standby;
         secondPostmaster.State = Primary;
         await firstProxy.DisableAsync();
+        var reconnectProbe = secondPostmaster.WaitForServerConnection().AsTask();
 
-        var queryTask = conn.ExecuteScalarAsync("SELECT 1");
-
-        var secondServer = await secondPostmaster.WaitForServerConnection();
-        await secondServer.ExpectExtendedQuery();
-        await secondServer.WriteScalarResponseAndFlush(1);
-
-        Assert.That(await queryTask, Is.EqualTo(1));
-        Assert.That(conn.Port, Is.EqualTo(secondProxy.Port));
+        Assert.ThrowsAsync<GaussDBException>(async () => await conn.ExecuteScalarAsync("SELECT 1"));
+        Assert.That(conn.State, Is.EqualTo(ConnectionState.Closed));
+        await Task.Delay(200);
+        Assert.That(reconnectProbe.IsCompleted, Is.False);
     }
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_auto_reconnect_proxy_disconnect_reconnects_to_secondary_az()
+    public async Task PriorityServers_auto_reconnect_proxy_disconnect_does_not_replay_current_command()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1159,20 +1156,17 @@ public class MultipleHostsTests : TestBase
         _ = await firstPostmaster.WaitForServerConnection();
 
         await firstProxy.DisableAsync();
+        var reconnectProbe = secondPostmaster.WaitForServerConnection().AsTask();
 
-        var queryTask = conn.ExecuteScalarAsync("SELECT 1");
-
-        var secondServer = await secondPostmaster.WaitForServerConnection();
-        await secondServer.ExpectExtendedQuery();
-        await secondServer.WriteScalarResponseAndFlush(1);
-
-        Assert.That(await queryTask, Is.EqualTo(1));
-        Assert.That(conn.Port, Is.EqualTo(secondProxy.Port));
+        Assert.ThrowsAsync<GaussDBException>(async () => await conn.ExecuteScalarAsync("SELECT 1"));
+        Assert.That(conn.State, Is.EqualTo(ConnectionState.Closed));
+        await Task.Delay(200);
+        Assert.That(reconnectProbe.IsCompleted, Is.False);
     }
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_auto_reconnect_disconnect_during_sql_execution_reconnects_to_secondary_az()
+    public async Task PriorityServers_auto_reconnect_disconnect_during_sql_execution_does_not_replay_current_command()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1202,13 +1196,12 @@ public class MultipleHostsTests : TestBase
         await firstServer.ExpectExtendedQuery();
 
         await firstProxy.DisableAsync();
+        var reconnectProbe = secondPostmaster.WaitForServerConnection().AsTask();
 
-        var secondServer = await secondPostmaster.WaitForServerConnection();
-        await secondServer.ExpectExtendedQuery();
-        await secondServer.WriteScalarResponseAndFlush(1);
-
-        Assert.That(await queryTask, Is.EqualTo(1));
-        Assert.That(conn.Port, Is.EqualTo(secondProxy.Port));
+        Assert.ThrowsAsync<GaussDBException>(async () => await queryTask);
+        Assert.That(conn.State, Is.EqualTo(ConnectionState.Closed));
+        await Task.Delay(200);
+        Assert.That(reconnectProbe.IsCompleted, Is.False);
     }
 
     [Test]
@@ -1292,7 +1285,7 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_auto_reconnect_failover_to_secondary_then_failback_to_primary_after_recovery()
+    public async Task PriorityServers_auto_reconnect_admin_shutdown_failover_to_secondary_then_failback_to_primary_after_recovery()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1321,14 +1314,17 @@ public class MultipleHostsTests : TestBase
         await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
         Assert.That(conn.Port, Is.EqualTo(az1FirstProxy.Port));
-        _ = await az1FirstPostmaster.WaitForServerConnection();
+        var az1CurrentServer = await az1FirstPostmaster.WaitForServerConnection();
 
         az1FirstProxy.RejectNewConnections();
-        az1FirstProxy.DisconnectExistingConnections();
         az1SecondProxy.RejectNewConnections();
-        az1SecondProxy.DisconnectExistingConnections();
 
         var failoverQueryTask = conn.ExecuteScalarAsync("SELECT 1");
+        await az1CurrentServer.ExpectExtendedQuery();
+        await az1CurrentServer
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failoverTarget = await WaitForAnyServerConnection(
             (az2FirstProxy.Port, az2FirstPostmaster),
             (az2SecondProxy.Port, az2SecondPostmaster));
@@ -1344,11 +1340,14 @@ public class MultipleHostsTests : TestBase
         dataSource.ClearDatabaseStates();
 
         az2FirstProxy.RejectNewConnections();
-        az2FirstProxy.DisconnectExistingConnections();
         az2SecondProxy.RejectNewConnections();
-        az2SecondProxy.DisconnectExistingConnections();
 
         var failbackQueryTask = conn.ExecuteScalarAsync("SELECT 2");
+        await failoverTarget.Server.ExpectExtendedQuery();
+        await failoverTarget.Server
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failbackTarget = await WaitForAnyServerConnection(
             (az1FirstProxy.Port, az1FirstPostmaster),
             (az1SecondProxy.Port, az1SecondPostmaster));
@@ -1362,7 +1361,7 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_exception_cn_eviction_auto_reconnect_and_az_failover()
+    public async Task PriorityServers_exception_cn_eviction_admin_shutdown_auto_reconnect_and_az_failover()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1392,12 +1391,16 @@ public class MultipleHostsTests : TestBase
         await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
         Assert.That(conn.Port, Is.EqualTo(az1FirstProxy.Port));
-        _ = await az1FirstPostmaster.WaitForServerConnection();
+        var az1FirstServer = await az1FirstPostmaster.WaitForServerConnection();
 
         az1FirstProxy.RejectNewConnections();
-        az1FirstProxy.DisconnectExistingConnections();
 
         var reconnectWithinPrimaryAzTask = conn.ExecuteScalarAsync("SELECT 1");
+        await az1FirstServer.ExpectExtendedQuery();
+        await az1FirstServer
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var reconnectWithinPrimaryAzServer = await az1SecondPostmaster.WaitForServerConnection();
         await reconnectWithinPrimaryAzServer.ExpectExtendedQuery();
         await reconnectWithinPrimaryAzServer.WriteScalarResponseAndFlush(1);
@@ -1408,9 +1411,13 @@ public class MultipleHostsTests : TestBase
         Assert.That(pools[1].GetDatabaseState(ignoreExpiration: true), Is.Not.EqualTo(DatabaseState.Offline));
 
         az1SecondProxy.RejectNewConnections();
-        az1SecondProxy.DisconnectExistingConnections();
 
         var failoverToSecondaryAzTask = conn.ExecuteScalarAsync("SELECT 2");
+        await reconnectWithinPrimaryAzServer.ExpectExtendedQuery();
+        await reconnectWithinPrimaryAzServer
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failoverToSecondaryAzTarget = await WaitForAnyServerConnection(
             (az2FirstProxy.Port, az2FirstPostmaster),
             (az2SecondProxy.Port, az2SecondPostmaster));
@@ -1487,7 +1494,7 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_primary_az_recovers_with_readd_then_secondary_az_failure_fails_back_to_primary()
+    public async Task PriorityServers_primary_az_recovers_with_readd_then_secondary_az_admin_shutdown_failure_fails_back_to_primary()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1517,14 +1524,17 @@ public class MultipleHostsTests : TestBase
         await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
         Assert.That(conn.Port, Is.EqualTo(az1FirstProxy.Port));
-        _ = await az1FirstPostmaster.WaitForServerConnection();
+        var az1CurrentServer = await az1FirstPostmaster.WaitForServerConnection();
 
         az1FirstProxy.RejectNewConnections();
-        az1FirstProxy.DisconnectExistingConnections();
         az1SecondProxy.RejectNewConnections();
-        az1SecondProxy.DisconnectExistingConnections();
 
         var failoverQueryTask = conn.ExecuteScalarAsync("SELECT 1");
+        await az1CurrentServer.ExpectExtendedQuery();
+        await az1CurrentServer
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failoverTarget = await WaitForAnyServerConnection(
             (az2FirstProxy.Port, az2FirstPostmaster),
             (az2SecondProxy.Port, az2SecondPostmaster));
@@ -1544,11 +1554,14 @@ public class MultipleHostsTests : TestBase
         Assert.That(pools[1].GetDatabaseState(ignoreExpiration: true), Is.EqualTo(DatabaseState.Unknown));
 
         az2FirstProxy.RejectNewConnections();
-        az2FirstProxy.DisconnectExistingConnections();
         az2SecondProxy.RejectNewConnections();
-        az2SecondProxy.DisconnectExistingConnections();
 
         var failbackQueryTask = conn.ExecuteScalarAsync("SELECT 2");
+        await failoverTarget.Server.ExpectExtendedQuery();
+        await failoverTarget.Server
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failbackTarget = await WaitForAnyServerConnection(
             (az1FirstProxy.Port, az1FirstPostmaster),
             (az1SecondProxy.Port, az1SecondPostmaster));
@@ -1562,7 +1575,7 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task PriorityServers_primary_az_recovers_after_host_recheck_then_secondary_az_failure_fails_back_to_primary()
+    public async Task PriorityServers_primary_az_recovers_after_host_recheck_then_secondary_az_admin_shutdown_failure_fails_back_to_primary()
     {
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
@@ -1593,14 +1606,17 @@ public class MultipleHostsTests : TestBase
         await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
         Assert.That(conn.Port, Is.EqualTo(az1FirstProxy.Port));
-        _ = await az1FirstPostmaster.WaitForServerConnection();
+        var az1CurrentServer = await az1FirstPostmaster.WaitForServerConnection();
 
         az1FirstProxy.RejectNewConnections();
-        az1FirstProxy.DisconnectExistingConnections();
         az1SecondProxy.RejectNewConnections();
-        az1SecondProxy.DisconnectExistingConnections();
 
         var failoverQueryTask = conn.ExecuteScalarAsync("SELECT 1");
+        await az1CurrentServer.ExpectExtendedQuery();
+        await az1CurrentServer
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failoverTarget = await WaitForAnyServerConnection(
             (az2FirstProxy.Port, az2FirstPostmaster),
             (az2SecondProxy.Port, az2SecondPostmaster));
@@ -1621,11 +1637,14 @@ public class MultipleHostsTests : TestBase
         Assert.That(pools[1].GetDatabaseState(), Is.EqualTo(DatabaseState.Unknown));
 
         az2FirstProxy.RejectNewConnections();
-        az2FirstProxy.DisconnectExistingConnections();
         az2SecondProxy.RejectNewConnections();
-        az2SecondProxy.DisconnectExistingConnections();
 
         var failbackQueryTask = conn.ExecuteScalarAsync("SELECT 2");
+        await failoverTarget.Server.ExpectExtendedQuery();
+        await failoverTarget.Server
+            .WriteErrorResponse(PostgresErrorCodes.AdminShutdown)
+            .WriteReadyForQuery()
+            .FlushAsync();
         var failbackTarget = await WaitForAnyServerConnection(
             (az1FirstProxy.Port, az1FirstPostmaster),
             (az1SecondProxy.Port, az1SecondPostmaster));

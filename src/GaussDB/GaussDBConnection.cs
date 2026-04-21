@@ -1602,7 +1602,7 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
         => SupportsAutoReconnect && IsAutoReconnectCandidate(exception);
 
     internal bool CanAutoReconnectCommand(Exception exception, bool allowAutoReconnect)
-        => allowAutoReconnect && IsAutoReconnectCandidate(exception);
+        => allowAutoReconnect && IsAutoReconnectCommandCandidate(exception);
 
     internal async Task PerformAutoReconnect(bool async, CancellationToken cancellationToken)
     {
@@ -1631,6 +1631,20 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
         };
     }
 
+    static bool IsAutoReconnectCommandCandidate(Exception exception)
+    {
+        if (exception is OperationCanceledException)
+            return false;
+
+        return exception switch
+        {
+            PostgresException postgresException => postgresException.SqlState == PostgresErrorCodes.AdminShutdown,
+            GaussDBException gaussDBException => gaussDBException.InnerException is not null && IsAutoReconnectCommandCandidate(gaussDBException.InnerException),
+            AggregateException aggregateException => AreAllAutoReconnectCommandCandidates(aggregateException),
+            _ => false
+        };
+    }
+
     static bool AreAllAutoReconnectCandidates(AggregateException aggregateException)
     {
         if (aggregateException.InnerExceptions.Count == 0)
@@ -1639,6 +1653,20 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
         foreach (var innerException in aggregateException.InnerExceptions)
         {
             if (!IsAutoReconnectCandidate(innerException))
+                return false;
+        }
+
+        return true;
+    }
+
+    static bool AreAllAutoReconnectCommandCandidates(AggregateException aggregateException)
+    {
+        if (aggregateException.InnerExceptions.Count == 0)
+            return false;
+
+        foreach (var innerException in aggregateException.InnerExceptions)
+        {
+            if (!IsAutoReconnectCommandCandidate(innerException))
                 return false;
         }
 
