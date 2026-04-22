@@ -38,6 +38,9 @@ case "cn-discovery-misconfigured-priority-seed-pollutes-cluster":
 case "cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption":
     await RunScenarioAsync("cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption", () => CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(options));
     return;
+case "cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster":
+    await RunScenarioAsync("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster", () => CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(options));
+    return;
 case "admin-shutdown-replay":
     await RunScenarioAsync("admin-shutdown-replay", () => AdminShutdownReplayAsync(options));
     return;
@@ -75,6 +78,7 @@ static void PrintScenarioList()
     Console.WriteLine("cn-discovery-forged-reachable-proxy-seed-binding");
     Console.WriteLine("cn-discovery-misconfigured-priority-seed-pollutes-cluster");
     Console.WriteLine("cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption");
+    Console.WriteLine("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster");
     Console.WriteLine("admin-shutdown-replay");
     Console.WriteLine("proxy-disconnect-no-replay");
     Console.WriteLine("explicit-tx-admin-shutdown-no-replay");
@@ -589,6 +593,91 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
     if (!pollutionObserved)
         throw new InvalidOperationException(
             $"Expected the preferred cluster to adopt the foreign node after the fallback seed stayed unbound, but connected via {observedEndpoint}.");
+}
+
+static async Task CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(Options options)
+{
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    if (seedRoutes.Length < 2)
+        throw new InvalidOperationException("Bound foreign seed scenario requires at least two real seed targets.");
+
+    var preferredSeed = seedRoutes[0];
+    var fallbackSeed = seedRoutes[1];
+    var deadPrimaryEndpoint = GetUnreachableEndpoint();
+
+    await using var fallbackRejectProbe = RejectingEndpointProbe.Start();
+    var fallbackProbeEndpoint = ParseEndpoint(fallbackRejectProbe.Endpoint);
+
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        preferredSeed.SeedEndpoint.Host,
+        preferredSeed.SeedEndpoint.Port,
+        new[]
+        {
+            new CoordinatorMetadata(preferredSeed.NodeName, deadPrimaryEndpoint, deadPrimaryEndpoint),
+            new CoordinatorMetadata(fallbackSeed.NodeName, fallbackProbeEndpoint, fallbackProbeEndpoint)
+        });
+
+    var discoveryConnectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { metadataProxy.Endpoint, fallbackRejectProbe.Endpoint },
+        options.BaseExtra,
+        "PriorityServers=1;AutoBalance=roundrobin;RefreshCNIpListTime=30");
+
+    Console.WriteLine($"preferred-seed={preferredSeed.Target} node={preferredSeed.NodeName}");
+    Console.WriteLine($"fallback-seed={fallbackSeed.Target} node={fallbackSeed.NodeName}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"rewritten-primary-endpoint={deadPrimaryEndpoint}");
+    Console.WriteLine($"rewritten-fallback-seed={fallbackRejectProbe.Endpoint}");
+    Console.WriteLine($"ConnectionString={discoveryConnectionString}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
+
+    await using (var warmConn1 = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var nodeName = await ExecuteScalarTextAsync(warmConn1, "SELECT get_nodename();");
+        var serverEndpoint = await ExecuteScalarTextAsync(warmConn1, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"warm-open[1] connected-via={warmConn1.Host}:{warmConn1.Port} server={serverEndpoint} node-name={nodeName}");
+    }
+
+    await using (var warmConn2 = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var nodeName = await ExecuteScalarTextAsync(warmConn2, "SELECT get_nodename();");
+        var serverEndpoint = await ExecuteScalarTextAsync(warmConn2, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"warm-open[2] connected-via={warmConn2.Host}:{warmConn2.Port} server={serverEndpoint} node-name={nodeName}");
+    }
+
+    Console.WriteLine($"metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (metadataProxy.RewrittenRowCount == 0)
+        throw new InvalidOperationException("Expected the second open to refresh pgxc_node on the preferred cluster, but no rows were rewritten.");
+
+    await metadataProxy.DisableAsync();
+    Console.WriteLine($"disabled-preferred-metadata-proxy={metadataProxy.Endpoint}");
+
+    Exception? captured = null;
+    try
+    {
+        await using var afterDisableConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+        var observedNodeName = await ExecuteScalarTextAsync(afterDisableConn, "SELECT get_nodename();");
+        var observedServerEndpoint = await ExecuteScalarTextAsync(afterDisableConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        throw new InvalidOperationException(
+            $"Connection unexpectedly succeeded after disabling the preferred seed. connected-via={afterDisableConn.Host}:{afterDisableConn.Port} server={observedServerEndpoint} node-name={observedNodeName}");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith("Connection unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+    Console.WriteLine($"fallback-reject-connection-count={fallbackRejectProbe.ConnectionCount}");
+
+    if (fallbackRejectProbe.ConnectionCount != 1)
+        throw new InvalidOperationException(
+            $"Expected the bound fallback seed to stay only in its own cluster and be attempted exactly once. observed-attempts={fallbackRejectProbe.ConnectionCount}");
 }
 
 static async Task OpenFailoverAsync(Options options)
@@ -1689,6 +1778,97 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
         {
             await source.CopyToAsync(destination, 81920, cancellationToken).ConfigureAwait(false);
             await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+}
+
+sealed class RejectingEndpointProbe : IAsyncDisposable
+{
+    readonly TcpListener _listener;
+    readonly CancellationTokenSource _shutdownCts = new();
+    readonly Task _acceptLoopTask;
+    volatile bool _disabled;
+    int _connectionCount;
+
+    internal string Endpoint => $"{IPAddress.Loopback}:{Port}";
+    internal int Port { get; }
+    internal int ConnectionCount => Volatile.Read(ref _connectionCount);
+
+    RejectingEndpointProbe()
+    {
+        _listener = new TcpListener(IPAddress.Loopback, 0);
+        _listener.Start();
+        Port = ((IPEndPoint)_listener.LocalEndpoint).Port;
+        _acceptLoopTask = RunAcceptLoopAsync();
+    }
+
+    internal static RejectingEndpointProbe Start()
+        => new();
+
+    async Task RunAcceptLoopAsync()
+    {
+        while (!_shutdownCts.IsCancellationRequested)
+        {
+            TcpClient client;
+            try
+            {
+                client = await _listener.AcceptTcpClientAsync(_shutdownCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (_shutdownCts.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (ObjectDisposedException) when (_shutdownCts.IsCancellationRequested || _disabled)
+            {
+                break;
+            }
+            catch (SocketException) when (_shutdownCts.IsCancellationRequested || _disabled)
+            {
+                break;
+            }
+
+            Interlocked.Increment(ref _connectionCount);
+            Abort(client);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_disabled)
+            return;
+
+        _disabled = true;
+        _shutdownCts.Cancel();
+        _listener.Stop();
+
+        try
+        {
+            await _acceptLoopTask.ConfigureAwait(false);
+        }
+        catch
+        {
+        }
+
+        _shutdownCts.Dispose();
+    }
+
+    static void Abort(TcpClient client)
+    {
+        try
+        {
+            if (client.Client is { } socket)
+                socket.LingerState = new LingerOption(true, 0);
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            client.Close();
+        }
+        catch
+        {
         }
     }
 }
