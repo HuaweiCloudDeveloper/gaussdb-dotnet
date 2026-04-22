@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using HuaweiCloud.GaussDB;
 
@@ -59,6 +60,15 @@ case "active-reader-second-command-in-progress":
 case "timeout-no-replay":
     await RunScenarioAsync("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options));
     return;
+case "seed-binding-rebind-using-eip-true":
+    await RunScenarioAsync("seed-binding-rebind-using-eip-true", () => SeedBindingRebindScenarioAsync(options, usingEip: true));
+    return;
+case "seed-binding-rebind-using-eip-false":
+    await RunScenarioAsync("seed-binding-rebind-using-eip-false", () => SeedBindingRebindScenarioAsync(options, usingEip: false));
+    return;
+case "seed-binding-rebind-state-check":
+    await RunScenarioAsync("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options));
+    return;
 case "matrix":
     await RunMatrixAsync(options);
     return;
@@ -85,6 +95,9 @@ static void PrintScenarioList()
     Console.WriteLine("active-reader-disconnect-no-replay");
     Console.WriteLine("active-reader-second-command-in-progress");
     Console.WriteLine("timeout-no-replay");
+    Console.WriteLine("seed-binding-rebind-using-eip-true");
+    Console.WriteLine("seed-binding-rebind-using-eip-false");
+    Console.WriteLine("seed-binding-rebind-state-check");
     Console.WriteLine("matrix");
 }
 
@@ -103,7 +116,10 @@ static async Task RunMatrixAsync(Options options)
         ("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options)),
         ("active-reader-disconnect-no-replay", () => ActiveReaderNoReplayAsync(options)),
         ("active-reader-second-command-in-progress", () => ActiveReaderSecondCommandInProgressAsync(options)),
-        ("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options))
+        ("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options)),
+        ("seed-binding-rebind-using-eip-true", () => SeedBindingRebindScenarioAsync(options, usingEip: true)),
+        ("seed-binding-rebind-using-eip-false", () => SeedBindingRebindScenarioAsync(options, usingEip: false)),
+        ("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options))
     };
 
     var results = new List<(string Name, bool Passed, string Detail)>(scenarios.Length);
@@ -981,6 +997,114 @@ static async Task CommandTimeoutNoReplayAsync(Options options)
         throw new InvalidOperationException("Timeout scenario reconnected to a new backend unexpectedly.");
 }
 
+static async Task SeedBindingRebindScenarioAsync(Options options, bool usingEip)
+{
+    var result = await ExecuteSeedBindingRebindFlowAsync(options, usingEip, emitStateDump: true);
+
+    Console.WriteLine($"target-node={result.TargetNodeName} blocked-seed={result.BlockedSeedEndpoint}");
+    Console.WriteLine($"wrong-owner-before={result.WrongOwnerBefore} corrected-owner-after={result.CorrectedOwnerAfter}");
+
+    if (!result.WrongOwnerBefore)
+        throw new InvalidOperationException("Did not observe initial wrong-cluster adoption before seed recovery; scenario did not reach the target branch.");
+
+    if (!result.CorrectedOwnerAfter)
+        throw new InvalidOperationException("Seed recovery did not correct logical node ownership back to the seed cluster.");
+
+    if (!result.HasRecoveredSeedBinding)
+        throw new InvalidOperationException("Recovered seed still has no seed binding after rebind.");
+}
+
+static async Task SeedBindingRebindStateCheckAsync(Options options)
+{
+    var result = await ExecuteSeedBindingRebindFlowAsync(options, usingEip: true, emitStateDump: true);
+
+    if (!result.WrongOwnerBefore)
+        throw new InvalidOperationException("Did not observe initial wrong-cluster adoption before correction.");
+
+    if (!result.CorrectedOwnerAfter)
+        throw new InvalidOperationException("Logical node owner is still wrong after recovered seed rebinding.");
+
+    if (!result.HasRecoveredSeedBinding)
+        throw new InvalidOperationException("Recovered seed binding missing after correction.");
+
+    if (result.TargetNodeBindingsAfter.Count != 1)
+        throw new InvalidOperationException($"Expected exactly 1 seed binding for {result.TargetNodeName} after correction, actual={result.TargetNodeBindingsAfter.Count}.");
+
+    var binding = result.TargetNodeBindingsAfter[0];
+    if (!string.Equals(binding.SeedEndpoint, result.BlockedSeedEndpoint, StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException($"Recovered binding points to {binding.SeedEndpoint}, expected {result.BlockedSeedEndpoint}.");
+
+    if (!string.Equals(binding.ClusterKey, result.SecondaryClusterKey, StringComparison.Ordinal))
+        throw new InvalidOperationException($"Recovered binding cluster is {binding.ClusterKey}, expected {result.SecondaryClusterKey}.");
+
+    if (result.TargetNodeOwnersAfter.Any(owner => !string.Equals(owner.ClusterKey, result.SecondaryClusterKey, StringComparison.Ordinal)))
+        throw new InvalidOperationException("Found stale logical owner in another cluster after correction.");
+}
+
+static async Task<SeedBindingRebindResult> ExecuteSeedBindingRebindFlowAsync(Options options, bool usingEip, bool emitStateDump)
+{
+    if (options.Targets.Length < 3)
+        throw new InvalidOperationException("Seed binding rebind scenarios require at least 3 CN targets.");
+
+    await using var proxyGroup = new ProxyGroup(options.Targets);
+    var blockedProxy = proxyGroup.GetByIndex(options.BindBlockTargetIndex);
+    var primaryClusterKey = string.Join(",", new[] { proxyGroup.GetByIndex(0).Endpoint, proxyGroup.GetByIndex(1).Endpoint }.OrderBy(static x => x, StringComparer.Ordinal));
+    var secondaryClusterKey = blockedProxy.Endpoint;
+    var targetEndpoint = ParseEndpoint(options.Targets[options.BindBlockTargetIndex]);
+    var targetNodeName = await FetchNodeNameDirectlyAsync(targetEndpoint.Host, targetEndpoint.Port, options.BaseExtra);
+
+    var scenarioExtra =
+        $"PriorityServers={options.PriorityServersForScenario};AutoBalance=priority2;Refresh CN IP List Time={options.RefreshSecondsForScenario};UsingEip={(usingEip ? "true" : "false")};AutoReconnect=false;Application Name=seed-binding-rebind-{(usingEip ? "eip" : "inner")}-{Guid.NewGuid():N}";
+    var connectionString = proxyGroup.ConnectionString(options.BaseExtra, scenarioExtra);
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"blocked-seed-proxy={blockedProxy.Endpoint} target={blockedProxy.Target} target-node={targetNodeName}");
+
+    await using (var conn = new GaussDBConnection(connectionString))
+    {
+        await conn.OpenAsync();
+        Console.WriteLine($"step-1 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
+    }
+
+    await blockedProxy.RejectConnectionsAsync();
+    Console.WriteLine($"step-2 paused blocked seed={blockedProxy.Endpoint}");
+    await Task.Delay(TimeSpan.FromSeconds(options.RefreshSecondsForScenario + 1));
+
+    RoutingSnapshot beforeState;
+    await using (var conn = new GaussDBConnection(connectionString))
+    {
+        await conn.OpenAsync();
+        Console.WriteLine($"step-2 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
+        beforeState = CaptureRoutingSnapshot(conn, proxyGroup);
+        if (emitStateDump)
+            Console.WriteLine(FormatRoutingSnapshot(beforeState));
+    }
+
+    await blockedProxy.ResumeAsync();
+    Console.WriteLine($"step-3 resumed blocked seed={blockedProxy.Endpoint}");
+    await Task.Delay(TimeSpan.FromSeconds(options.RefreshSecondsForScenario + 1));
+
+    RoutingSnapshot afterState;
+    await using (var conn = new GaussDBConnection(connectionString))
+    {
+        await conn.OpenAsync();
+        Console.WriteLine($"step-3 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
+        afterState = CaptureRoutingSnapshot(conn, proxyGroup);
+        if (emitStateDump)
+            Console.WriteLine(FormatRoutingSnapshot(afterState));
+    }
+
+    return new SeedBindingRebindResult(
+        targetNodeName,
+        blockedProxy.Endpoint,
+        primaryClusterKey,
+        secondaryClusterKey,
+        beforeState.LogicalNodes.Any(node => node.NodeName == targetNodeName && node.ClusterKey == primaryClusterKey),
+        afterState.LogicalNodes.Any(node => node.NodeName == targetNodeName && node.ClusterKey == secondaryClusterKey),
+        afterState.SeedBindings.Any(binding => binding.NodeName == targetNodeName && string.Equals(binding.SeedEndpoint, blockedProxy.Endpoint, StringComparison.OrdinalIgnoreCase)),
+        afterState.SeedBindings.Where(binding => binding.NodeName == targetNodeName).ToList(),
+        afterState.LogicalNodes.Where(node => node.NodeName == targetNodeName).ToList());
+}
+
 static async Task<long> ExecuteScalarLongAsync(GaussDBConnection conn, string sql, GaussDBTransaction? tx = null)
 {
     // 读标量并转成长整型，减少每个场景里的样板代码。
@@ -1003,6 +1127,103 @@ static async Task<object?> ExecuteScalarAsync(GaussDBConnection conn, string sql
     if (tx is not null)
         cmd.Transaction = tx;
     return await cmd.ExecuteScalarAsync();
+}
+
+static async Task<string> FetchNodeNameDirectlyAsync(string host, int port, string baseExtra)
+{
+    var connectionString = ConnectionStringUtil.BuildConnectionString(new[] { $"{host}:{port}" }, baseExtra, string.Empty);
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+    return await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+}
+
+static RoutingSnapshot CaptureRoutingSnapshot(GaussDBConnection conn, ProxyGroup proxyGroup)
+{
+    var dataSourceField = typeof(GaussDBConnection).GetField("_dataSource", BindingFlags.Instance | BindingFlags.NonPublic)
+                          ?? throw new InvalidOperationException("Could not find GaussDBConnection._dataSource.");
+    var dataSource = dataSourceField.GetValue(conn)
+                    ?? throw new InvalidOperationException("Connection _dataSource was null.");
+    var dataSourceType = dataSource.GetType();
+
+    var seedClustersField = dataSourceType.GetField("_seedClusters", BindingFlags.Instance | BindingFlags.NonPublic)
+                            ?? throw new InvalidOperationException("Could not find _seedClusters.");
+    var seedClustersArray = (Array?)seedClustersField.GetValue(dataSource) ?? Array.Empty<object>();
+    var seedClusters = new List<SeedClusterView>();
+    foreach (var cluster in seedClustersArray)
+    {
+        var clusterType = cluster!.GetType();
+        var clusterKey = Convert.ToString(clusterType.GetProperty("Key")!.GetValue(cluster)) ?? "<null>";
+        var endpoints = (Array?)clusterType.GetProperty("SeedEndpoints")!.GetValue(cluster) ?? Array.Empty<object>();
+        seedClusters.Add(new(
+            clusterKey,
+            endpoints.Cast<object?>().Select(FormatInternalEndpoint).ToList()));
+    }
+
+    var seedBindingsField = dataSourceType.GetField("_seedBindings", BindingFlags.Instance | BindingFlags.NonPublic)
+                             ?? throw new InvalidOperationException("Could not find _seedBindings.");
+    var seedBindingsDict = (System.Collections.IDictionary?)seedBindingsField.GetValue(dataSource)
+                           ?? throw new InvalidOperationException("_seedBindings was null.");
+    var seedBindings = new List<SeedBindingView>();
+    foreach (System.Collections.DictionaryEntry entry in seedBindingsDict)
+    {
+        var binding = entry.Value!;
+        var bindingType = binding.GetType();
+        var seedEndpoint = FormatInternalEndpoint(bindingType.GetProperty("SeedEndpoint")!.GetValue(binding));
+        seedBindings.Add(new(
+            seedEndpoint,
+            Convert.ToString(bindingType.GetProperty("NodeName")!.GetValue(binding)) ?? "<null>",
+            Convert.ToString(bindingType.GetProperty("ClusterKey")!.GetValue(binding)) ?? "<null>",
+            proxyGroup.DescribeEndpoint(seedEndpoint)));
+    }
+
+    var logicalNodesField = dataSourceType.GetField("_logicalNodes", BindingFlags.Instance | BindingFlags.NonPublic)
+                             ?? throw new InvalidOperationException("Could not find _logicalNodes.");
+    var logicalNodesDict = (System.Collections.IDictionary?)logicalNodesField.GetValue(dataSource)
+                           ?? throw new InvalidOperationException("_logicalNodes was null.");
+    var logicalNodes = new List<LogicalNodeView>();
+    foreach (System.Collections.DictionaryEntry entry in logicalNodesDict)
+    {
+        var node = entry.Value!;
+        var nodeType = node.GetType();
+        logicalNodes.Add(new(
+            Convert.ToString(nodeType.GetProperty("NodeName", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)) ?? "<null>",
+            Convert.ToString(nodeType.GetProperty("ClusterKey", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)) ?? "<null>",
+            FormatInternalEndpoint(nodeType.GetProperty("SeedEndpoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)),
+            FormatInternalEndpoint(nodeType.GetMethod("GetDynamicEndpoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.Invoke(node, null))));
+    }
+
+    return new(seedClusters, seedBindings, logicalNodes);
+}
+
+static string FormatRoutingSnapshot(RoutingSnapshot snapshot)
+{
+    var builder = new StringBuilder();
+    builder.AppendLine("[routing-state]");
+    builder.AppendLine("seed-clusters:");
+    foreach (var cluster in snapshot.SeedClusters)
+        builder.AppendLine($"  cluster={cluster.Key} seeds=[{string.Join(", ", cluster.SeedEndpoints)}]");
+
+    builder.AppendLine("seed-bindings:");
+    foreach (var binding in snapshot.SeedBindings.OrderBy(static x => x.SeedEndpoint, StringComparer.Ordinal))
+        builder.AppendLine($"  seed={binding.SeedEndpoint} ({binding.ProxyLabel}) -> node={binding.NodeName} cluster={binding.ClusterKey}");
+
+    builder.AppendLine("logical-nodes:");
+    foreach (var node in snapshot.LogicalNodes.OrderBy(static x => x.NodeName, StringComparer.Ordinal))
+        builder.AppendLine($"  logical node={node.NodeName} cluster={node.ClusterKey} seed={node.SeedEndpoint} dynamic={node.DynamicEndpoint}");
+
+    return builder.ToString();
+}
+
+static string FormatInternalEndpoint(object? endpoint)
+{
+    if (endpoint is null)
+        return "<null>";
+
+    var type = endpoint.GetType();
+    var host = Convert.ToString(type.GetProperty("Host", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(endpoint));
+    var portObject = type.GetProperty("Port", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(endpoint);
+    var port = portObject is null ? "<null>" : Convert.ToString(portObject);
+    return $"{host}:{port}";
 }
 
 static async Task<List<CoordinatorMetadata>> LoadActiveCoordinatorsAsync(GaussDBConnection conn)
@@ -1127,7 +1348,10 @@ sealed record Options(
     string Mode,
     string[] Targets,
     string BaseExtra,
-    TimeSpan FailDelay)
+    TimeSpan FailDelay,
+    int BindBlockTargetIndex,
+    int PriorityServersForScenario,
+    int RefreshSecondsForScenario)
 {
     // 从命令行参数和环境变量里解析场景配置，便于本地和 CI 共用同一套入口。
     internal static Options Parse(string[] args)
@@ -1154,8 +1378,18 @@ sealed record Options(
         var baseExtra = GetValue(values, "extra", "REAL_GAUSS_EXTRA",
             "Database=postgres;Username=root;Password=Gauss_234net,;Timeout=5;Command Timeout=30;SSL Mode=Disable;Pooling=false;Multiplexing=false;UsingEip=true");
         var failDelayMs = int.Parse(GetValue(values, "fail-delay-ms", "REAL_GAUSS_FAIL_DELAY_MS", "1000"));
+        var bindBlockTargetIndex = int.Parse(GetValue(values, "bind-block-target-index", "REAL_GAUSS_BIND_BLOCK_TARGET_INDEX", "2"));
+        var priorityServersForScenario = int.Parse(GetValue(values, "priority-servers", "REAL_GAUSS_PRIORITY_SERVERS", "2"));
+        var refreshSecondsForScenario = int.Parse(GetValue(values, "refresh-seconds", "REAL_GAUSS_REFRESH_SECONDS", "1"));
 
-        return new(mode, targets, baseExtra, TimeSpan.FromMilliseconds(failDelayMs));
+        return new(
+            mode,
+            targets,
+            baseExtra,
+            TimeSpan.FromMilliseconds(failDelayMs),
+            bindBlockTargetIndex,
+            priorityServersForScenario,
+            refreshSecondsForScenario);
     }
 
     static string GetValue(IReadOnlyDictionary<string, string> values, string key, string envVar, string defaultValue)
@@ -1182,6 +1416,12 @@ sealed class ProxyGroup : IAsyncDisposable
 
     internal RealTcpFaultProxy? FindByPort(int port)
         => _proxies.FirstOrDefault(proxy => proxy.Port == port);
+
+    internal string DescribeEndpoint(string endpoint)
+    {
+        var proxy = _proxies.FirstOrDefault(proxy => string.Equals(proxy.Endpoint, endpoint, StringComparison.OrdinalIgnoreCase));
+        return proxy is null ? "direct/unknown" : $"proxy->{proxy.Target}";
+    }
 
     internal string ConnectionString(string baseExtra, string scenarioExtra)
         => ConnectionStringUtil.BuildConnectionString(_proxies.Select(static proxy => proxy.Endpoint).ToArray(), baseExtra, scenarioExtra);
@@ -1648,6 +1888,22 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
             connection.Close();
     }
 
+    internal Task RejectConnectionsAsync()
+    {
+        _rejectNewConnections = true;
+        DisconnectExistingConnections();
+        return Task.CompletedTask;
+    }
+
+    internal Task ResumeAsync()
+    {
+        if (_disabled)
+            throw new InvalidOperationException("Proxy has already been disabled permanently.");
+
+        _rejectNewConnections = false;
+        return Task.CompletedTask;
+    }
+
     async Task RunAcceptLoopAsync()
     {
         // 接受连接并把流量转发到真实目标；这是一个最小转发代理。
@@ -1781,6 +2037,21 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
         }
     }
 }
+
+sealed record SeedClusterView(string Key, IReadOnlyList<string> SeedEndpoints);
+sealed record SeedBindingView(string SeedEndpoint, string NodeName, string ClusterKey, string ProxyLabel);
+sealed record LogicalNodeView(string NodeName, string ClusterKey, string SeedEndpoint, string DynamicEndpoint);
+sealed record RoutingSnapshot(IReadOnlyList<SeedClusterView> SeedClusters, IReadOnlyList<SeedBindingView> SeedBindings, IReadOnlyList<LogicalNodeView> LogicalNodes);
+sealed record SeedBindingRebindResult(
+    string TargetNodeName,
+    string BlockedSeedEndpoint,
+    string PrimaryClusterKey,
+    string SecondaryClusterKey,
+    bool WrongOwnerBefore,
+    bool CorrectedOwnerAfter,
+    bool HasRecoveredSeedBinding,
+    IReadOnlyList<SeedBindingView> TargetNodeBindingsAfter,
+    IReadOnlyList<LogicalNodeView> TargetNodeOwnersAfter);
 
 sealed class RejectingEndpointProbe : IAsyncDisposable
 {
