@@ -665,10 +665,6 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     void TryBindSeedEndpoint(SeedCluster cluster, int seedIndex, HaEndpoint seedEndpoint, string nodeName)
     {
-        // 同一个逻辑节点只能属于一个簇，防止跨 AZ 误绑定。
-        if (_logicalNodes.TryGetValue(nodeName, out var existing) && existing.ClusterKey != cluster.Key)
-            return;
-
         var seedOrder = GetSeedOrder(cluster, seedIndex);
         var record = _logicalNodes.GetOrAdd(
             nodeName,
@@ -676,10 +672,34 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             (ClusterKey: cluster.Key, SeedEndpoint: seedEndpoint, SeedOrder: seedOrder));
 
         if (record.ClusterKey != cluster.Key)
-            return;
+        {
+            // seed 后续若明确识别出该节点属于当前簇，则允许纠正先前动态发现造成的误归簇。
+            record.RebindClusterAndSeedEndpoint(cluster.Key, seedEndpoint, seedOrder);
+            RemoveConflictingSeedBindings(nodeName, cluster.Key, seedEndpoint.Key);
+        }
+        else
+        {
+            record.SetSeedEndpoint(seedEndpoint, seedOrder);
+        }
 
-        record.SetSeedEndpoint(seedEndpoint, seedOrder);
-        _seedBindings.TryAdd(seedEndpoint.Key, new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder));
+        _seedBindings.AddOrUpdate(
+            seedEndpoint.Key,
+            new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder),
+            (_, _) => new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder));
+    }
+
+    void RemoveConflictingSeedBindings(string nodeName, string clusterKey, string currentSeedKey)
+    {
+        foreach (var binding in _seedBindings)
+        {
+            if (binding.Key == currentSeedKey)
+                continue;
+
+            if (binding.Value.NodeName != nodeName || binding.Value.ClusterKey == clusterKey)
+                continue;
+
+            _seedBindings.TryRemove(binding.Key, out _);
+        }
     }
 
     void MergeDiscoveredNodes(SeedCluster cluster, IReadOnlyList<HaCoordinatorNode> snapshot)
@@ -1029,6 +1049,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     {
         // 逻辑节点记录会被并发更新，因此 seed/dynamic 地址和顺序都受同一把锁保护。
         readonly object _sync = new();
+        string _clusterKey;
         HaEndpoint? _seedEndpoint;
         HaEndpoint? _dynamicEndpoint;
         int _order;
@@ -1036,13 +1057,20 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         internal LogicalNodeRecord(string nodeName, string clusterKey, HaEndpoint? seedEndpoint, int order)
         {
             NodeName = nodeName;
-            ClusterKey = clusterKey;
+            _clusterKey = clusterKey;
             _seedEndpoint = seedEndpoint;
             _order = order;
         }
 
         internal string NodeName { get; }
-        internal string ClusterKey { get; }
+        internal string ClusterKey
+        {
+            get
+            {
+                lock (_sync)
+                    return _clusterKey;
+            }
+        }
 
         internal HaEndpoint? SeedEndpoint
         {
@@ -1069,6 +1097,16 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 // seed 地址一旦确认就保持最早顺序，避免后续探测把原始优先级覆盖掉。
                 _seedEndpoint ??= seedEndpoint;
                 _order = Math.Min(_order, order);
+            }
+        }
+
+        internal void RebindClusterAndSeedEndpoint(string clusterKey, HaEndpoint seedEndpoint, int order)
+        {
+            lock (_sync)
+            {
+                _clusterKey = clusterKey;
+                _seedEndpoint = seedEndpoint;
+                _order = order;
             }
         }
 
