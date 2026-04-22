@@ -8,6 +8,7 @@ using HuaweiCloud.GaussDB;
 
 var options = Options.Parse(args);
 
+// 通过命令行 mode 选择要执行的场景，便于单独复现某一种重连或故障转移行为。
 switch (options.Mode)
 {
 case "list":
@@ -85,6 +86,7 @@ static void PrintScenarioList()
 
 static async Task RunMatrixAsync(Options options)
 {
+    // matrix 模式会把所有场景串起来跑一遍，并把每个场景的结果单独汇总。
     var scenarios = new (string Name, Func<Task> Run)[]
     {
         ("open-failover", () => OpenFailoverAsync(options)),
@@ -126,6 +128,7 @@ static async Task RunMatrixAsync(Options options)
 
 static async Task RunScenarioAsync(string name, Func<Task> scenario)
 {
+    // 统一打印场景标题和 PASS 标记，方便在命令行里快速定位失败点。
     Console.WriteLine($"=== {name} ===");
     await scenario();
     Console.WriteLine("PASS");
@@ -590,6 +593,7 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
 
 static async Task OpenFailoverAsync(Options options)
 {
+    // 验证 Open 阶段能在主节点不可达时切到备节点，而不是卡死在第一个 seed 上。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var disabled = proxyGroup.GetByIndex(0);
     await disabled.DisableAsync();
@@ -609,6 +613,7 @@ static async Task OpenFailoverAsync(Options options)
 
 static async Task AdminShutdownReplayAsync(Options options)
 {
+    // 验证命令执行中遇到 AdminShutdown 时会自动重连并重新执行安全命令。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
 
@@ -641,8 +646,9 @@ static async Task AdminShutdownReplayAsync(Options options)
 
 static async Task ProxyDisconnectNoReplayAsync(Options options)
 {
+    // 验证代理断开时命令不会被透明重放，调用方应收到失败而不是悄悄成功。
     await using var proxyGroup = new ProxyGroup(options.Targets);
-    var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
+    var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3;RefreshCNIpListTime=1;AutoBalance=Shuffle");
     Console.WriteLine($"ConnectionString={connectionString}");
 
     await using var conn = new GaussDBConnection(connectionString);
@@ -680,6 +686,7 @@ static async Task ProxyDisconnectNoReplayAsync(Options options)
 
 static async Task ExplicitTransactionNoReplayAsync(Options options)
 {
+    // 显式事务内不允许自动重放，否则会破坏事务语义。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
 
@@ -720,6 +727,7 @@ static async Task ExplicitTransactionNoReplayAsync(Options options)
 
 static async Task ActiveReaderNoReplayAsync(Options options)
 {
+    // 活动 reader 期间也不能自动重连重放，否则读到的流状态会失真。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -791,6 +799,7 @@ static async Task ActiveReaderNoReplayAsync(Options options)
 
 static async Task ActiveReaderSecondCommandInProgressAsync(Options options)
 {
+    // 保持第一个 reader 打开时，第二个命令必须被拒绝，不能通过重连绕过去。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
 
@@ -850,6 +859,7 @@ FROM generate_series(1, 100000) AS s(i);
 
 static async Task CommandTimeoutNoReplayAsync(Options options)
 {
+    // 超时不应触发重连或换 backend，避免把普通慢 SQL 当成故障转移。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3;Command Timeout=1");
     Console.WriteLine($"ConnectionString={connectionString}");
 
@@ -884,18 +894,21 @@ static async Task CommandTimeoutNoReplayAsync(Options options)
 
 static async Task<long> ExecuteScalarLongAsync(GaussDBConnection conn, string sql, GaussDBTransaction? tx = null)
 {
+    // 读标量并转成长整型，减少每个场景里的样板代码。
     var value = await ExecuteScalarAsync(conn, sql, tx);
     return Convert.ToInt64(value);
 }
 
 static async Task<string> ExecuteScalarTextAsync(GaussDBConnection conn, string sql, GaussDBTransaction? tx = null)
 {
+    // 读标量并转成字符串，统一处理 null。
     var value = await ExecuteScalarAsync(conn, sql, tx);
     return Convert.ToString(value) ?? "<null>";
 }
 
 static async Task<object?> ExecuteScalarAsync(GaussDBConnection conn, string sql, GaussDBTransaction? tx = null)
 {
+    // 公共标量执行入口，可选地附带事务对象。
     await using var cmd = conn.CreateCommand();
     cmd.CommandText = sql;
     if (tx is not null)
@@ -973,6 +986,7 @@ static Endpoint GetUnreachableEndpoint()
 
 static async Task TerminateBackendAsync(string controlConnectionString, long pid)
 {
+    // 通过控制连接显式杀掉目标 backend，用来模拟后端故障。
     await using var control = new GaussDBConnection(controlConnectionString);
     await control.OpenAsync();
     await using var cmd = control.CreateCommand();
@@ -984,6 +998,7 @@ static async Task TerminateBackendAsync(string controlConnectionString, long pid
 
 sealed class ConnectionStringUtil
 {
+    // 把目标 endpoints 和场景专用参数拼成完整连接串，避免每个场景重复拼接。
     internal static string BuildConnectionString(IReadOnlyList<string> targets, string baseExtra, string scenarioExtra)
     {
         var hostPart = string.Join(',', targets);
@@ -1025,6 +1040,7 @@ sealed record Options(
     string BaseExtra,
     TimeSpan FailDelay)
 {
+    // 从命令行参数和环境变量里解析场景配置，便于本地和 CI 共用同一套入口。
     internal static Options Parse(string[] args)
     {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1063,6 +1079,7 @@ sealed class ProxyGroup : IAsyncDisposable
 {
     readonly RealTcpFaultProxy[] _proxies;
 
+    // 把一组真实目标包装成一组本地代理，方便统一注入断连/拒绝连接故障。
     internal ProxyGroup(IReadOnlyList<string> targets)
         => _proxies = targets.Select(ParseEndpoint).Select(endpoint => RealTcpFaultProxy.Start(endpoint.Host, endpoint.Port)).ToArray();
 
@@ -1514,6 +1531,7 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
     internal static RealTcpFaultProxy Start(string targetHost, int targetPort)
         => new(targetHost, targetPort);
 
+    // 仅拒绝新连接，不影响已经建立好的连接。
     internal async Task DisableAsync()
     {
         if (_disabled)
@@ -1536,12 +1554,14 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
 
     void DisconnectExistingConnections()
     {
+        // 主动断掉当前所有转发中的连接，触发客户端侧的故障转移逻辑。
         foreach (var connection in _connections.Values)
             connection.Close();
     }
 
     async Task RunAcceptLoopAsync()
     {
+        // 接受连接并把流量转发到真实目标；这是一个最小转发代理。
         while (!_shutdownCts.IsCancellationRequested)
         {
             TcpClient client;
@@ -1574,6 +1594,7 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
 
     async Task HandleClientAsync(TcpClient client)
     {
+        // 每个客户端都建立一对 client/server socket，然后双向转发。
         TcpClient? server = null;
         var connectionId = Interlocked.Increment(ref _nextConnectionId);
 
@@ -1608,6 +1629,7 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
 
     static void Abort(TcpClient client)
     {
+        // 用 RST 方式快速断开，避免测试因优雅关闭而错过故障时序。
         try
         {
             if (client.Client is { } socket)
@@ -1631,6 +1653,7 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
         readonly TcpClient _client = client;
         readonly TcpClient _server = server;
 
+        // 两个方向同时泵流，任一方向断开时就整体关闭这对 socket。
         internal async Task RunAsync(CancellationToken cancellationToken)
         {
             using (_client)
@@ -1657,6 +1680,7 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
 
         internal void Close()
         {
+            // 关闭两端，确保客户端和服务端都感知到中断。
             Abort(_client);
             Abort(_server);
         }

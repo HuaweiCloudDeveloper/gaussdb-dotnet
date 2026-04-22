@@ -27,7 +27,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     readonly ConcurrentDictionary<string, GaussDBDataSource> _endpointPools = new(StringComparer.Ordinal);
     readonly SeedCluster[] _seedClusters;
     readonly string _urlKey;
+    // seed endpoint 到逻辑 CN 的绑定关系；用于把 seed 地址与动态地址视为同一个节点。
     readonly ConcurrentDictionary<string, SeedBinding> _seedBindings = new(StringComparer.Ordinal);
+    // 簇内逻辑 CN 视图，保存节点名、seed 地址、动态地址以及排序信息。
     readonly ConcurrentDictionary<string, LogicalNodeRecord> _logicalNodes = new(StringComparer.Ordinal);
 
     internal GaussDBDataSource[] Pools => _pools;
@@ -386,6 +388,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         CancellationToken cancellationToken,
         bool allowOffline = false)
     {
+        // 统一封装一轮 pool 扫描顺序：先空闲/新建，再普通获取；先首选节点，再可接受的非首选节点。
         Func<DatabaseState, TargetSessionAttributes, bool> preferredValidator = allowOffline ? IsPreferredOrOffline : IsPreferred;
         Func<DatabaseState, TargetSessionAttributes, bool> onlineValidator = allowOffline ? IsOnlineOrOffline : IsOnline;
 
@@ -430,6 +433,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         foreach (var cluster in orderedClusters)
         {
             var endpoints = await ResolveClusterEndpoints(cluster, preferredClusterKey, cancellationToken).ConfigureAwait(false);
+            // 一份计划保留在线节点，另一份保留所有节点，供“整轮都被 Offline 裁空”时兜底。
             var clusterPools = endpoints.Select(GetOrAddEndpointPool).ToArray();
             var filteredClusterPools = clusterPools
                 .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
@@ -440,6 +444,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
             if (ShouldAppendSeedFallbackPlan(cluster, endpoints))
             {
+                // 动态 CN 列表没有覆盖全部 seed 时，再补一轮静态 seed fallback。
                 var seedFallbackPools = cluster.SeedEndpoints.Select(GetOrAddEndpointPool).ToArray();
                 var filteredSeedFallbackPools = seedFallbackPools
                     .Where(static pool => pool.GetDatabaseState() != DatabaseState.Offline)
@@ -474,9 +479,11 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     async ValueTask<HaEndpoint[]> ResolveClusterEndpoints(SeedCluster cluster, string? preferredClusterKey, CancellationToken cancellationToken)
     {
+        // 不使用动态快照时，直接根据当前逻辑视图构造候选，并带上尚未绑定的 seed。
         if (!ShouldUseCoordinatorSnapshot(cluster.Key, preferredClusterKey))
             return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: true);
 
+        // 快照获取带缓存与节流；真正刷新时才会查询 pgxc_node。
         var snapshot = await GaussDBCoordinatorListTracker.GetSnapshotAsync(
                 cluster.Key,
                 TimeSpan.FromSeconds(Settings.RefreshCNIpListTime),
@@ -487,15 +494,18 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
         if (snapshot is { Length: > 0 })
         {
+            // 先把 seed endpoint 和逻辑节点名对齐，再合并动态发现出来的新地址和新节点。
             await EnsureSeedBindingsAsync(snapshot, cancellationToken).ConfigureAwait(false);
             MergeDiscoveredNodes(cluster, snapshot);
         }
 
+        // 使用过快照后，只返回已纳入逻辑节点视图的候选，避免未绑定 seed 打乱排序。
         return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: false);
     }
 
     bool ShouldUseCoordinatorSnapshot(string clusterKey, string? preferredClusterKey)
     {
+        // 显式关闭刷新时，直接退回静态 seed 路由。
         if (Settings.RefreshCNIpListTime <= 0)
             return false;
 
@@ -510,9 +520,11 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     bool ShouldAppendSeedFallbackPlan(SeedCluster cluster, IReadOnlyList<HaEndpoint> resolvedEndpoints)
     {
+        // PriorityServers 场景下不额外补 seed fallback，避免把非首选簇又提前。
         if (Settings.PriorityServers > 0 || Settings.AutoBalanceModeParsed == HaAutoBalanceMode.Disabled)
             return false;
 
+        // 只要动态候选里缺失任一 seed，就追加一次静态 seed 扫描。
         foreach (var seed in cluster.SeedEndpoints)
             if (!resolvedEndpoints.Any(endpoint => endpoint.Key == seed.Key))
                 return true;
@@ -541,6 +553,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                     {
                         var refreshedNodes = new List<HaCoordinatorNode>();
                         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            // 同时保存 node_host 与 node_host1，后续再按 UsingEip 决定优先使用哪一个。
                             refreshedNodes.Add(new(
                                 reader.GetString(0),
                                 new HaEndpoint(reader.GetString(1), reader.GetInt32(2)),
@@ -561,6 +574,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     async ValueTask EnsureSeedBindingsAsync(IReadOnlyList<HaCoordinatorNode> snapshot, CancellationToken cancellationToken)
     {
+        // 逐个 seed endpoint 识别其对应的逻辑 CN 名字，后续动态地址才能与其合并。
         foreach (var cluster in _seedClusters)
         {
             for (var i = 0; i < cluster.SeedEndpoints.Length; i++)
@@ -584,6 +598,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         IReadOnlyList<HaCoordinatorNode> snapshot,
         CancellationToken cancellationToken)
     {
+        // 直接连到 seed 执行 get_nodename()，把“地址”反查成“逻辑节点名”。
         var probeSettings = Settings.Clone();
         probeSettings.Host = seedEndpoint.Host;
         probeSettings.Port = seedEndpoint.Port;
@@ -631,6 +646,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     static HaCoordinatorNode? FindUniqueMatchingNode(IReadOnlyList<HaCoordinatorNode> snapshot, HaEndpoint endpoint)
     {
+        // 地址唯一命中时可直接绑定；若同一地址对应多个节点，则退回显式探测。
         HaCoordinatorNode? match = null;
         for (var i = 0; i < snapshot.Count; i++)
         {
@@ -649,6 +665,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     void TryBindSeedEndpoint(SeedCluster cluster, int seedIndex, HaEndpoint seedEndpoint, string nodeName)
     {
+        // 同一个逻辑节点只能属于一个簇，防止跨 AZ 误绑定。
         if (_logicalNodes.TryGetValue(nodeName, out var existing) && existing.ClusterKey != cluster.Key)
             return;
 
@@ -667,6 +684,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     void MergeDiscoveredNodes(SeedCluster cluster, IReadOnlyList<HaCoordinatorNode> snapshot)
     {
+        // 只有当前簇已经确认过 seed 绑定，才允许把快照里的陌生节点并入本簇。
         if (!ClusterHasConfirmedSeedBinding(cluster))
             return;
 
@@ -692,6 +710,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     HaEndpoint[] BuildLogicalCandidates(SeedCluster cluster, bool includeUnboundSeedEndpoints)
     {
+        // 先构造逻辑节点候选，再按 AutoBalance 规则排序，最后扁平化成 endpoint 列表。
         var candidates = new List<LogicalNodeCandidate>(cluster.SeedEndpoints.Length + _logicalNodes.Count);
         var seenNodeNames = new HashSet<string>(StringComparer.Ordinal);
 
@@ -723,6 +742,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         var seenEndpoints = new HashSet<string>(StringComparer.Ordinal);
         foreach (var candidate in orderedCandidates)
         {
+            // 同一个逻辑节点优先尝试动态地址，失败时再回退到原始 seed 地址。
             var dynamicEndpoint = candidate.DynamicEndpoint;
             if (dynamicEndpoint is not null && seenEndpoints.Add(dynamicEndpoint.Value.Key))
                 flattened.Add(dynamicEndpoint.Value);
@@ -745,6 +765,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         SeedCluster cluster,
         IReadOnlyList<LogicalNodeCandidate> resolvedEndpoints)
     {
+        // 这里只做“簇内排序”；簇与簇之间的优先级已经在 BuildClusterRoutingPlansAsync 里决定。
         if (resolvedEndpoints.Count <= 1)
             return resolvedEndpoints.ToArray();
 
@@ -755,6 +776,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         List<LogicalNodeCandidate> nonPriorityEndpoints;
         if (priorityCount > 0)
         {
+            // priorityN 依据 seed 顺序判定高优先节点，动态地址变化不会改变其优先级归属。
             var priorityKeys = new HashSet<string>(cluster.SeedEndpoints.Take(priorityCount).Select(static endpoint => endpoint.Key), StringComparer.Ordinal);
             priorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is not null && priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
             nonPriorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is null || !priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
@@ -1005,6 +1027,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     sealed class LogicalNodeRecord
     {
+        // 逻辑节点记录会被并发更新，因此 seed/dynamic 地址和顺序都受同一把锁保护。
         readonly object _sync = new();
         HaEndpoint? _seedEndpoint;
         HaEndpoint? _dynamicEndpoint;
@@ -1043,6 +1066,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         {
             lock (_sync)
             {
+                // seed 地址一旦确认就保持最早顺序，避免后续探测把原始优先级覆盖掉。
                 _seedEndpoint ??= seedEndpoint;
                 _order = Math.Min(_order, order);
             }
@@ -1051,6 +1075,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         internal void UpdateDynamicEndpoint(HaEndpoint endpoint)
         {
             lock (_sync)
+                // 动态地址允许被最新快照覆盖，以便跟随 CN 实时漂移。
                 _dynamicEndpoint = endpoint;
         }
 
@@ -1061,8 +1086,12 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         }
     }
 
+    // seed endpoint 与逻辑节点名的确认绑定，用于把静态 seed 和动态 CN 地址视为同一节点。
     readonly record struct SeedBinding(HaEndpoint SeedEndpoint, string NodeName, string ClusterKey, int SeedOrder);
+    // 一个逻辑候选可能同时携带 seed/dynamic 两种地址，后续会展开成“先动态、后 seed”的尝试顺序。
     readonly record struct LogicalNodeCandidate(string? NodeName, HaEndpoint? SeedEndpoint, HaEndpoint? DynamicEndpoint, int Order);
+    // 一个簇对应一组 seed endpoints；PriorityServers 会把原始 host 列表切成多个簇。
     readonly record struct SeedCluster(string Key, HaEndpoint[] SeedEndpoints);
+    // 一轮簇级路由计划，同时说明要扫描哪些 pool，以及是否允许继续尝试 Offline 节点。
     readonly record struct ClusterRoutingPlan(string ClusterKey, GaussDBDataSource[] Pools, bool AllowOffline);
 }

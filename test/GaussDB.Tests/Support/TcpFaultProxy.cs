@@ -39,20 +39,24 @@ sealed class TcpFaultProxy : IAsyncDisposable
     internal static TcpFaultProxy Start(string targetHost, int targetPort)
         => new(targetHost, targetPort);
 
+    // 之后新建的连接直接拒绝，但不影响当前已经建立的转发连接。
     internal void RejectNewConnections()
         => _rejectNewConnections = true;
 
+    // 恢复接受新连接，让测试可以验证“故障后恢复”路径。
     internal void AcceptNewConnections()
         => _rejectNewConnections = false;
 
     internal void DisconnectExistingConnections()
     {
+        // 主动断开所有现有连接，用来模拟链路瞬断。
         foreach (var connection in _connections.Values)
             connection.Close();
     }
 
     internal async Task DisableAsync()
     {
+        // 完整停掉代理：拒绝新连接、断开旧连接，并退出 accept loop。
         if (_disabled)
             return;
 
@@ -75,6 +79,7 @@ sealed class TcpFaultProxy : IAsyncDisposable
 
     async Task RunAcceptLoopAsync()
     {
+        // 接受本地客户端连接，再为每个连接创建到真实目标的转发对。
         while (!_shutdownCts.IsCancellationRequested)
         {
             TcpClient client;
@@ -107,6 +112,7 @@ sealed class TcpFaultProxy : IAsyncDisposable
 
     async Task HandleClientAsync(TcpClient client)
     {
+        // 每个客户端各自维护一对 client/server socket，互不影响。
         TcpClient? server = null;
         var connectionId = Interlocked.Increment(ref _nextConnectionId);
 
@@ -141,6 +147,7 @@ sealed class TcpFaultProxy : IAsyncDisposable
 
     static void Abort(TcpClient client)
     {
+        // 尽量用 RST 快速终止连接，避免测试等待正常四次挥手。
         try
         {
             client.Client.LingerState = new LingerOption(true, 0);
@@ -163,6 +170,7 @@ sealed class TcpFaultProxy : IAsyncDisposable
         readonly TcpClient _client = client;
         readonly TcpClient _server = server;
 
+        // 两个方向并行泵流，任一方向结束就整体关闭这对连接。
         internal async Task RunAsync(CancellationToken cancellationToken)
         {
             using (_client)
@@ -190,6 +198,7 @@ sealed class TcpFaultProxy : IAsyncDisposable
 
         internal void Close()
         {
+            // 统一关闭 client/server 两端，确保双方都观察到链路中断。
             Abort(_client);
             Abort(_server);
         }

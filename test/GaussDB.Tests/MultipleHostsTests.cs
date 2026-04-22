@@ -897,6 +897,7 @@ public class MultipleHostsTests : TestBase
     [Test]
     public async Task AutoReconnect_retries_eligible_failover_error()
     {
+        // 模拟主库返回 AdminShutdown，验证命令安全窗口内会重连到新的主库并完成本次查询。
         await using var firstPostmaster = PgPostmasterMock.Start(state: Primary);
         await using var secondPostmaster = PgPostmasterMock.Start(state: Standby);
 
@@ -939,6 +940,7 @@ public class MultipleHostsTests : TestBase
     [Test]
     public async Task AutoReconnect_exhaustion_leaves_connection_closed()
     {
+        // 验证重连次数耗尽后连接会保持关闭状态，避免继续复用已坏 connector。
         var postmaster = PgPostmasterMock.Start(state: Primary);
         var postmasterDisposed = false;
 
@@ -973,6 +975,7 @@ public class MultipleHostsTests : TestBase
     [Test]
     public async Task AutoReconnect_does_not_replay_explicit_transaction()
     {
+        // 显式事务中遇到可重连错误也不能透明重放，否则会破坏事务边界。
         await using var firstPostmaster = PgPostmasterMock.Start(state: Primary);
         await using var secondPostmaster = PgPostmasterMock.Start(state: Standby);
 
@@ -1018,6 +1021,7 @@ public class MultipleHostsTests : TestBase
     [Test]
     public async Task AutoReconnect_does_not_replay_active_reader()
     {
+        // reader 已经开始返回数据时不能自动重连重放，避免流式读取出现重复或缺失。
         await using var firstPostmaster = PgPostmasterMock.Start(state: Primary);
         await using var secondPostmaster = PgPostmasterMock.Start(state: Standby);
 
@@ -1066,6 +1070,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_proxy_primary_unreachable_falls_back_to_secondary_seed_cluster()
     {
+        // 主 AZ 的 seed 代理不可达时，应按 PriorityServers 规则落到备用簇的 seed。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1095,6 +1100,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task AutoReconnect_proxy_disconnect_does_not_replay_current_command()
     {
+        // TCP 代理断开属于当前命令执行中断，不应把 SQL 自动重放到新节点。
         await using var firstPostmaster = PgPostmasterMock.Start(state: Primary);
         await using var secondPostmaster = PgPostmasterMock.Start(state: Standby);
         await using var firstProxy = TcpFaultProxy.Start(firstPostmaster.Host, firstPostmaster.Port);
@@ -1131,6 +1137,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_auto_reconnect_proxy_disconnect_does_not_replay_current_command()
     {
+        // 即使开启 PriorityServers，当前命令被 TCP 断开时也不做透明重放。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1168,6 +1175,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_auto_reconnect_disconnect_during_sql_execution_does_not_replay_current_command()
     {
+        // 在 SQL 已发送到服务端后断链，验证驱动只关闭连接，不重放当前命令。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1208,6 +1216,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_primary_az_single_cn_failure_routes_to_other_primary_az_cn()
     {
+        // 主 AZ 内一个 CN 不可达时，应优先尝试同主 AZ 的其他 CN，而不是直接切到备 AZ。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1243,6 +1252,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_failover_to_secondary_then_failback_to_primary_after_recovery()
     {
+        // 验证主 AZ 故障后切到备 AZ，主 AZ 恢复后又能回切。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1287,6 +1297,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_auto_reconnect_admin_shutdown_failover_to_secondary_then_failback_to_primary_after_recovery()
     {
+        // 启用 AutoReconnect 时，AdminShutdown 触发的重连同样要遵循主备 AZ 切换规则。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1363,6 +1374,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_exception_cn_eviction_admin_shutdown_auto_reconnect_and_az_failover()
     {
+        // 验证异常 CN 会被临时驱逐，随后重连和 AZ 切换都要走新的路由状态。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1434,6 +1446,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_retries_all_hosts_when_state_cache_marks_every_cluster_host_offline()
     {
+        // 当状态缓存把整组候选都标成 Offline 时，应回退再扫一轮静态 host。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1472,6 +1485,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Legacy_multi_host_retries_all_hosts_when_state_cache_marks_every_host_offline()
     {
+        // 兼容旧多 host 路由：缓存把所有 host 误判为 Offline 时也要回退重试。
         await using var first = PgPostmasterMock.Start(state: Primary);
         await using var second = PgPostmasterMock.Start(state: Primary);
         await using var third = PgPostmasterMock.Start(state: Primary);
@@ -1497,6 +1511,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_primary_az_recovers_with_readd_then_secondary_az_admin_shutdown_failure_fails_back_to_primary()
     {
+        // 主 AZ 恢复后重新加入路由，随后备用 AZ 故障时应再次回切到主 AZ。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1578,6 +1593,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_primary_az_recovers_after_host_recheck_then_secondary_az_admin_shutdown_failure_fails_back_to_primary()
     {
+        // 验证 HostRecheckSeconds 到期后，恢复的主 AZ 可以重新进入候选并被命中。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1661,6 +1677,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task TcpFaultProxy_disconnect_existing_connections_preserves_new_connections()
     {
+        // 断开已存在连接后，新连接仍应能正常建立，说明代理只影响当前链路。
         await using var postmaster = PgPostmasterMock.Start(state: Primary);
         await using var proxy = TcpFaultProxy.Start(postmaster.Host, postmaster.Port);
 
@@ -1689,6 +1706,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task TcpFaultProxy_reject_new_connections_can_be_restored()
     {
+        // 先拒绝新连接，再恢复接受，验证代理开关可逆。
         await using var postmaster = PgPostmasterMock.Start(state: Primary);
         await using var proxy = TcpFaultProxy.Start(postmaster.Host, postmaster.Port);
 
@@ -1890,6 +1908,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_prefers_discovered_primary_cluster()
     {
+        // 记忆中的主簇优先级应压过连接串里原始 seed 顺序。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1925,6 +1944,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task AutoBalance_priority_prefers_priority_seed_subset()
     {
+        // priorityN 只应在当前簇内生效，把高优先 seed 对应的节点排在前面。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1954,6 +1974,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task PriorityServers_autobalance_falls_back_to_secondary_seed_cluster_when_preferred_snapshot_is_unreachable()
     {
+        // 当前首选簇的动态快照全不可达时，应退回到对端簇的静态 seed。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -1997,6 +2018,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task AutoBalance_priority_falls_back_to_seed_hosts_when_snapshot_is_unreachable()
     {
+        // 单簇 priority 模式下，动态快照不可达时也要回到静态 seed hosts。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -2028,6 +2050,7 @@ public class MultipleHostsTests : TestBase
     [Test]
     public async Task Coordinator_snapshot_refresh_failure_is_throttled_by_refresh_interval()
     {
+        // 刷新失败同样要被节流，避免并发建连持续打 pgxc_node。
         GaussDBCoordinatorListTracker.Reset();
 
         var refreshAttempts = 0;
@@ -2064,6 +2087,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Dynamic_endpoint_is_preferred_before_seed_for_same_node()
     {
+        // 同一个逻辑节点同时存在动态地址和 seed 地址时，应优先走动态地址。
         GaussDBCoordinatorListTracker.Reset();
 
         await using var seed = PgPostmasterMock.Start(state: Primary);
@@ -2093,6 +2117,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Dynamic_endpoint_failure_falls_back_to_seed_for_same_node()
     {
+        // 动态地址不可达时，要回退到同一逻辑节点的 seed 地址。
         GaussDBCoordinatorListTracker.Reset();
 
         await using var seed = PgPostmasterMock.Start(state: Primary);
@@ -2122,6 +2147,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Unknown_discovered_node_is_added_to_refreshing_cluster()
     {
+        // 当前簇刷出来的新 CN 节点应能被合并进候选列表。
         GaussDBCoordinatorListTracker.Reset();
 
         var seedEndpoint = GetUnreachableEndpoint();
@@ -2152,6 +2178,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Refreshing_primary_cluster_updates_other_cluster_dynamic_endpoint_without_joining_current_cluster()
     {
+        // 刷新主簇时如果识别到其他簇的动态地址，只更新它的动态 endpoint，不把它错误并入当前簇。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -2190,6 +2217,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Preferred_cluster_uses_same_node_seed_fallback_before_secondary_cluster_when_seed_binding_comes_from_get_nodename()
     {
+        // seed 绑定只能靠 get_nodename() 识别时，首选簇仍应优先走本簇回退 seed。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -2235,6 +2263,7 @@ public class MultipleHostsTests : TestBase
     [NonParallelizable]
     public async Task Standby_connection_does_not_overwrite_preferred_primary_cluster()
     {
+        // 连接到 standby 不应覆盖“最近一次主簇”的记忆。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -2395,6 +2424,7 @@ public class MultipleHostsTests : TestBase
 
     static async Task RespondToGetNodeName(PgPostmasterMock postmaster, string nodeName)
     {
+        // 让 mock 节点对 get_nodename() 返回指定逻辑节点名，辅助 seed 绑定测试。
         var server = await postmaster.WaitForServerConnection();
         await server.ExpectExtendedQuery();
         await server.WriteScalarResponseAndFlush(nodeName);
@@ -2402,6 +2432,7 @@ public class MultipleHostsTests : TestBase
 
     static HaEndpoint GetUnreachableEndpoint()
     {
+        // 占用一个临时端口后立刻释放，构造“端口存在但无人监听”的不可达 endpoint。
         using var listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         var port = ((IPEndPoint)listener.LocalEndpoint).Port;
@@ -2411,6 +2442,7 @@ public class MultipleHostsTests : TestBase
 
     static async Task<(int Port, PgServerMock Server)> WaitForAnyServerConnection(params (int Port, PgPostmasterMock Postmaster)[] candidates)
     {
+        // 等待多个候选 postmaster 中任意一个先收到连接，用于验证实际落点。
         var candidateTasks = candidates
             .Select(async candidate => (candidate.Port, Server: await candidate.Postmaster.WaitForServerConnection()))
             .ToArray();

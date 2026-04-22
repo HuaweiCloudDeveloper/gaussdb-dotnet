@@ -122,6 +122,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void Ha_options_default_values()
     {
+        // 验证新增 HA 相关参数的默认值，确保未配置时仍保持兼容行为。
         var builder = new GaussDBConnectionStringBuilder();
         Assert.That(builder.PriorityServers, Is.EqualTo(0));
         Assert.That(builder.AutoBalance, Is.Null);
@@ -134,6 +135,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void Ha_options_parse_from_connection_string()
     {
+        // 验证主备 AZ、动态 CN 刷新和自动重连参数都能从连接串正确解析出来。
         var builder = new GaussDBConnectionStringBuilder(
             "Host=a,b,c,d;priorityServers=2;autoBalance=shufflePriority4;refreshCNIpListTime=30;usingEip=false;autoReconnect=true;maxReconnects=5");
 
@@ -147,6 +149,7 @@ class ConnectionStringBuilderTests
 
     [Test]
     public void AutoBalance_invalid_numeric_throws()
+        // AutoBalance 只能是受支持的模式名，不能直接填裸数字。
         => Assert.That(
             () => new GaussDBConnectionStringBuilder("Host=a,b;AutoBalance=3"),
             Throws.Exception.TypeOf<ArgumentException>().With.Message.Contains("AutoBalance"));
@@ -154,6 +157,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void PriorityServers_invalid_split_throws()
     {
+        // PriorityServers 必须真正把 host 列表拆成“优先簇 + 兜底簇”，否则配置无效。
         var builder = new GaussDBConnectionStringBuilder
         {
             Host = "a,b",
@@ -168,6 +172,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void Priority_auto_balance_caps_to_selected_cluster_size()
     {
+        // priorityN 在簇内生效时要被当前簇大小截断，避免优先区间超过实际节点数。
         var builder = new GaussDBConnectionStringBuilder
         {
             Host = "a,b,c,d",
@@ -184,6 +189,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void RefreshCNIpListTime_zero_is_allowed()
     {
+        // 0 表示关闭动态 CN 刷新，应当允许作为显式配置值。
         var builder = new GaussDBConnectionStringBuilder
         {
             RefreshCNIpListTime = 0
@@ -194,6 +200,7 @@ class ConnectionStringBuilderTests
 
     [Test]
     public void RefreshCNIpListTime_negative_throws()
+        // 刷新间隔不能为负数，避免路由刷新逻辑出现无意义配置。
         => Assert.Throws<ArgumentOutOfRangeException>(() =>
             new GaussDBConnectionStringBuilder
             {
@@ -203,6 +210,7 @@ class ConnectionStringBuilderTests
     [Test]
     public void Removing_ha_options_from_clone_allows_single_host_probe_connection_string()
     {
+        // seed 反查节点名时会克隆连接串并移除 HA 路由参数，探测连接必须退化成单 host 直连。
         var probeBuilder = new GaussDBConnectionStringBuilder
         {
             Host = "host1,host2,host3",
@@ -224,6 +232,7 @@ class ConnectionStringBuilderTests
 
     [Test]
     public void MaxReconnects_invalid_throws()
+        // 自动重连次数至少为 1，0 会让开启 AutoReconnect 失去意义。
         => Assert.Throws<ArgumentOutOfRangeException>(() =>
             new GaussDBConnectionStringBuilder
             {

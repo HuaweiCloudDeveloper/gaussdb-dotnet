@@ -1087,6 +1087,9 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     /// <summary>
     /// Controls how often the driver refreshes coordinator endpoints from metadata.
     /// </summary>
+    /// <remarks>
+    /// 取值为 `0` 时表示禁用动态 CN 刷新，只依赖连接串里的静态 seed hosts。
+    /// </remarks>
     [Category("Failover and load balancing")]
     [Description("Controls how often the driver refreshes coordinator endpoints from metadata.")]
     [DisplayName("Refresh CN IP List Time")]
@@ -1097,6 +1100,7 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         get => _refreshCNIpListTime;
         set
         {
+            // 允许显式关闭刷新，但仍限制最大值，避免异常配置把快照缓存得过久。
             ArgumentOutOfRangeException.ThrowIfNegative(value);
             if (value > 9999)
                 throw new ArgumentOutOfRangeException(nameof(value), value, "RefreshCNIpListTime must be between 0 and 9999 seconds.");

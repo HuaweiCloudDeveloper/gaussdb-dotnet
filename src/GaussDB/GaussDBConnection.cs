@@ -1601,6 +1601,7 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
     internal bool CanAutoReconnectOnOpen(Exception exception)
         => SupportsAutoReconnect && IsAutoReconnectCandidate(exception);
 
+    // 命令阶段的重连比 Open 阶段更保守，只允许在安全窗口内对明确可恢复的错误做重连。
     internal bool CanAutoReconnectCommand(Exception exception, bool allowAutoReconnect)
         => allowAutoReconnect && IsAutoReconnectCommandCandidate(exception);
 
@@ -1633,6 +1634,7 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
 
     static bool IsAutoReconnectCommandCandidate(Exception exception)
     {
+        // 命令执行中不能泛化重放；这里只接受后端主动下线这类可重新建连的场景。
         if (exception is OperationCanceledException)
             return false;
 
@@ -1661,6 +1663,7 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
 
     static bool AreAllAutoReconnectCommandCandidates(AggregateException aggregateException)
     {
+        // 聚合异常只有在所有内层异常都可重连时，才允许整次命令重试。
         if (aggregateException.InnerExceptions.Count == 0)
             return false;
 
