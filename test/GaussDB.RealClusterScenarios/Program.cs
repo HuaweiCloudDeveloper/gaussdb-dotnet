@@ -18,6 +18,27 @@ case "list":
 case "open-failover":
     await RunScenarioAsync("open-failover", () => OpenFailoverAsync(options));
     return;
+case "open-auto-reconnect-transient-failure":
+    await RunScenarioAsync("open-auto-reconnect-transient-failure", () => OpenAutoReconnectTransientFailureAsync(options));
+    return;
+case "priority-autobalance-preferred-cluster":
+    await RunScenarioAsync("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options));
+    return;
+case "invalid-autobalance-rejected":
+    await RunScenarioAsync("invalid-autobalance-rejected", () => InvalidAutoBalanceRejectedAsync(options));
+    return;
+case "host-recheck-expiry-reprobes":
+    await RunScenarioAsync("host-recheck-expiry-reprobes", () => HostRecheckExpiryReprobesAsync(options));
+    return;
+case "offline-cache-skips-immediate-reprobe":
+    await RunScenarioAsync("offline-cache-skips-immediate-reprobe", () => OfflineCacheSkipsImmediateReprobeAsync(options));
+    return;
+case "host-recheck-zero-immediate-reprobe":
+    await RunScenarioAsync("host-recheck-zero-immediate-reprobe", () => HostRecheckZeroImmediateReprobeAsync(options));
+    return;
+case "all-offline-fallback-recovered":
+    await RunScenarioAsync("all-offline-fallback-recovered", () => AllOfflineFallbackRecoveredAsync(options));
+    return;
 case "inspect-routing":
     await RunScenarioAsync("inspect-routing", () => InspectRoutingAsync(options));
     return;
@@ -32,6 +53,12 @@ case "cn-discovery-forged-expanded-node-failover":
     return;
 case "cn-discovery-forged-reachable-proxy-seed-binding":
     await RunScenarioAsync("cn-discovery-forged-reachable-proxy-seed-binding", () => CnDiscoveryForgedReachableProxySeedBindingAsync(options));
+    return;
+case "cn-discovery-using-eip-selection":
+    await RunScenarioAsync("cn-discovery-using-eip-selection", () => CnDiscoveryUsingEipSelectionAsync(options));
+    return;
+case "cn-discovery-refresh-disabled":
+    await RunScenarioAsync("cn-discovery-refresh-disabled", () => CnDiscoveryRefreshDisabledAsync(options));
     return;
 case "cn-discovery-misconfigured-priority-seed-pollutes-cluster":
     await RunScenarioAsync("cn-discovery-misconfigured-priority-seed-pollutes-cluster", () => CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(options));
@@ -51,6 +78,9 @@ case "proxy-disconnect-no-replay":
 case "explicit-tx-admin-shutdown-no-replay":
     await RunScenarioAsync("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options));
     return;
+case "copy-export-disconnect-no-replay":
+    await RunScenarioAsync("copy-export-disconnect-no-replay", () => CopyExportDisconnectNoReplayAsync(options));
+    return;
 case "active-reader-disconnect-no-replay":
     await RunScenarioAsync("active-reader-disconnect-no-replay", () => ActiveReaderNoReplayAsync(options));
     return;
@@ -69,6 +99,9 @@ case "seed-binding-rebind-using-eip-false":
 case "seed-binding-rebind-state-check":
     await RunScenarioAsync("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options));
     return;
+case "sql-error-no-reconnect":
+    await RunScenarioAsync("sql-error-no-reconnect", () => SqlErrorNoReconnectAsync(options));
+    return;
 case "matrix":
     await RunMatrixAsync(options);
     return;
@@ -81,23 +114,34 @@ default:
 static void PrintScenarioList()
 {
     Console.WriteLine("open-failover");
+    Console.WriteLine("open-auto-reconnect-transient-failure");
+    Console.WriteLine("priority-autobalance-preferred-cluster");
+    Console.WriteLine("invalid-autobalance-rejected");
+    Console.WriteLine("host-recheck-expiry-reprobes");
+    Console.WriteLine("offline-cache-skips-immediate-reprobe");
+    Console.WriteLine("host-recheck-zero-immediate-reprobe");
+    Console.WriteLine("all-offline-fallback-recovered");
     Console.WriteLine("inspect-routing");
     Console.WriteLine("cn-discovery-roundrobin");
     Console.WriteLine("cn-discovery-proxy-seed-binding");
     Console.WriteLine("cn-discovery-forged-expanded-node-failover");
     Console.WriteLine("cn-discovery-forged-reachable-proxy-seed-binding");
+    Console.WriteLine("cn-discovery-using-eip-selection");
+    Console.WriteLine("cn-discovery-refresh-disabled");
     Console.WriteLine("cn-discovery-misconfigured-priority-seed-pollutes-cluster");
     Console.WriteLine("cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption");
     Console.WriteLine("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster");
     Console.WriteLine("admin-shutdown-replay");
     Console.WriteLine("proxy-disconnect-no-replay");
     Console.WriteLine("explicit-tx-admin-shutdown-no-replay");
+    Console.WriteLine("copy-export-disconnect-no-replay");
     Console.WriteLine("active-reader-disconnect-no-replay");
     Console.WriteLine("active-reader-second-command-in-progress");
     Console.WriteLine("timeout-no-replay");
     Console.WriteLine("seed-binding-rebind-using-eip-true");
     Console.WriteLine("seed-binding-rebind-using-eip-false");
     Console.WriteLine("seed-binding-rebind-state-check");
+    Console.WriteLine("sql-error-no-reconnect");
     Console.WriteLine("matrix");
 }
 
@@ -107,19 +151,30 @@ static async Task RunMatrixAsync(Options options)
     var scenarios = new (string Name, Func<Task> Run)[]
     {
         ("open-failover", () => OpenFailoverAsync(options)),
+        ("open-auto-reconnect-transient-failure", () => OpenAutoReconnectTransientFailureAsync(options)),
+        ("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options)),
+        ("invalid-autobalance-rejected", () => InvalidAutoBalanceRejectedAsync(options)),
+        ("host-recheck-expiry-reprobes", () => HostRecheckExpiryReprobesAsync(options)),
+        ("offline-cache-skips-immediate-reprobe", () => OfflineCacheSkipsImmediateReprobeAsync(options)),
+        ("host-recheck-zero-immediate-reprobe", () => HostRecheckZeroImmediateReprobeAsync(options)),
+        ("all-offline-fallback-recovered", () => AllOfflineFallbackRecoveredAsync(options)),
         ("cn-discovery-roundrobin", () => CnDiscoveryRoundRobinAsync(options)),
         ("cn-discovery-proxy-seed-binding", () => CnDiscoveryProxySeedBindingAsync(options)),
         ("cn-discovery-forged-expanded-node-failover", () => CnDiscoveryForgedExpandedNodeFailoverAsync(options)),
         ("cn-discovery-forged-reachable-proxy-seed-binding", () => CnDiscoveryForgedReachableProxySeedBindingAsync(options)),
+        ("cn-discovery-using-eip-selection", () => CnDiscoveryUsingEipSelectionAsync(options)),
+        ("cn-discovery-refresh-disabled", () => CnDiscoveryRefreshDisabledAsync(options)),
         ("admin-shutdown-replay", () => AdminShutdownReplayAsync(options)),
         ("proxy-disconnect-no-replay", () => ProxyDisconnectNoReplayAsync(options)),
         ("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options)),
+        ("copy-export-disconnect-no-replay", () => CopyExportDisconnectNoReplayAsync(options)),
         ("active-reader-disconnect-no-replay", () => ActiveReaderNoReplayAsync(options)),
         ("active-reader-second-command-in-progress", () => ActiveReaderSecondCommandInProgressAsync(options)),
         ("timeout-no-replay", () => CommandTimeoutNoReplayAsync(options)),
         ("seed-binding-rebind-using-eip-true", () => SeedBindingRebindScenarioAsync(options, usingEip: true)),
         ("seed-binding-rebind-using-eip-false", () => SeedBindingRebindScenarioAsync(options, usingEip: false)),
-        ("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options))
+        ("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options)),
+        ("sql-error-no-reconnect", () => SqlErrorNoReconnectAsync(options))
     };
 
     var results = new List<(string Name, bool Passed, string Detail)>(scenarios.Length);
@@ -461,8 +516,124 @@ static async Task CnDiscoveryForgedReachableProxySeedBindingAsync(Options option
     Console.WriteLine("validation-mode=forged-direct-discovery");
 }
 
+static async Task CnDiscoveryUsingEipSelectionAsync(Options options)
+{
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var seedRoute = seedRoutes[0];
+
+    await using var hostSideProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
+    await using var eipSideProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
+    var hostSideEndpoint = ParseEndpoint(hostSideProxy.Endpoint);
+    var eipSideEndpoint = ParseEndpoint(eipSideProxy.Endpoint);
+
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port,
+        new[] { new CoordinatorMetadata(seedRoute.NodeName, hostSideEndpoint, eipSideEndpoint) });
+
+    Console.WriteLine($"seed-target={seedRoute.Target}");
+    Console.WriteLine($"seed-node-name={seedRoute.NodeName}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"forged-host-endpoint={hostSideEndpoint}");
+    Console.WriteLine($"forged-eip-endpoint={eipSideEndpoint}");
+
+    await OpenAndAssertPreferredEndpointAsync("using-eip-true", usingEip: true, eipSideEndpoint);
+    await OpenAndAssertPreferredEndpointAsync("using-eip-false", usingEip: false, hostSideEndpoint);
+
+    Console.WriteLine($"metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (metadataProxy.RewrittenRowCount == 0)
+        throw new InvalidOperationException("Expected CN discovery to read and rewrite pgxc_node rows.");
+
+    Console.WriteLine("validation-mode=using-eip-selection");
+
+    async Task OpenAndAssertPreferredEndpointAsync(string label, bool usingEip, Endpoint expectedEndpoint)
+    {
+        var connectionString = ConnectionStringUtil.BuildConnectionString(
+            new[] { metadataProxy.Endpoint },
+            options.BaseExtra,
+            $"AutoBalance=roundrobin;RefreshCNIpListTime=30;UsingEip={usingEip.ToString().ToLowerInvariant()}");
+        Console.WriteLine($"{label}-connection-string={connectionString}");
+
+        await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+        await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+        var connectedNodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+        var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        var connectedEndpoint = new Endpoint(conn.Host!, conn.Port);
+        Console.WriteLine($"{label} connected-via={connectedEndpoint} server={serverEndpoint} node-name={connectedNodeName}");
+
+        if (connectedNodeName != seedRoute.NodeName)
+            throw new InvalidOperationException(
+                $"{label} expected node '{seedRoute.NodeName}', but connected to '{connectedNodeName}'.");
+
+        if (connectedEndpoint.ToString() != expectedEndpoint.ToString())
+            throw new InvalidOperationException(
+                $"{label} expected endpoint {expectedEndpoint}, but connected via {connectedEndpoint}.");
+
+        if (connectedEndpoint.ToString() == metadataProxy.Endpoint)
+            throw new InvalidOperationException($"{label} unexpectedly stayed on the metadata rewrite proxy.");
+    }
+}
+
+static async Task CnDiscoveryRefreshDisabledAsync(Options options)
+{
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var seedRoute = seedRoutes[0];
+
+    await using var forgedPreferredProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
+    var forgedPreferredEndpoint = ParseEndpoint(forgedPreferredProxy.Endpoint);
+
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port,
+        new[] { new CoordinatorMetadata(seedRoute.NodeName, forgedPreferredEndpoint, forgedPreferredEndpoint) });
+
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { metadataProxy.Endpoint },
+        options.BaseExtra,
+        "AutoBalance=roundrobin;RefreshCNIpListTime=0");
+
+    Console.WriteLine($"seed-target={seedRoute.Target}");
+    Console.WriteLine($"seed-node-name={seedRoute.NodeName}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"forged-preferred-endpoint={forgedPreferredEndpoint}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+    var connectedNodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+    var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    var connectedEndpoint = new Endpoint(conn.Host!, conn.Port);
+    Console.WriteLine($"connected-via={connectedEndpoint} server={serverEndpoint} node-name={connectedNodeName}");
+    Console.WriteLine($"metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (connectedNodeName != seedRoute.NodeName)
+        throw new InvalidOperationException(
+            $"Expected disabled refresh scenario to stay on seed node '{seedRoute.NodeName}', but connected to '{connectedNodeName}'.");
+
+    if (connectedEndpoint.ToString() != metadataProxy.Endpoint)
+        throw new InvalidOperationException(
+            $"RefreshCNIpListTime=0 should not use forged discovered endpoint {forgedPreferredEndpoint}; connected via {connectedEndpoint}.");
+
+    if (metadataProxy.RewrittenRowCount != 0)
+        throw new InvalidOperationException("RefreshCNIpListTime=0 unexpectedly triggered pgxc_node row rewriting.");
+
+    if (metadataProxy.SeenSql.Length != 0)
+        throw new InvalidOperationException(
+            $"RefreshCNIpListTime=0 unexpectedly queried pgxc_node: {string.Join(" || ", metadataProxy.SeenSql)}");
+
+    Console.WriteLine("validation-mode=refresh-disabled-seed-only");
+}
+
 static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Options options)
 {
+    // 这个场景验证 fix rebind bug：
+    // 即使优先 seed 一开始被错误配置到别的簇，后续真实 seed 一旦明确识别出 node_name -> cluster，
+    // 也要把先前误吸纳到首选簇的外簇节点纠正回自己的簇，不再让伪造动态地址留在首选簇里。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     if (seedRoutes.Length < 3)
         throw new InvalidOperationException("Misconfigured priority seed scenario requires at least three seed targets.");
@@ -533,9 +704,11 @@ static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Optio
         var pollutionObserved = forgedEndpointKeys.Contains(observedEndpoint.ToString());
         Console.WriteLine($"pollution-observed={pollutionObserved}");
 
-        if (!pollutionObserved)
+        if (pollutionObserved)
             throw new InvalidOperationException(
-                $"Expected the misconfigured priority seed to pollute the preferred cluster and route through a forged endpoint, but connected via {observedEndpoint}.");
+                $"Expected the rebind fix to prevent polluted forged endpoints from remaining in the preferred cluster, but connected via forged endpoint {observedEndpoint}.");
+
+        Console.WriteLine("rebind-fix-observed=True");
     }
 }
 
@@ -613,6 +786,8 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
 
 static async Task CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(Options options)
 {
+    // 这个场景保留了可被后续明确识别的 fallback seed，用来验证：
+    // 一旦 seed 能够确认 node_name -> cluster 归属，驱动会纠正先前动态发现造成的误归簇。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     if (seedRoutes.Length < 2)
         throw new InvalidOperationException("Bound foreign seed scenario requires at least two real seed targets.");
@@ -694,6 +869,8 @@ static async Task CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(Op
     if (fallbackRejectProbe.ConnectionCount != 1)
         throw new InvalidOperationException(
             $"Expected the bound fallback seed to stay only in its own cluster and be attempted exactly once. observed-attempts={fallbackRejectProbe.ConnectionCount}");
+
+    Console.WriteLine("rebind-fix-observed=True");
 }
 
 static async Task OpenFailoverAsync(Options options)
@@ -714,6 +891,276 @@ static async Task OpenFailoverAsync(Options options)
 
     if (conn.Port == disabled.Port)
         throw new InvalidOperationException("Open fallback did not skip the disabled primary seed.");
+}
+
+static async Task OpenAutoReconnectTransientFailureAsync(Options options)
+{
+    var seedRoute = (await LoadSeedRoutesAsync(options))[0];
+    await using var transientProxy = RealTcpFaultProxy.Start(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port,
+        initialRejectedConnectionCount: 1);
+
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { transientProxy.Endpoint },
+        options.BaseExtra,
+        "AutoReconnect=true;MaxReconnects=3");
+    Console.WriteLine($"seed-target={seedRoute.Target}");
+    Console.WriteLine($"transient-proxy={transientProxy.Endpoint} target={transientProxy.Target}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+
+    var nodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+    var server = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    Console.WriteLine($"connected-via={conn.Host}:{conn.Port} server={server} node-name={nodeName}");
+    Console.WriteLine($"proxy-connection-count={transientProxy.ConnectionCount}");
+
+    if (transientProxy.ConnectionCount < 2)
+        throw new InvalidOperationException(
+            $"Expected Open auto-reconnect to retry after the transient failure. observed-connections={transientProxy.ConnectionCount}");
+
+    if (conn.Port != transientProxy.Port)
+        throw new InvalidOperationException($"Expected to reconnect through {transientProxy.Endpoint}, but connected via {conn.Host}:{conn.Port}.");
+}
+
+static async Task PriorityAutoBalancePreferredClusterAsync(Options options)
+{
+    if (options.Targets.Length < 3)
+        throw new InvalidOperationException("Priority auto-balance scenario requires at least three seed targets.");
+
+    await using var proxyGroup = new ProxyGroup(options.Targets);
+    var preferredPrimary = proxyGroup.GetByIndex(0);
+    var preferredPeer = proxyGroup.GetByIndex(1);
+    var fallbackCluster = proxyGroup.GetByIndex(2);
+    var connectionString = proxyGroup.ConnectionString(
+        options.BaseExtra,
+        "PriorityServers=2;AutoBalance=priority1;RefreshCNIpListTime=0");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"preferred-primary={preferredPrimary.Endpoint}");
+    Console.WriteLine($"preferred-peer={preferredPeer.Endpoint}");
+    Console.WriteLine($"fallback-cluster={fallbackCluster.Endpoint}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using (var preferredConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(preferredConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"preferred-open connected-via={preferredConn.Host}:{preferredConn.Port} server={server}");
+
+        if (preferredConn.Port != preferredPrimary.Port)
+            throw new InvalidOperationException(
+                $"AutoBalance=priority1 should prefer the first seed in the preferred cluster. connected-via={preferredConn.Host}:{preferredConn.Port}");
+    }
+
+    await preferredPrimary.DisableAsync();
+    Console.WriteLine($"disabled-preferred-primary={preferredPrimary.Endpoint}");
+
+    await using var failoverConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+    var failoverServer = await ExecuteScalarTextAsync(failoverConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    Console.WriteLine($"failover-open connected-via={failoverConn.Host}:{failoverConn.Port} server={failoverServer}");
+
+    if (failoverConn.Port != preferredPeer.Port)
+        throw new InvalidOperationException(
+            $"Expected failover to stay inside the preferred cluster and use {preferredPeer.Endpoint}, but connected via {failoverConn.Host}:{failoverConn.Port}.");
+
+    if (failoverConn.Port == fallbackCluster.Port)
+        throw new InvalidOperationException("Failover unexpectedly jumped to the fallback cluster before exhausting the preferred cluster.");
+}
+
+static Task InvalidAutoBalanceRejectedAsync(Options options)
+{
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { options.Targets[0] },
+        options.BaseExtra,
+        "AutoBalance=3");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    Exception? captured = null;
+    try
+    {
+        _ = new GaussDBConnectionStringBuilder(connectionString);
+        throw new InvalidOperationException("AutoBalance=3 unexpectedly succeeded.");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith("AutoBalance=3 unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+
+    var message = captured.Message;
+    if (captured.InnerException is not null)
+        message += " || " + captured.InnerException.Message;
+
+    if (captured is not ArgumentException ||
+        !message.Contains("AutoBalance must use a named routing mode", StringComparison.Ordinal))
+    {
+        throw new InvalidOperationException(
+            $"Expected a named-mode AutoBalance validation error, but captured {captured.GetType().Name}: {captured.Message}",
+            captured);
+    }
+
+    return Task.CompletedTask;
+}
+
+static async Task HostRecheckExpiryReprobesAsync(Options options)
+{
+    if (options.Targets.Length < 2)
+        throw new InvalidOperationException("Host recheck expiry scenario requires at least two seed targets.");
+
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    await using var primaryProxy = RealTcpFaultProxy.Start(
+        seedRoutes[0].SeedEndpoint.Host,
+        seedRoutes[0].SeedEndpoint.Port,
+        initialRejectedConnectionCount: 1);
+    await using var fallbackProxy = RealTcpFaultProxy.Start(
+        seedRoutes[1].SeedEndpoint.Host,
+        seedRoutes[1].SeedEndpoint.Port);
+
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { primaryProxy.Endpoint, fallbackProxy.Endpoint },
+        options.BaseExtra,
+        "HostRecheckSeconds=1");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"primary-proxy={primaryProxy.Endpoint}");
+    Console.WriteLine($"fallback-proxy={fallbackProxy.Endpoint}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using (var firstConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var firstServer = await ExecuteScalarTextAsync(firstConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"first-open connected-via={firstConn.Host}:{firstConn.Port} server={firstServer}");
+
+        if (firstConn.Port != fallbackProxy.Port)
+            throw new InvalidOperationException(
+                $"Expected the first open to fall back to {fallbackProxy.Endpoint}, but connected via {firstConn.Host}:{firstConn.Port}.");
+    }
+
+    await Task.Delay(TimeSpan.FromSeconds(1.2));
+
+    await using var secondConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+    var secondServer = await ExecuteScalarTextAsync(secondConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    Console.WriteLine($"second-open connected-via={secondConn.Host}:{secondConn.Port} server={secondServer}");
+    Console.WriteLine($"primary-proxy-connections={primaryProxy.ConnectionCount}");
+
+    if (secondConn.Port != primaryProxy.Port)
+        throw new InvalidOperationException(
+            $"Expected HostRecheckSeconds expiry to reprobe {primaryProxy.Endpoint}, but connected via {secondConn.Host}:{secondConn.Port}.");
+}
+
+static async Task OfflineCacheSkipsImmediateReprobeAsync(Options options)
+{
+    var fallbackTarget = ParseEndpoint(options.Targets[0]);
+    await using var rejectingProbe = RejectingEndpointProbe.Start();
+    await using var fallbackProxy = RealTcpFaultProxy.Start(fallbackTarget.Host, fallbackTarget.Port);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { rejectingProbe.Endpoint, fallbackProxy.Endpoint },
+        options.BaseExtra,
+        "HostRecheckSeconds=60");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"rejecting-endpoint={rejectingProbe.Endpoint}");
+    Console.WriteLine($"fallback-proxy={fallbackProxy.Endpoint}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using (var firstConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(firstConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"first-open connected-via={firstConn.Host}:{firstConn.Port} server={server}");
+    }
+
+    var countAfterFirst = rejectingProbe.ConnectionCount;
+    await using (var secondConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(secondConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"second-open connected-via={secondConn.Host}:{secondConn.Port} server={server}");
+    }
+
+    var countAfterSecond = rejectingProbe.ConnectionCount;
+    Console.WriteLine($"rejecting-connections first={countAfterFirst} second={countAfterSecond}");
+
+    if (countAfterFirst != 1 || countAfterSecond != 1)
+        throw new InvalidOperationException(
+            $"Expected the Offline endpoint to be skipped before HostRecheckSeconds expiry. observed-first={countAfterFirst} observed-second={countAfterSecond}");
+}
+
+static async Task HostRecheckZeroImmediateReprobeAsync(Options options)
+{
+    var fallbackTarget = ParseEndpoint(options.Targets[0]);
+    await using var rejectingProbe = RejectingEndpointProbe.Start();
+    await using var fallbackProxy = RealTcpFaultProxy.Start(fallbackTarget.Host, fallbackTarget.Port);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { rejectingProbe.Endpoint, fallbackProxy.Endpoint },
+        options.BaseExtra,
+        "HostRecheckSeconds=0");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"rejecting-endpoint={rejectingProbe.Endpoint}");
+    Console.WriteLine($"fallback-proxy={fallbackProxy.Endpoint}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using (var firstConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(firstConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"first-open connected-via={firstConn.Host}:{firstConn.Port} server={server}");
+    }
+
+    var countAfterFirst = rejectingProbe.ConnectionCount;
+    await using (var secondConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(secondConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"second-open connected-via={secondConn.Host}:{secondConn.Port} server={server}");
+    }
+
+    var countAfterSecond = rejectingProbe.ConnectionCount;
+    Console.WriteLine($"rejecting-connections first={countAfterFirst} second={countAfterSecond}");
+
+    if (countAfterFirst != 1 || countAfterSecond < 2)
+        throw new InvalidOperationException(
+            $"Expected HostRecheckSeconds=0 to allow immediate reprobe. observed-first={countAfterFirst} observed-second={countAfterSecond}");
+}
+
+static async Task AllOfflineFallbackRecoveredAsync(Options options)
+{
+    if (options.Targets.Length < 2)
+        throw new InvalidOperationException("All-offline fallback scenario requires at least two seed targets.");
+
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    await using var firstProxy = RealTcpFaultProxy.Start(
+        seedRoutes[0].SeedEndpoint.Host,
+        seedRoutes[0].SeedEndpoint.Port,
+        initialRejectedConnectionCount: 1);
+    await using var secondProxy = RealTcpFaultProxy.Start(
+        seedRoutes[1].SeedEndpoint.Host,
+        seedRoutes[1].SeedEndpoint.Port,
+        initialRejectedConnectionCount: 1);
+
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { firstProxy.Endpoint, secondProxy.Endpoint },
+        options.BaseExtra,
+        "HostRecheckSeconds=60");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"first-proxy={firstProxy.Endpoint}");
+    Console.WriteLine($"second-proxy={secondProxy.Endpoint}");
+
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+
+    var server = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    Console.WriteLine($"connected-via={conn.Host}:{conn.Port} server={server}");
+    Console.WriteLine($"first-proxy-connections={firstProxy.ConnectionCount}");
+    Console.WriteLine($"second-proxy-connections={secondProxy.ConnectionCount}");
+
+    if (firstProxy.ConnectionCount < 2)
+        throw new InvalidOperationException(
+            $"Expected the all-offline fallback to retry the first endpoint within the same Open. observed={firstProxy.ConnectionCount}");
+
+    if (conn.Port != firstProxy.Port)
+        throw new InvalidOperationException(
+            $"Expected fallback allowOffline pass to reconnect to {firstProxy.Endpoint}, but connected via {conn.Host}:{conn.Port}.");
 }
 
 static async Task AdminShutdownReplayAsync(Options options)
@@ -825,6 +1272,72 @@ static async Task ExplicitTransactionNoReplayAsync(Options options)
 
     if (captured is InvalidOperationException invalidOperationException &&
         invalidOperationException.Message.StartsWith("Explicit transaction command unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+}
+
+static async Task CopyExportDisconnectNoReplayAsync(Options options)
+{
+    await using var proxyGroup = new ProxyGroup(options.Targets);
+    var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+
+    var currentProxy = proxyGroup.FindByPort(conn.Port)
+                      ?? throw new InvalidOperationException($"No proxy found for port {conn.Port}");
+    Console.WriteLine($"initial-proxy={currentProxy.Endpoint} target={currentProxy.Target}");
+
+    TextReader? reader = null;
+    Exception? captured = null;
+    try
+    {
+        reader = await conn.BeginTextExportAsync(
+            "COPY (SELECT repeat('x', 8192) FROM generate_series(1, 100000)) TO STDOUT");
+        var buffer = new char[8192];
+        var firstRead = await reader.ReadAsync(buffer, 0, buffer.Length);
+        Console.WriteLine($"copy-first-chunk={firstRead}");
+        if (firstRead <= 0)
+            throw new InvalidOperationException("COPY export did not produce the first chunk.");
+
+        await currentProxy.DisableAsync();
+        Console.WriteLine($"disabled-proxy={currentProxy.Endpoint}");
+
+        while (true)
+        {
+            var read = await reader.ReadAsync(buffer, 0, buffer.Length);
+            if (read == 0)
+                break;
+        }
+
+        throw new InvalidOperationException("COPY export unexpectedly completed after proxy disconnect.");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+    finally
+    {
+        if (reader is not null)
+        {
+            try
+            {
+                reader.Dispose();
+            }
+            catch (Exception ex) when (captured is not null)
+            {
+                Console.WriteLine($"dispose-captured={ex.GetType().Name}: {ex.Message}");
+                if (captured is InvalidOperationException pendingInvalidOperation &&
+                    pendingInvalidOperation.Message.StartsWith("COPY export unexpectedly completed", StringComparison.Ordinal))
+                    captured = ex;
+            }
+        }
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith("COPY export unexpectedly completed", StringComparison.Ordinal))
         throw captured;
 
     Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
@@ -1103,6 +1616,46 @@ static async Task<SeedBindingRebindResult> ExecuteSeedBindingRebindFlowAsync(Opt
         afterState.SeedBindings.Any(binding => binding.NodeName == targetNodeName && string.Equals(binding.SeedEndpoint, blockedProxy.Endpoint, StringComparison.OrdinalIgnoreCase)),
         afterState.SeedBindings.Where(binding => binding.NodeName == targetNodeName).ToList(),
         afterState.LogicalNodes.Where(node => node.NodeName == targetNodeName).ToList());
+}
+
+static async Task SqlErrorNoReconnectAsync(Options options)
+{
+    // 普通 SQL 语义错误不是连接级故障，不应触发自动重连或更换 backend。
+    var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var conn = new GaussDBConnection(connectionString);
+    await conn.OpenAsync();
+
+    var initialPid = await ExecuteScalarLongAsync(conn, "SELECT pg_backend_pid();");
+    var initialEndpoint = new Endpoint(conn.Host!, conn.Port);
+    Console.WriteLine($"initial-endpoint={initialEndpoint} initial-pid={initialPid}");
+
+    Exception? captured = null;
+    try
+    {
+        var result = await ExecuteScalarTextAsync(conn, "SELECT * FROM __gaussdb_codex_missing_table_for_sql_error_no_reconnect__;");
+        throw new InvalidOperationException($"Semantic SQL error unexpectedly succeeded with result {result}");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith("Semantic SQL error unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    var afterPid = await ExecuteScalarLongAsync(conn, "SELECT pg_backend_pid();");
+    var afterEndpoint = new Endpoint(conn.Host!, conn.Port);
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+    Console.WriteLine($"after-error endpoint={afterEndpoint} pid={afterPid}");
+
+    if (afterPid != initialPid)
+        throw new InvalidOperationException("Semantic SQL error unexpectedly reconnected to a new backend.");
+
+    if (afterEndpoint.ToString() != initialEndpoint.ToString())
+        throw new InvalidOperationException("Semantic SQL error unexpectedly switched endpoints.");
 }
 
 static async Task<long> ExecuteScalarLongAsync(GaussDBConnection conn, string sql, GaussDBTransaction? tx = null)
@@ -1840,25 +2393,29 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
     readonly string _targetHost;
     readonly int _targetPort;
     int _nextConnectionId;
+    int _connectionCount;
+    int _remainingInitialRejectedConnections;
     bool _disabled;
     volatile bool _rejectNewConnections;
 
     internal string Endpoint => $"{IPAddress.Loopback}:{Port}";
     internal string Target => $"{_targetHost}:{_targetPort}";
     internal int Port { get; }
+    internal int ConnectionCount => Volatile.Read(ref _connectionCount);
 
-    RealTcpFaultProxy(string targetHost, int targetPort)
+    RealTcpFaultProxy(string targetHost, int targetPort, int initialRejectedConnectionCount)
     {
         _targetHost = targetHost;
         _targetPort = targetPort;
+        _remainingInitialRejectedConnections = initialRejectedConnectionCount;
         _listener = new TcpListener(IPAddress.Loopback, 0);
         _listener.Start();
         Port = ((IPEndPoint)_listener.LocalEndpoint).Port;
         _acceptLoopTask = RunAcceptLoopAsync();
     }
 
-    internal static RealTcpFaultProxy Start(string targetHost, int targetPort)
-        => new(targetHost, targetPort);
+    internal static RealTcpFaultProxy Start(string targetHost, int targetPort, int initialRejectedConnectionCount = 0)
+        => new(targetHost, targetPort, initialRejectedConnectionCount);
 
     // 仅拒绝新连接，不影响已经建立好的连接。
     internal async Task DisableAsync()
@@ -1927,7 +2484,8 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
                 break;
             }
 
-            if (_rejectNewConnections)
+            Interlocked.Increment(ref _connectionCount);
+            if (_rejectNewConnections || TryConsumeInitialRejectedConnection())
             {
                 Abort(client);
                 continue;
@@ -1970,6 +2528,19 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
     {
         await DisableAsync().ConfigureAwait(false);
         _shutdownCts.Dispose();
+    }
+
+    bool TryConsumeInitialRejectedConnection()
+    {
+        while (true)
+        {
+            var remaining = Volatile.Read(ref _remainingInitialRejectedConnections);
+            if (remaining <= 0)
+                return false;
+
+            if (Interlocked.CompareExchange(ref _remainingInitialRejectedConnections, remaining - 1, remaining) == remaining)
+                return true;
+        }
     }
 
     static void Abort(TcpClient client)
