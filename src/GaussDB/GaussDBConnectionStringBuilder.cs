@@ -1150,10 +1150,10 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     bool _disasterToleranceCluster;
 
     /// <summary>
-    /// Enables bounded reconnect attempts after eligible disconnects.
+    /// Enables bounded reconnect attempts for eligible disconnects while opening a connection.
     /// </summary>
     [Category("Failover and load balancing")]
-    [Description("Enables bounded reconnect attempts after eligible disconnects.")]
+    [Description("Enables bounded reconnect attempts for eligible disconnects while opening a connection.")]
     [DisplayName("Auto Reconnect")]
     [DefaultValue(false)]
     [GaussDBConnectionStringProperty]
@@ -1169,10 +1169,10 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     bool _autoReconnect;
 
     /// <summary>
-    /// Controls how many reconnect attempts are allowed when auto reconnect is enabled.
+    /// Controls how many reconnect attempts are allowed when open-time auto reconnect is enabled.
     /// </summary>
     [Category("Failover and load balancing")]
-    [Description("Controls how many reconnect attempts are allowed when auto reconnect is enabled.")]
+    [Description("Controls how many reconnect attempts are allowed when open-time auto reconnect is enabled.")]
     [DisplayName("Max Reconnects")]
     [DefaultValue(3)]
     [GaussDBConnectionStringProperty]

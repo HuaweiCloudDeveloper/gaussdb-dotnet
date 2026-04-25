@@ -1579,40 +1579,8 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
     internal int GetMaxAutoReconnectAttempts()
         => SupportsAutoReconnect ? Settings.MaxReconnects : 0;
 
-    internal bool CanStartAutoReconnectCommandScope()
-    {
-        if (!SupportsAutoReconnect)
-            return false;
-
-        // 显式事务、COPY 和绑定事务场景都不能安全重放，因此直接禁止自动重连。
-        if (EnlistedTransaction != null || ConnectorBindingScope is ConnectorBindingScope.Transaction or ConnectorBindingScope.Copy)
-            return false;
-
-        var connector = Connector;
-        if (connector is null)
-            return true;
-
-        if (connector.InTransaction || connector.CurrentCopyOperation != null)
-            return false;
-
-        return connector.CurrentReader is null;
-    }
-
     internal bool CanAutoReconnectOnOpen(Exception exception)
         => SupportsAutoReconnect && IsAutoReconnectCandidate(exception);
-
-    // 命令阶段的重连比 Open 阶段更保守，只允许在安全窗口内对明确可恢复的错误做重连。
-    internal bool CanAutoReconnectCommand(Exception exception, bool allowAutoReconnect)
-        => allowAutoReconnect && IsAutoReconnectCommandCandidate(exception);
-
-    internal async Task PerformAutoReconnect(bool async, CancellationToken cancellationToken)
-    {
-        // 重连统一走 Close -> Open，这样可以复用最新的多主路由状态，而不是粘在旧 connector 上。
-        if (FullState is not ConnectionState.Closed)
-            await Close(async).ConfigureAwait(false);
-
-        await Open(async, cancellationToken).ConfigureAwait(false);
-    }
 
     static bool IsAutoReconnectCandidate(Exception exception)
     {
@@ -1632,21 +1600,6 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
         };
     }
 
-    static bool IsAutoReconnectCommandCandidate(Exception exception)
-    {
-        // 命令执行中不能泛化重放；这里只接受后端主动下线这类可重新建连的场景。
-        if (exception is OperationCanceledException)
-            return false;
-
-        return exception switch
-        {
-            PostgresException postgresException => postgresException.SqlState == PostgresErrorCodes.AdminShutdown,
-            GaussDBException gaussDBException => gaussDBException.InnerException is not null && IsAutoReconnectCommandCandidate(gaussDBException.InnerException),
-            AggregateException aggregateException => AreAllAutoReconnectCommandCandidates(aggregateException),
-            _ => false
-        };
-    }
-
     static bool AreAllAutoReconnectCandidates(AggregateException aggregateException)
     {
         if (aggregateException.InnerExceptions.Count == 0)
@@ -1660,22 +1613,6 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
 
         return true;
     }
-
-    static bool AreAllAutoReconnectCommandCandidates(AggregateException aggregateException)
-    {
-        // 聚合异常只有在所有内层异常都可重连时，才允许整次命令重试。
-        if (aggregateException.InnerExceptions.Count == 0)
-            return false;
-
-        foreach (var innerException in aggregateException.InnerExceptions)
-        {
-            if (!IsAutoReconnectCommandCandidate(innerException))
-                return false;
-        }
-
-        return true;
-    }
-
     static bool IsAutoReconnectSqlState(string sqlState)
         => sqlState switch
         {

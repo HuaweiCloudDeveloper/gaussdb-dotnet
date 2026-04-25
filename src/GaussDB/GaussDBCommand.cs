@@ -1372,25 +1372,7 @@ GROUP BY pg_proc.proargnames, pg_proc.proargtypes, pg_proc.proallargtypes, pg_pr
     {
         var conn = CheckAndGetConnection();
         _behavior = behavior;
-
-        var remainingReconnects = conn?.GetMaxAutoReconnectAttempts() ?? 0;
-        var allowAutoReconnect = conn is not null && _connector is null && conn.CanStartAutoReconnectCommandScope();
-
-        while (true)
-        {
-            try
-            {
-                return await ExecuteReaderCore(async, behavior, cancellationToken, conn).ConfigureAwait(false);
-            }
-            // 命令级重试只在“无活动 reader / 无事务 / 无 COPY”这些安全窗口里生效。
-            catch (Exception e) when (conn is not null &&
-                                      remainingReconnects > 0 &&
-                                      conn.CanAutoReconnectCommand(e, allowAutoReconnect))
-            {
-                remainingReconnects--;
-                await conn.PerformAutoReconnect(async, cancellationToken).ConfigureAwait(false);
-            }
-        }
+        return await ExecuteReaderCore(async, behavior, cancellationToken, conn).ConfigureAwait(false);
     }
 
     async ValueTask<GaussDBDataReader> ExecuteReaderCore(

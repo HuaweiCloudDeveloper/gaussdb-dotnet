@@ -35,7 +35,7 @@ The driver also supports JDBC-aligned distributed GaussDB HA routing options on 
 - `RefreshCNIpListTime`: throttles coordinator discovery from metadata (`pgxc_node` or `pgxc_disaster_read_node()`), including repeated refresh failures.
 - `UsingEip`: selects `node_host1/node_port1` instead of `node_host/node_port` during coordinator refresh.
 - `DisasterToleranceCluster`: when enabled on a disaster cluster, refreshes coordinators from `pgxc_disaster_read_node()` instead of `pgxc_node`, matching JDBC.
-- `AutoReconnect`: enables bounded reconnect for eligible disconnect and failover errors during `Open/OpenAsync()` and safe command execution windows.
+- `AutoReconnect`: enables bounded reconnect for eligible disconnect and failover errors during `Open/OpenAsync()`.
 - `MaxReconnects`: caps the reconnect attempt count.
 - `HostRecheckSeconds`: controls how long failed hosts/CNs stay offline before they can be probed again.
 
@@ -68,4 +68,4 @@ await using var conn = await dataSource
 
 `HostRecheckSeconds` continues to drive abnormal CN eviction and recheck timing. Failed CNs are marked offline and skipped until the recheck window expires; after that they return to `Unknown` and can be probed again by later opens or reconnects.
 
-Automatic reconnect is intentionally conservative. It retries eligible disconnect and failover errors by reopening through the latest routing state during initial open and safe command execution windows, but it does not transparently replay explicit transactions, COPY operations, or active streaming readers. This keeps the behavior close to JDBC's HA intent without introducing unsafe generic statement replay in .NET.
+Automatic reconnect is intentionally conservative. It only retries eligible disconnect and failover errors while opening the connection, by reopening through the latest routing state. The driver does not transparently replay commands after a connection has already been opened.

@@ -69,9 +69,6 @@ case "cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption":
 case "cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster":
     await RunScenarioAsync("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster", () => CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(options));
     return;
-case "admin-shutdown-replay":
-    await RunScenarioAsync("admin-shutdown-replay", () => AdminShutdownReplayAsync(options));
-    return;
 case "proxy-disconnect-no-replay":
     await RunScenarioAsync("proxy-disconnect-no-replay", () => ProxyDisconnectNoReplayAsync(options));
     return;
@@ -131,7 +128,6 @@ static void PrintScenarioList()
     Console.WriteLine("cn-discovery-misconfigured-priority-seed-pollutes-cluster");
     Console.WriteLine("cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption");
     Console.WriteLine("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster");
-    Console.WriteLine("admin-shutdown-replay");
     Console.WriteLine("proxy-disconnect-no-replay");
     Console.WriteLine("explicit-tx-admin-shutdown-no-replay");
     Console.WriteLine("copy-export-disconnect-no-replay");
@@ -164,7 +160,6 @@ static async Task RunMatrixAsync(Options options)
         ("cn-discovery-forged-reachable-proxy-seed-binding", () => CnDiscoveryForgedReachableProxySeedBindingAsync(options)),
         ("cn-discovery-using-eip-selection", () => CnDiscoveryUsingEipSelectionAsync(options)),
         ("cn-discovery-refresh-disabled", () => CnDiscoveryRefreshDisabledAsync(options)),
-        ("admin-shutdown-replay", () => AdminShutdownReplayAsync(options)),
         ("proxy-disconnect-no-replay", () => ProxyDisconnectNoReplayAsync(options)),
         ("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options)),
         ("copy-export-disconnect-no-replay", () => CopyExportDisconnectNoReplayAsync(options)),
@@ -1161,39 +1156,6 @@ static async Task AllOfflineFallbackRecoveredAsync(Options options)
     if (conn.Port != firstProxy.Port)
         throw new InvalidOperationException(
             $"Expected fallback allowOffline pass to reconnect to {firstProxy.Endpoint}, but connected via {conn.Host}:{conn.Port}.");
-}
-
-static async Task AdminShutdownReplayAsync(Options options)
-{
-    // 验证命令执行中遇到 AdminShutdown 时会自动重连并重新执行安全命令。
-    var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
-    Console.WriteLine($"ConnectionString={connectionString}");
-
-    await using var conn = new GaussDBConnection(connectionString);
-    await conn.OpenAsync();
-
-    var initialHost = conn.Host;
-    var initialPid = await ExecuteScalarLongAsync(conn, "SELECT pg_backend_pid();");
-    Console.WriteLine($"initial-host={initialHost} initial-pid={initialPid}");
-
-    var queryTask = ExecuteScalarTextAsync(
-        conn,
-        "SELECT inet_server_addr()::text || ':' || inet_server_port()::text || '|pid=' || pg_backend_pid()::text FROM pg_sleep(8);");
-
-    await Task.Delay(options.FailDelay);
-    await TerminateBackendAsync(ConnectionStringUtil.BuildConnectionString(new[] { initialHost! }, options.BaseExtra, string.Empty), initialPid);
-    Console.WriteLine($"terminated-pid={initialPid}");
-
-    var replayResult = await queryTask;
-    var currentPid = await ExecuteScalarLongAsync(conn, "SELECT pg_backend_pid();");
-    Console.WriteLine($"replay-result={replayResult}");
-    Console.WriteLine($"post-reconnect host={conn.Host} pid={currentPid}");
-
-    if (currentPid == initialPid)
-        throw new InvalidOperationException("Command replay did not establish a new backend.");
-
-    if (replayResult.Contains($"pid={initialPid}", StringComparison.Ordinal))
-        throw new InvalidOperationException("Query result still came from the terminated backend.");
 }
 
 static async Task ProxyDisconnectNoReplayAsync(Options options)
