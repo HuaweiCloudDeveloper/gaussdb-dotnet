@@ -2065,11 +2065,11 @@ public class MultipleHostsTests : TestBase
     public void Coordinator_refresh_sql_uses_selected_data_source()
     {
         Assert.That(
-            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.CoordinatorMetadataSource),
-            Does.Contain("from pgxc_node where node_type='C' and nodeis_active = true order by node_name;"));
+            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.CoordinatorMetadataSource, usingEip: false),
+            Is.EqualTo("select node_host,node_port from pgxc_node where node_type='C' and nodeis_active = true order by node_host;"));
         Assert.That(
-            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.DisasterCoordinatorMetadataSource),
-            Does.Contain("from pgxc_disaster_read_node() where node_type='C' and nodeis_active = true order by node_name;"));
+            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.DisasterCoordinatorMetadataSource, usingEip: true),
+            Is.EqualTo("select node_host1,node_port1 from pgxc_disaster_read_node() where node_type='C' and nodeis_active = true order by node_host1;"));
     }
 
     [Test]
@@ -2080,7 +2080,7 @@ public class MultipleHostsTests : TestBase
 
         var refreshAttempts = 0;
 
-        async ValueTask<HaCoordinatorNode[]?> Refresh(CancellationToken cancellationToken)
+        async ValueTask<HaEndpoint[]?> Refresh(CancellationToken cancellationToken)
         {
             refreshAttempts++;
             await Task.CompletedTask;
@@ -2120,7 +2120,7 @@ public class MultipleHostsTests : TestBase
 
         GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             ClusterKey(seed),
-            CoordinatorNode("cn_1", seed, dynamic));
+            new HaEndpoint(dynamic.Host, dynamic.Port));
 
         var builder = new GaussDBConnectionStringBuilder
         {
@@ -2140,9 +2140,9 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task Dynamic_endpoint_failure_falls_back_to_seed_for_same_node()
+    public async Task Dynamic_endpoint_failure_falls_back_to_seed_endpoint()
     {
-        // 动态地址不可达时，要回退到同一逻辑节点的 seed 地址。
+        // 动态地址不可达时，要回退到连接串中的 seed 地址。
         GaussDBCoordinatorListTracker.Reset();
 
         await using var seed = PgPostmasterMock.Start(state: Primary);
@@ -2150,7 +2150,7 @@ public class MultipleHostsTests : TestBase
 
         GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             ClusterKey(seed),
-            new HaCoordinatorNode("cn_1", new HaEndpoint(seed.Host, seed.Port), unreachable));
+            unreachable);
 
         var builder = new GaussDBConnectionStringBuilder
         {
@@ -2181,8 +2181,8 @@ public class MultipleHostsTests : TestBase
 
         GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             seedEndpoint.Key,
-            new HaCoordinatorNode("cn_seed", seedEndpoint, seedEndpoint),
-            new HaCoordinatorNode("cn_expanded", expandedEndpoint, expandedEndpoint));
+            seedEndpoint,
+            expandedEndpoint);
 
         var builder = new GaussDBConnectionStringBuilder
         {
@@ -2201,48 +2201,48 @@ public class MultipleHostsTests : TestBase
 
     [Test]
     [NonParallelizable]
-    public async Task Refreshing_primary_cluster_updates_other_cluster_dynamic_endpoint_without_joining_current_cluster()
+    public async Task Preferred_cluster_retains_seed_fallback_before_secondary_cluster_when_discovered_endpoints_are_unreachable()
     {
-        // 刷新主簇时如果识别到其他簇的动态地址，只更新它的动态 endpoint，不把它错误并入当前簇。
+        // 首选簇的动态地址全部不可达时，仍应先回退到本簇 seed，而不是直接跳到次簇。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
+        await using var az1First = PgPostmasterMock.Start(state: Primary);
+        await using var az1Second = PgPostmasterMock.Start(state: Primary);
         await using var az2Seed = PgPostmasterMock.Start(state: Primary);
-        await using var az2Dynamic = PgPostmasterMock.Start(state: Primary);
-        var az1Seed = GetUnreachableEndpoint();
 
         var builder = new GaussDBConnectionStringBuilder
         {
-            Host = $"{az1Seed.Key},{az2Seed.Host}:{az2Seed.Port}",
-            PriorityServers = 1,
-            AutoBalance = "shuffle",
+            Host = MultipleHosts(az1First, az1Second, az2Seed),
+            PriorityServers = 2,
+            AutoBalance = "priority2",
             RefreshCNIpListTime = 30,
             UsingEip = true,
             Pooling = false,
             ServerCompatibilityMode = ServerCompatibilityMode.NoTypeLoading
         };
 
-        var urlKey = string.Join(",", new[] { az1Seed.Key, $"{az2Seed.Host}:{az2Seed.Port}" }.OrderBy(static x => x, StringComparer.Ordinal));
-        var az1ClusterKey = az1Seed.Key;
-        var az2ClusterKey = ClusterKey(az2Seed);
+        var urlKey = ClusterKey(az1First, az1Second, az2Seed);
+        var az1ClusterKey = ClusterKey(az1First, az1Second);
         GaussDBGlobalClusterStatusTracker.ReportPrimary(urlKey, az1ClusterKey);
         GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             az1ClusterKey,
-            new HaCoordinatorNode("cn_1", az1Seed, az1Seed),
-            CoordinatorNode("cn_2", az2Seed, az2Dynamic));
+            GetUnreachableEndpoint(),
+            GetUnreachableEndpoint(),
+            GetUnreachableEndpoint());
 
         await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
         await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
-        Assert.That(connection.Port, Is.EqualTo(az2Dynamic.Port));
-        Assert.That(GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(urlKey), Is.EqualTo(az2ClusterKey));
+        Assert.That(new[] { az1First.Port, az1Second.Port }, Contains.Item(connection.Port));
+        Assert.That(GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(urlKey), Is.EqualTo(az1ClusterKey));
     }
 
     [Test]
     [NonParallelizable]
-    public async Task Preferred_cluster_uses_same_node_seed_fallback_before_secondary_cluster_when_seed_binding_comes_from_get_nodename()
+    public async Task Preferred_cluster_uses_discovered_endpoints_before_seed_fallback()
     {
-        // seed 绑定只能靠 get_nodename() 识别时，首选簇仍应优先走本簇回退 seed。
+        // 首选簇先尝试动态发现的 endpoint，全部失败后再回退到本簇 seed。
         GaussDBGlobalClusterStatusTracker.Reset();
         GaussDBCoordinatorListTracker.Reset();
 
@@ -2267,21 +2267,15 @@ public class MultipleHostsTests : TestBase
 
         GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             az1ClusterKey,
-            new HaCoordinatorNode("cn_5001", GetUnreachableEndpoint(), GetUnreachableEndpoint()),
-            new HaCoordinatorNode("cn_5002", GetUnreachableEndpoint(), GetUnreachableEndpoint()),
-            new HaCoordinatorNode("cn_5003", GetUnreachableEndpoint(), GetUnreachableEndpoint()));
+            GetUnreachableEndpoint(),
+            GetUnreachableEndpoint(),
+            GetUnreachableEndpoint());
 
         await using var dataSource = new GaussDBDataSourceBuilder(builder.ConnectionString).BuildMultiHost();
-
-        var seedProbe1 = RespondToGetNodeName(az1First, "cn_5001");
-        var seedProbe2 = RespondToGetNodeName(az1Second, "cn_5002");
-        var seedProbe3 = RespondToGetNodeName(az2First, "cn_5003");
 
         await using var connection = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
         Assert.That(new[] { az1First.Port, az1Second.Port }, Contains.Item(connection.Port));
-
-        await Task.WhenAll(seedProbe1, seedProbe2, seedProbe3);
     }
 
     [Test]
@@ -2440,20 +2434,6 @@ public class MultipleHostsTests : TestBase
         => GaussDBCoordinatorListTracker.SeedSnapshotForTesting(
             ClusterKey(postmasters),
             postmasters.Select(p => new HaEndpoint(p.Host, p.Port)).ToArray());
-
-    static HaCoordinatorNode CoordinatorNode(string nodeName, PgPostmasterMock hostEndpoint, PgPostmasterMock eipEndpoint)
-        => new(
-            nodeName,
-            new HaEndpoint(hostEndpoint.Host, hostEndpoint.Port),
-            new HaEndpoint(eipEndpoint.Host, eipEndpoint.Port));
-
-    static async Task RespondToGetNodeName(PgPostmasterMock postmaster, string nodeName)
-    {
-        // 让 mock 节点对 get_nodename() 返回指定逻辑节点名，辅助 seed 绑定测试。
-        var server = await postmaster.WaitForServerConnection();
-        await server.ExpectExtendedQuery();
-        await server.WriteScalarResponseAndFlush(nodeName);
-    }
 
     static HaEndpoint GetUnreachableEndpoint()
     {

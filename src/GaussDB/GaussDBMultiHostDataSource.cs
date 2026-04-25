@@ -31,17 +31,12 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     readonly ConcurrentDictionary<string, GaussDBDataSource> _endpointPools = new(StringComparer.Ordinal);
     readonly SeedCluster[] _seedClusters;
     readonly string _urlKey;
-    // seed endpoint 到逻辑 CN 的绑定关系；用于把 seed 地址与动态地址视为同一个节点。
-    readonly ConcurrentDictionary<string, SeedBinding> _seedBindings = new(StringComparer.Ordinal);
-    // 簇内逻辑 CN 视图，保存节点名、seed 地址、动态地址以及排序信息。
-    readonly ConcurrentDictionary<string, LogicalNodeRecord> _logicalNodes = new(StringComparer.Ordinal);
 
     internal GaussDBDataSource[] Pools => _pools;
 
     readonly MultiHostDataSourceWrapper[] _wrappers;
 
     volatile int _roundRobinIndex = -1;
-    int _logicalNodeOrder;
 
     internal GaussDBMultiHostDataSource(GaussDBConnectionStringBuilder settings, GaussDBDataSourceConfiguration dataSourceConfig)
         : base(settings, dataSourceConfig)
@@ -74,7 +69,6 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
         _seedClusters = BuildSeedClusters(settings, seedEndpoints);
         _urlKey = CreateKey(seedEndpoints);
-        _logicalNodeOrder = seedEndpoints.Length;
 
         var targetSessionAttributeValues = Enum.GetValues<TargetSessionAttributes>().ToArray();
         var highestValue = 0;
@@ -483,9 +477,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     async ValueTask<HaEndpoint[]> ResolveClusterEndpoints(SeedCluster cluster, string? preferredClusterKey, CancellationToken cancellationToken)
     {
-        // 不使用动态快照时，直接根据当前逻辑视图构造候选，并带上尚未绑定的 seed。
+        // 不使用动态快照时，直接基于连接串里的 seed endpoints 做簇内排序。
         if (!ShouldUseCoordinatorSnapshot(cluster.Key, preferredClusterKey))
-            return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: true);
+            return OrderClusterEndpoints(Settings, cluster, cluster.SeedEndpoints);
 
         // 快照获取带缓存与节流；真正刷新时才会查询 pgxc_node。
         var snapshot = await GaussDBCoordinatorListTracker.GetSnapshotAsync(
@@ -496,15 +490,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 cancellationToken)
             .ConfigureAwait(false);
 
-        if (snapshot is { Length: > 0 })
-        {
-            // 先把 seed endpoint 和逻辑节点名对齐，再合并动态发现出来的新地址和新节点。
-            await EnsureSeedBindingsAsync(snapshot, cancellationToken).ConfigureAwait(false);
-            MergeDiscoveredNodes(cluster, snapshot);
-        }
-
-        // 使用过快照后，只返回已纳入逻辑节点视图的候选，避免未绑定 seed 打乱排序。
-        return BuildLogicalCandidates(cluster, includeUnboundSeedEndpoints: false);
+        return BuildClusterCandidates(cluster, snapshot);
     }
 
     bool ShouldUseCoordinatorSnapshot(string clusterKey, string? preferredClusterKey)
@@ -536,7 +522,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         return false;
     }
 
-    async ValueTask<HaCoordinatorNode[]?> RefreshCoordinatorEndpoints(SeedCluster cluster, CancellationToken cancellationToken)
+    async ValueTask<HaEndpoint[]?> RefreshCoordinatorEndpoints(SeedCluster cluster, CancellationToken cancellationToken)
     {
         // 只要该簇里有一个可达 seed CN，就用它查询 pgxc_node，拿到当前有效的 CN 列表。
         foreach (var endpoint in cluster.SeedEndpoints)
@@ -554,15 +540,11 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                     var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
                     await using (reader.ConfigureAwait(false))
                     {
-                        var refreshedNodes = new List<HaCoordinatorNode>();
+                        var refreshedEndpoints = new List<HaEndpoint>();
                         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                            // 同时保存 node_host 与 node_host1，后续再按 UsingEip 决定优先使用哪一个。
-                            refreshedNodes.Add(new(
-                                reader.GetString(0),
-                                new HaEndpoint(reader.GetString(1), reader.GetInt32(2)),
-                                new HaEndpoint(reader.GetString(3), reader.GetInt32(4))));
+                            refreshedEndpoints.Add(new(reader.GetString(0), reader.GetInt32(1)));
 
-                        return refreshedNodes.Count == 0 ? null : refreshedNodes.ToArray();
+                        return refreshedEndpoints.Count == 0 ? null : refreshedEndpoints.ToArray();
                     }
                 }
             }
@@ -588,7 +570,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             dataSource = SelectCoordinatorMetadataSource(Settings.DisasterToleranceCluster, runMode);
         }
 
-        return BuildCoordinatorRefreshSql(dataSource);
+        return BuildCoordinatorRefreshSql(dataSource, Settings.UsingEip);
     }
 
     internal static string SelectCoordinatorMetadataSource(bool disasterToleranceCluster, int disasterClusterRunMode)
@@ -599,223 +581,41 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     internal static int ParseDisasterClusterRunMode(object? value)
         => value is null or DBNull ? int.MinValue : Convert.ToInt32(value);
 
-    internal static string BuildCoordinatorRefreshSql(string dataSource)
-        => "select node_name,node_host,node_port,node_host1,node_port1 " +
-           $"from {dataSource} where node_type='C' and nodeis_active = true order by node_name;";
+    internal static string BuildCoordinatorRefreshSql(string dataSource, bool usingEip)
+        => usingEip
+            ? $"select node_host1,node_port1 from {dataSource} where node_type='C' and nodeis_active = true order by node_host1;"
+            : $"select node_host,node_port from {dataSource} where node_type='C' and nodeis_active = true order by node_host;";
 
-    async ValueTask EnsureSeedBindingsAsync(IReadOnlyList<HaCoordinatorNode> snapshot, CancellationToken cancellationToken)
+    HaEndpoint[] BuildClusterCandidates(SeedCluster cluster, IReadOnlyList<HaEndpoint>? dynamicEndpoints)
     {
-        // 逐个 seed endpoint 识别其对应的逻辑 CN 名字，后续动态地址才能与其合并。
-        foreach (var cluster in _seedClusters)
-        {
-            for (var i = 0; i < cluster.SeedEndpoints.Length; i++)
-            {
-                var seedEndpoint = cluster.SeedEndpoints[i];
-                if (_seedBindings.ContainsKey(seedEndpoint.Key))
-                    continue;
-
-                var match = FindUniqueMatchingNode(snapshot, seedEndpoint) ??
-                            await IdentifySeedNodeAsync(seedEndpoint, snapshot, cancellationToken).ConfigureAwait(false);
-                if (match is null)
-                    continue;
-
-                TryBindSeedEndpoint(cluster, i, seedEndpoint, match.Value.NodeName);
-            }
-        }
-    }
-
-    async ValueTask<HaCoordinatorNode?> IdentifySeedNodeAsync(
-        HaEndpoint seedEndpoint,
-        IReadOnlyList<HaCoordinatorNode> snapshot,
-        CancellationToken cancellationToken)
-    {
-        // 直接连到 seed 执行 get_nodename()，把“地址”反查成“逻辑节点名”。
-        var probeSettings = Settings.Clone();
-        probeSettings.Host = seedEndpoint.Host;
-        probeSettings.Port = seedEndpoint.Port;
-        probeSettings.Pooling = false;
-        probeSettings.LoadBalanceHosts = false;
-        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.PriorityServers));
-        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.AutoBalance));
-        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.RefreshCNIpListTime));
-        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.DisasterToleranceCluster));
-        probeSettings.Timeout = probeSettings.Timeout == 0 ? 2 : Math.Min(probeSettings.Timeout, 2);
-        probeSettings.CommandTimeout = probeSettings.CommandTimeout == 0 ? 2 : Math.Min(probeSettings.CommandTimeout, 2);
-
-        try
-        {
-            var connection = new GaussDBConnection(probeSettings.ConnectionString);
-            await using (connection.ConfigureAwait(false))
-            {
-                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-
-                using var command = connection.CreateCommand();
-                command.CommandText = "select get_nodename();";
-
-                var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-                await using (reader.ConfigureAwait(false))
-                {
-                    if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                        return null;
-
-                    var nodeName = reader.GetString(0);
-                    for (var i = 0; i < snapshot.Count; i++)
-                    {
-                        var discovered = snapshot[i];
-                        if (discovered.NodeName == nodeName)
-                            return discovered;
-                    }
-
-                    return null;
-                }
-            }
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    static HaCoordinatorNode? FindUniqueMatchingNode(IReadOnlyList<HaCoordinatorNode> snapshot, HaEndpoint endpoint)
-    {
-        // 地址唯一命中时可直接绑定；若同一地址对应多个节点，则退回显式探测。
-        HaCoordinatorNode? match = null;
-        for (var i = 0; i < snapshot.Count; i++)
-        {
-            var discovered = snapshot[i];
-            if (!discovered.Matches(endpoint))
-                continue;
-
-            if (match is not null)
-                return null;
-
-            match = discovered;
-        }
-
-        return match;
-    }
-
-    void TryBindSeedEndpoint(SeedCluster cluster, int seedIndex, HaEndpoint seedEndpoint, string nodeName)
-    {
-        var seedOrder = GetSeedOrder(cluster, seedIndex);
-        var record = _logicalNodes.GetOrAdd(
-            nodeName,
-            static (name, state) => new LogicalNodeRecord(name, state.ClusterKey, state.SeedEndpoint, state.SeedOrder),
-            (ClusterKey: cluster.Key, SeedEndpoint: seedEndpoint, SeedOrder: seedOrder));
-
-        if (record.ClusterKey != cluster.Key)
-        {
-            // seed 后续若明确识别出该节点属于当前簇，则允许纠正先前动态发现造成的误归簇。
-            record.RebindClusterAndSeedEndpoint(cluster.Key, seedEndpoint, seedOrder);
-            RemoveConflictingSeedBindings(nodeName, cluster.Key, seedEndpoint.Key);
-        }
-        else
-        {
-            record.SetSeedEndpoint(seedEndpoint, seedOrder);
-        }
-
-        _seedBindings.AddOrUpdate(
-            seedEndpoint.Key,
-            new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder),
-            (_, _) => new SeedBinding(seedEndpoint, nodeName, cluster.Key, seedOrder));
-    }
-
-    void RemoveConflictingSeedBindings(string nodeName, string clusterKey, string currentSeedKey)
-    {
-        foreach (var binding in _seedBindings)
-        {
-            if (binding.Key == currentSeedKey)
-                continue;
-
-            if (binding.Value.NodeName != nodeName || binding.Value.ClusterKey == clusterKey)
-                continue;
-
-            _seedBindings.TryRemove(binding.Key, out _);
-        }
-    }
-
-    void MergeDiscoveredNodes(SeedCluster cluster, IReadOnlyList<HaCoordinatorNode> snapshot)
-    {
-        // 只有当前簇已经确认过 seed 绑定，才允许把快照里的陌生节点并入本簇。
-        if (!ClusterHasConfirmedSeedBinding(cluster))
-            return;
-
-        for (var i = 0; i < snapshot.Count; i++)
-        {
-            var discovered = snapshot[i];
-            var preferredEndpoint = discovered.GetPreferredEndpoint(Settings.UsingEip);
-            if (_logicalNodes.TryGetValue(discovered.NodeName, out var existing))
-            {
-                existing.UpdateDynamicEndpoint(preferredEndpoint);
-                continue;
-            }
-
-            var order = Interlocked.Increment(ref _logicalNodeOrder);
-            var created = new LogicalNodeRecord(discovered.NodeName, cluster.Key, null, order);
-            created.UpdateDynamicEndpoint(preferredEndpoint);
-            _logicalNodes.TryAdd(discovered.NodeName, created);
-        }
-    }
-
-    bool ClusterHasConfirmedSeedBinding(SeedCluster cluster)
-        => cluster.SeedEndpoints.Any(seed => _seedBindings.ContainsKey(seed.Key));
-
-    HaEndpoint[] BuildLogicalCandidates(SeedCluster cluster, bool includeUnboundSeedEndpoints)
-    {
-        // 先构造逻辑节点候选，再按 AutoBalance 规则排序，最后扁平化成 endpoint 列表。
-        var candidates = new List<LogicalNodeCandidate>(cluster.SeedEndpoints.Length + _logicalNodes.Count);
-        var seenNodeNames = new HashSet<string>(StringComparer.Ordinal);
-
-        for (var i = 0; i < cluster.SeedEndpoints.Length; i++)
-        {
-            var seedEndpoint = cluster.SeedEndpoints[i];
-            if (_seedBindings.TryGetValue(seedEndpoint.Key, out var binding) &&
-                _logicalNodes.TryGetValue(binding.NodeName, out var node) &&
-                node.ClusterKey == cluster.Key)
-            {
-                candidates.Add(new(node.NodeName, node.SeedEndpoint, node.GetDynamicEndpoint(), node.Order));
-                seenNodeNames.Add(node.NodeName);
-                continue;
-            }
-
-            if (includeUnboundSeedEndpoints)
-                candidates.Add(new(null, seedEndpoint, null, GetSeedOrder(cluster, i)));
-        }
-
-        foreach (var node in _logicalNodes.Values
-                     .Where(node => node.ClusterKey == cluster.Key && !seenNodeNames.Contains(node.NodeName))
-                     .OrderBy(node => node.Order))
-        {
-            candidates.Add(new(node.NodeName, node.SeedEndpoint, node.GetDynamicEndpoint(), node.Order));
-        }
-
-        var orderedCandidates = OrderClusterEndpoints(Settings, cluster, candidates);
-        var flattened = new List<HaEndpoint>(orderedCandidates.Length * 2);
-        var seenEndpoints = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var candidate in orderedCandidates)
-        {
-            // 同一个逻辑节点优先尝试动态地址，失败时再回退到原始 seed 地址。
-            var dynamicEndpoint = candidate.DynamicEndpoint;
-            if (dynamicEndpoint is not null && seenEndpoints.Add(dynamicEndpoint.Value.Key))
-                flattened.Add(dynamicEndpoint.Value);
-
-            var seedEndpoint = candidate.SeedEndpoint;
-            if (seedEndpoint is not null && seenEndpoints.Add(seedEndpoint.Value.Key))
-                flattened.Add(seedEndpoint.Value);
-        }
-
-        if (flattened.Count > 0)
-            return flattened.ToArray();
-
-        return includeUnboundSeedEndpoints
-            ? cluster.SeedEndpoints
+        // 动态发现出的 endpoint 优先尝试，但连接串里的 seed endpoints 始终保留作兜底。
+        var orderedDynamicEndpoints = dynamicEndpoints is { Count: > 0 }
+            ? OrderClusterEndpoints(Settings, cluster, dynamicEndpoints)
             : [];
+        var flattened = new List<HaEndpoint>(orderedDynamicEndpoints.Length + cluster.SeedEndpoints.Length);
+        var seenEndpoints = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var endpoint in orderedDynamicEndpoints)
+        {
+            if (seenEndpoints.Add(endpoint.Key))
+                flattened.Add(endpoint);
+        }
+
+        foreach (var seedEndpoint in cluster.SeedEndpoints)
+        {
+            if (seenEndpoints.Add(seedEndpoint.Key))
+                flattened.Add(seedEndpoint);
+        }
+
+        return flattened.Count > 0
+            ? flattened.ToArray()
+            : cluster.SeedEndpoints;
     }
 
-    LogicalNodeCandidate[] OrderClusterEndpoints(
+    HaEndpoint[] OrderClusterEndpoints(
         GaussDBConnectionStringBuilder settings,
         SeedCluster cluster,
-        IReadOnlyList<LogicalNodeCandidate> resolvedEndpoints)
+        IReadOnlyList<HaEndpoint> resolvedEndpoints)
     {
         // 这里只做“簇内排序”；簇与簇之间的优先级已经在 BuildClusterRoutingPlansAsync 里决定。
         if (resolvedEndpoints.Count <= 1)
@@ -824,14 +624,13 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         var allEndpoints = resolvedEndpoints.ToList();
         var priorityCount = settings.GetEffectivePriorityHostCount(cluster.SeedEndpoints.Length);
 
-        List<LogicalNodeCandidate> priorityEndpoints;
-        List<LogicalNodeCandidate> nonPriorityEndpoints;
+        List<HaEndpoint> priorityEndpoints;
+        List<HaEndpoint> nonPriorityEndpoints;
         if (priorityCount > 0)
         {
-            // priorityN 依据 seed 顺序判定高优先节点，动态地址变化不会改变其优先级归属。
             var priorityKeys = new HashSet<string>(cluster.SeedEndpoints.Take(priorityCount).Select(static endpoint => endpoint.Key), StringComparer.Ordinal);
-            priorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is not null && priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
-            nonPriorityEndpoints = allEndpoints.Where(endpoint => endpoint.SeedEndpoint is null || !priorityKeys.Contains(endpoint.SeedEndpoint.Value.Key)).ToList();
+            priorityEndpoints = allEndpoints.Where(endpoint => priorityKeys.Contains(endpoint.Key)).ToList();
+            nonPriorityEndpoints = allEndpoints.Where(endpoint => !priorityKeys.Contains(endpoint.Key)).ToList();
         }
         else
         {
@@ -873,9 +672,6 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 : allEndpoints.ToArray();
         }
     }
-
-    static int GetSeedOrder(SeedCluster cluster, int index)
-        => index;
 
     GaussDBDataSource GetOrAddEndpointPool(HaEndpoint endpoint)
         => _endpointPools.GetOrAdd(endpoint.Key, _ =>
@@ -1077,89 +873,6 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     static string CreateKey(IReadOnlyCollection<HaEndpoint> endpoints)
         => string.Join(",", endpoints.Select(static endpoint => endpoint.Key).OrderBy(static endpoint => endpoint, StringComparer.Ordinal));
 
-    sealed class LogicalNodeRecord
-    {
-        // 逻辑节点记录会被并发更新，因此 seed/dynamic 地址和顺序都受同一把锁保护。
-        readonly object _sync = new();
-        string _clusterKey;
-        HaEndpoint? _seedEndpoint;
-        HaEndpoint? _dynamicEndpoint;
-        int _order;
-
-        internal LogicalNodeRecord(string nodeName, string clusterKey, HaEndpoint? seedEndpoint, int order)
-        {
-            NodeName = nodeName;
-            _clusterKey = clusterKey;
-            _seedEndpoint = seedEndpoint;
-            _order = order;
-        }
-
-        internal string NodeName { get; }
-        internal string ClusterKey
-        {
-            get
-            {
-                lock (_sync)
-                    return _clusterKey;
-            }
-        }
-
-        internal HaEndpoint? SeedEndpoint
-        {
-            get
-            {
-                lock (_sync)
-                    return _seedEndpoint;
-            }
-        }
-
-        internal int Order
-        {
-            get
-            {
-                lock (_sync)
-                    return _order;
-            }
-        }
-
-        internal void SetSeedEndpoint(HaEndpoint seedEndpoint, int order)
-        {
-            lock (_sync)
-            {
-                // seed 地址一旦确认就保持最早顺序，避免后续探测把原始优先级覆盖掉。
-                _seedEndpoint ??= seedEndpoint;
-                _order = Math.Min(_order, order);
-            }
-        }
-
-        internal void RebindClusterAndSeedEndpoint(string clusterKey, HaEndpoint seedEndpoint, int order)
-        {
-            lock (_sync)
-            {
-                _clusterKey = clusterKey;
-                _seedEndpoint = seedEndpoint;
-                _order = order;
-            }
-        }
-
-        internal void UpdateDynamicEndpoint(HaEndpoint endpoint)
-        {
-            lock (_sync)
-                // 动态地址允许被最新快照覆盖，以便跟随 CN 实时漂移。
-                _dynamicEndpoint = endpoint;
-        }
-
-        internal HaEndpoint? GetDynamicEndpoint()
-        {
-            lock (_sync)
-                return _dynamicEndpoint;
-        }
-    }
-
-    // seed endpoint 与逻辑节点名的确认绑定，用于把静态 seed 和动态 CN 地址视为同一节点。
-    readonly record struct SeedBinding(HaEndpoint SeedEndpoint, string NodeName, string ClusterKey, int SeedOrder);
-    // 一个逻辑候选可能同时携带 seed/dynamic 两种地址，后续会展开成“先动态、后 seed”的尝试顺序。
-    readonly record struct LogicalNodeCandidate(string? NodeName, HaEndpoint? SeedEndpoint, HaEndpoint? DynamicEndpoint, int Order);
     // 一个簇对应一组 seed endpoints；PriorityServers 会把原始 host 列表切成多个簇。
     readonly record struct SeedCluster(string Key, HaEndpoint[] SeedEndpoints);
     // 一轮簇级路由计划，同时说明要扫描哪些 pool，以及是否允许继续尝试 Offline 节点。
