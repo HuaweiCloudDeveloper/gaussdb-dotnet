@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using HuaweiCloud.GaussDB;
 
@@ -24,8 +24,38 @@ case "open-auto-reconnect-transient-failure":
 case "priority-autobalance-preferred-cluster":
     await RunScenarioAsync("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options));
     return;
+case "priority-loadbalance-false-sticks-first-seed":
+    await RunScenarioAsync("priority-loadbalance-false-sticks-first-seed", () => PriorityLoadBalanceFalseSticksFirstSeedAsync(options));
+    return;
+case "priority-loadbalance-true-shuffles-within-cluster":
+    await RunScenarioAsync("priority-loadbalance-true-shuffles-within-cluster", () => PriorityLoadBalanceTrueShufflesWithinClusterAsync(options));
+    return;
+case "priority-autobalance-true-ignores-loadbalancehosts":
+    await RunScenarioAsync("priority-autobalance-true-ignores-loadbalancehosts", () => PriorityAutoBalanceTrueIgnoresLoadBalanceHostsAsync(options));
+    return;
+case "autobalance-balance-alias-matches-roundrobin":
+    await RunScenarioAsync("autobalance-balance-alias-matches-roundrobin", () => AutoBalanceBalanceAliasMatchesRoundRobinAsync(options));
+    return;
+case "autobalance-priority-subset-routing":
+    await RunScenarioAsync("autobalance-priority-subset-routing", () => AutoBalancePrioritySubsetRoutingAsync(options));
+    return;
+case "autobalance-shuffle-subset-routing":
+    await RunScenarioAsync("autobalance-shuffle-subset-routing", () => AutoBalanceShuffleSubsetRoutingAsync(options));
+    return;
+case "autobalance-specified-seed-only":
+    await RunScenarioAsync("autobalance-specified-seed-only", () => AutoBalanceSpecifiedSeedOnlyAsync(options));
+    return;
+case "autobalance-leastconn-preserves-order":
+    await RunScenarioAsync("autobalance-leastconn-preserves-order", () => AutoBalanceLeastConnPreservesOrderAsync(options));
+    return;
 case "invalid-autobalance-rejected":
     await RunScenarioAsync("invalid-autobalance-rejected", () => InvalidAutoBalanceRejectedAsync(options));
+    return;
+case "invalid-autobalance-priority-bound-rejected":
+    await RunScenarioAsync("invalid-autobalance-priority-bound-rejected", () => InvalidAutoBalancePriorityBoundRejectedAsync(options));
+    return;
+case "invalid-autobalance-shuffle-bound-rejected":
+    await RunScenarioAsync("invalid-autobalance-shuffle-bound-rejected", () => InvalidAutoBalanceShuffleBoundRejectedAsync(options));
     return;
 case "host-recheck-expiry-reprobes":
     await RunScenarioAsync("host-recheck-expiry-reprobes", () => HostRecheckExpiryReprobesAsync(options));
@@ -59,6 +89,9 @@ case "cn-discovery-using-eip-selection":
     return;
 case "cn-discovery-refresh-disabled":
     await RunScenarioAsync("cn-discovery-refresh-disabled", () => CnDiscoveryRefreshDisabledAsync(options));
+    return;
+case "refresh-failure-throttled":
+    await RunScenarioAsync("refresh-failure-throttled", () => RefreshFailureThrottledAsync(options));
     return;
 case "cn-discovery-misconfigured-priority-seed-pollutes-cluster":
     await RunScenarioAsync("cn-discovery-misconfigured-priority-seed-pollutes-cluster", () => CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(options));
@@ -96,6 +129,9 @@ case "seed-binding-rebind-using-eip-false":
 case "seed-binding-rebind-state-check":
     await RunScenarioAsync("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options));
     return;
+case "single-cluster-enhanced-ha-without-priorityservers":
+    await RunScenarioAsync("single-cluster-enhanced-ha-without-priorityservers", () => SingleClusterEnhancedHaWithoutPriorityServersAsync(options));
+    return;
 case "sql-error-no-reconnect":
     await RunScenarioAsync("sql-error-no-reconnect", () => SqlErrorNoReconnectAsync(options));
     return;
@@ -113,7 +149,17 @@ static void PrintScenarioList()
     Console.WriteLine("open-failover");
     Console.WriteLine("open-auto-reconnect-transient-failure");
     Console.WriteLine("priority-autobalance-preferred-cluster");
+    Console.WriteLine("priority-loadbalance-false-sticks-first-seed");
+    Console.WriteLine("priority-loadbalance-true-shuffles-within-cluster");
+    Console.WriteLine("priority-autobalance-true-ignores-loadbalancehosts");
+    Console.WriteLine("autobalance-balance-alias-matches-roundrobin");
+    Console.WriteLine("autobalance-priority-subset-routing");
+    Console.WriteLine("autobalance-shuffle-subset-routing");
+    Console.WriteLine("autobalance-specified-seed-only");
+    Console.WriteLine("autobalance-leastconn-preserves-order");
     Console.WriteLine("invalid-autobalance-rejected");
+    Console.WriteLine("invalid-autobalance-priority-bound-rejected");
+    Console.WriteLine("invalid-autobalance-shuffle-bound-rejected");
     Console.WriteLine("host-recheck-expiry-reprobes");
     Console.WriteLine("offline-cache-skips-immediate-reprobe");
     Console.WriteLine("host-recheck-zero-immediate-reprobe");
@@ -125,6 +171,7 @@ static void PrintScenarioList()
     Console.WriteLine("cn-discovery-forged-reachable-proxy-seed-binding");
     Console.WriteLine("cn-discovery-using-eip-selection");
     Console.WriteLine("cn-discovery-refresh-disabled");
+    Console.WriteLine("refresh-failure-throttled");
     Console.WriteLine("cn-discovery-misconfigured-priority-seed-pollutes-cluster");
     Console.WriteLine("cn-discovery-unbound-fallback-seed-allows-foreign-node-adoption");
     Console.WriteLine("cn-discovery-bound-foreign-seed-does-not-join-preferred-cluster");
@@ -137,6 +184,7 @@ static void PrintScenarioList()
     Console.WriteLine("seed-binding-rebind-using-eip-true");
     Console.WriteLine("seed-binding-rebind-using-eip-false");
     Console.WriteLine("seed-binding-rebind-state-check");
+    Console.WriteLine("single-cluster-enhanced-ha-without-priorityservers");
     Console.WriteLine("sql-error-no-reconnect");
     Console.WriteLine("matrix");
 }
@@ -149,7 +197,17 @@ static async Task RunMatrixAsync(Options options)
         ("open-failover", () => OpenFailoverAsync(options)),
         ("open-auto-reconnect-transient-failure", () => OpenAutoReconnectTransientFailureAsync(options)),
         ("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options)),
+        ("priority-loadbalance-false-sticks-first-seed", () => PriorityLoadBalanceFalseSticksFirstSeedAsync(options)),
+        ("priority-loadbalance-true-shuffles-within-cluster", () => PriorityLoadBalanceTrueShufflesWithinClusterAsync(options)),
+        ("priority-autobalance-true-ignores-loadbalancehosts", () => PriorityAutoBalanceTrueIgnoresLoadBalanceHostsAsync(options)),
+        ("autobalance-balance-alias-matches-roundrobin", () => AutoBalanceBalanceAliasMatchesRoundRobinAsync(options)),
+        ("autobalance-priority-subset-routing", () => AutoBalancePrioritySubsetRoutingAsync(options)),
+        ("autobalance-shuffle-subset-routing", () => AutoBalanceShuffleSubsetRoutingAsync(options)),
+        ("autobalance-specified-seed-only", () => AutoBalanceSpecifiedSeedOnlyAsync(options)),
+        ("autobalance-leastconn-preserves-order", () => AutoBalanceLeastConnPreservesOrderAsync(options)),
         ("invalid-autobalance-rejected", () => InvalidAutoBalanceRejectedAsync(options)),
+        ("invalid-autobalance-priority-bound-rejected", () => InvalidAutoBalancePriorityBoundRejectedAsync(options)),
+        ("invalid-autobalance-shuffle-bound-rejected", () => InvalidAutoBalanceShuffleBoundRejectedAsync(options)),
         ("host-recheck-expiry-reprobes", () => HostRecheckExpiryReprobesAsync(options)),
         ("offline-cache-skips-immediate-reprobe", () => OfflineCacheSkipsImmediateReprobeAsync(options)),
         ("host-recheck-zero-immediate-reprobe", () => HostRecheckZeroImmediateReprobeAsync(options)),
@@ -160,6 +218,7 @@ static async Task RunMatrixAsync(Options options)
         ("cn-discovery-forged-reachable-proxy-seed-binding", () => CnDiscoveryForgedReachableProxySeedBindingAsync(options)),
         ("cn-discovery-using-eip-selection", () => CnDiscoveryUsingEipSelectionAsync(options)),
         ("cn-discovery-refresh-disabled", () => CnDiscoveryRefreshDisabledAsync(options)),
+        ("refresh-failure-throttled", () => RefreshFailureThrottledAsync(options)),
         ("proxy-disconnect-no-replay", () => ProxyDisconnectNoReplayAsync(options)),
         ("explicit-tx-admin-shutdown-no-replay", () => ExplicitTransactionNoReplayAsync(options)),
         ("copy-export-disconnect-no-replay", () => CopyExportDisconnectNoReplayAsync(options)),
@@ -169,6 +228,7 @@ static async Task RunMatrixAsync(Options options)
         ("seed-binding-rebind-using-eip-true", () => SeedBindingRebindScenarioAsync(options, usingEip: true)),
         ("seed-binding-rebind-using-eip-false", () => SeedBindingRebindScenarioAsync(options, usingEip: false)),
         ("seed-binding-rebind-state-check", () => SeedBindingRebindStateCheckAsync(options)),
+        ("single-cluster-enhanced-ha-without-priorityservers", () => SingleClusterEnhancedHaWithoutPriorityServersAsync(options)),
         ("sql-error-no-reconnect", () => SqlErrorNoReconnectAsync(options))
     };
 
@@ -239,6 +299,7 @@ static async Task InspectRoutingAsync(Options options)
 
 static async Task CnDiscoveryRoundRobinAsync(Options options)
 {
+    // 先直连单个 seed，读取真实的 pgxc_node 元数据，建立“理论上应发现到哪些 CN”的基线。
     var seedTarget = options.Targets[0];
     var seedConnectionString = ConnectionStringUtil.BuildConnectionString(new[] { seedTarget }, options.BaseExtra, string.Empty);
     var seedBuilder = new GaussDBConnectionStringBuilder(seedConnectionString);
@@ -249,6 +310,7 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
     await using var seedConn = new GaussDBConnection(seedConnectionString);
     await seedConn.OpenAsync();
 
+    // 当前 seed 所在 node_name + 当前活跃 coordinator 列表，后续都以此作为断言基准。
     var seedNodeName = await ExecuteScalarTextAsync(seedConn, "SELECT get_nodename();");
     var coordinators = await LoadActiveCoordinatorsAsync(seedConn);
     if (coordinators.Count < 2)
@@ -264,6 +326,8 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
         .ToArray();
     var seedEndpoint = ParseEndpoint(seedTarget);
     var directlyReachableNodes = new HashSet<string>(StringComparer.Ordinal);
+    // 对动态发现出的 endpoint 做一次直接可达性探测。
+    // 如果这些地址从当前测试机根本不可达，驱动回退到 seed 才是正确行为。
     foreach (var coordinator in coordinators)
     {
         if (await CanConnectAsync(coordinator.GetPreferredEndpoint(seedBuilder.UsingEip)))
@@ -287,6 +351,7 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
         "AutoBalance=roundrobin;RefreshCNIpListTime=30");
     Console.WriteLine($"ConnectionString={discoveryConnectionString}");
 
+    // 连续多次 Open，让驱动有机会在 round-robin 下逐步命中发现出的多个 CN。
     await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
     var observedNodes = new HashSet<string>(StringComparer.Ordinal);
     var observedEndpoints = new HashSet<string>(StringComparer.Ordinal);
@@ -307,6 +372,7 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
     Console.WriteLine($"observed-nodes={string.Join(",", observedNodesOrdered)}");
     Console.WriteLine($"observed-endpoints={string.Join(",", observedEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}");
 
+    // 如果一个可达的发现节点都没有，则本场景的正确结果就是稳定留在 seed。
     if (directlyReachableDiscoveredNodes.Length == 0)
     {
         if (observedNodesOrdered.Length != 1 || observedNodesOrdered[0] != seedNodeName)
@@ -317,6 +383,7 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
         return;
     }
 
+    // 只要存在可达的 discovered node，就应该能在多次 Open 后观察到它们被实际选中。
     if (!directlyReachableDiscoveredNodes.All(node => observedNodes.Contains(node)))
         throw new InvalidOperationException(
             $"Observed node set did not include every directly reachable discovered node. expected-reachable=[{string.Join(",", directlyReachableDiscoveredNodes)}] observed=[{string.Join(",", observedNodesOrdered)}]");
@@ -336,6 +403,8 @@ static async Task CnDiscoveryRoundRobinAsync(Options options)
 
 static async Task CnDiscoveryProxySeedBindingAsync(Options options)
 {
+    // 这个场景验证：即使连接串里的 seed 先经过一层本地代理，驱动仍能把它绑定回正确的 node_name，
+    // 并在动态 endpoint 可达时切到动态 endpoint；否则留在 seed fallback。
     var seedTarget = options.Targets[0];
     var seedConnectionString = ConnectionStringUtil.BuildConnectionString(new[] { seedTarget }, options.BaseExtra, string.Empty);
     var seedBuilder = new GaussDBConnectionStringBuilder(seedConnectionString);
@@ -351,6 +420,7 @@ static async Task CnDiscoveryProxySeedBindingAsync(Options options)
 
     var expectedPreferredEndpoint = seedCoordinator.GetPreferredEndpoint(seedBuilder.UsingEip);
 
+    // 用本地代理模拟“连接串里的 host != 数据库里暴露出来的真实地址”。
     await using var proxyGroup = new ProxyGroup(new[] { seedTarget });
     var proxiedSeed = proxyGroup.GetByIndex(0);
     var discoveryConnectionString = ConnectionStringUtil.BuildConnectionString(
@@ -369,6 +439,7 @@ static async Task CnDiscoveryProxySeedBindingAsync(Options options)
     await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
     await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
+    // 先校验 node_name 绑定没丢，再根据 preferred endpoint 是否可达分别断言 direct-discovery 或 seed-fallback。
     var connectedNodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
     var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
     var connectedEndpoint = new Endpoint(conn.Host!, conn.Port);
@@ -400,19 +471,34 @@ static async Task CnDiscoveryProxySeedBindingAsync(Options options)
 
 static async Task CnDiscoveryForgedExpandedNodeFailoverAsync(Options options)
 {
+    // 这个场景把当前 seed 改写成不可达，同时把另一个真实 CN 改写成可达的 forged dynamic endpoint，
+    // 验证驱动是否会按动态发现结果切到这个“扩容出来”的 CN。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     if (seedRoutes.Length < 2)
         throw new InvalidOperationException("Forged expanded node scenario requires at least two seed targets.");
 
     var seedRoute = seedRoutes[0];
     var expandedRoute = seedRoutes[1];
+    var coordinatorMetadata = await LoadCoordinatorMetadataByNodeNameAsync(options, seedRoute.Target);
+    var seedCoordinator = coordinatorMetadata[seedRoute.NodeName];
+    var expandedCoordinator = coordinatorMetadata[expandedRoute.NodeName];
     await using var expandedProxy = RealTcpFaultProxy.Start(expandedRoute.SeedEndpoint.Host, expandedRoute.SeedEndpoint.Port);
     var expandedEndpoint = ParseEndpoint(expandedProxy.Endpoint);
     var unreachableSeedEndpoint = GetUnreachableEndpoint();
     var overrides = new[]
     {
-        new CoordinatorMetadata(seedRoute.NodeName, unreachableSeedEndpoint, unreachableSeedEndpoint),
-        new CoordinatorMetadata(expandedRoute.NodeName, expandedEndpoint, expandedEndpoint)
+        new CoordinatorMetadata(
+            seedRoute.NodeName,
+            unreachableSeedEndpoint,
+            unreachableSeedEndpoint,
+            seedCoordinator.HostEndpoint,
+            seedCoordinator.EipEndpoint),
+        new CoordinatorMetadata(
+            expandedRoute.NodeName,
+            expandedEndpoint,
+            expandedEndpoint,
+            expandedCoordinator.HostEndpoint,
+            expandedCoordinator.EipEndpoint)
     };
 
     await using var metadataProxy = PgMetadataRewriteProxy.Start(
@@ -435,6 +521,7 @@ static async Task CnDiscoveryForgedExpandedNodeFailoverAsync(Options options)
     await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
     await using (var warmConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
     {
+        // 第一次 warm-open 负责触发刷新，把 forged endpoint 预热进候选集。
         var warmNodeName = await ExecuteScalarTextAsync(warmConn, "SELECT get_nodename();");
         var warmServerEndpoint = await ExecuteScalarTextAsync(warmConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
         Console.WriteLine($"warm-open connected-via={warmConn.Host}:{warmConn.Port} server={warmServerEndpoint} node-name={warmNodeName}");
@@ -446,6 +533,7 @@ static async Task CnDiscoveryForgedExpandedNodeFailoverAsync(Options options)
     await metadataProxy.DisableAsync();
     Console.WriteLine($"disabled-metadata-proxy={metadataProxy.Endpoint}");
 
+    // 关掉 metadata 入口后再次 Open，确认不是“偶然继续依赖旧 seed”，而是真的已经切到 forged discovered node。
     await using var failoverConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
     var failoverNodeName = await ExecuteScalarTextAsync(failoverConn, "SELECT get_nodename();");
     var failoverServerEndpoint = await ExecuteScalarTextAsync(failoverConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
@@ -465,12 +553,21 @@ static async Task CnDiscoveryForgedExpandedNodeFailoverAsync(Options options)
 
 static async Task CnDiscoveryForgedReachableProxySeedBindingAsync(Options options)
 {
+    // 这个场景验证：当刷新结果把“当前 seed 对应的同一个 node_name”改写到另一个可达地址时，
+    // 驱动应优先使用改写后的动态地址，而不是停留在 metadata proxy 上。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     var seedRoute = seedRoutes[0];
+    var coordinatorMetadata = await LoadCoordinatorMetadataByNodeNameAsync(options, seedRoute.Target);
+    var seedCoordinator = coordinatorMetadata[seedRoute.NodeName];
 
     await using var forgedPreferredProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
     var forgedPreferredEndpoint = ParseEndpoint(forgedPreferredProxy.Endpoint);
-    var overrideCoordinator = new CoordinatorMetadata(seedRoute.NodeName, forgedPreferredEndpoint, forgedPreferredEndpoint);
+    var overrideCoordinator = new CoordinatorMetadata(
+        seedRoute.NodeName,
+        forgedPreferredEndpoint,
+        forgedPreferredEndpoint,
+        seedCoordinator.HostEndpoint,
+        seedCoordinator.EipEndpoint);
 
     await using var metadataProxy = PgMetadataRewriteProxy.Start(
         seedRoute.SeedEndpoint.Host,
@@ -513,51 +610,62 @@ static async Task CnDiscoveryForgedReachableProxySeedBindingAsync(Options option
 
 static async Task CnDiscoveryUsingEipSelectionAsync(Options options)
 {
+    // 给同一个 node_name 同时伪造 host 列和 eip 列两套地址，
+    // 分别验证 UsingEip=true/false 时到底会采用哪一列进入候选集。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     var seedRoute = seedRoutes[0];
+    var coordinatorMetadata = await LoadCoordinatorMetadataByNodeNameAsync(options, seedRoute.Target);
+    var seedCoordinator = coordinatorMetadata[seedRoute.NodeName];
 
     await using var hostSideProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
     await using var eipSideProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
     var hostSideEndpoint = ParseEndpoint(hostSideProxy.Endpoint);
     var eipSideEndpoint = ParseEndpoint(eipSideProxy.Endpoint);
 
-    await using var metadataProxy = PgMetadataRewriteProxy.Start(
-        seedRoute.SeedEndpoint.Host,
-        seedRoute.SeedEndpoint.Port,
-        new[] { new CoordinatorMetadata(seedRoute.NodeName, hostSideEndpoint, eipSideEndpoint) });
-
     Console.WriteLine($"seed-target={seedRoute.Target}");
     Console.WriteLine($"seed-node-name={seedRoute.NodeName}");
-    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
     Console.WriteLine($"forged-host-endpoint={hostSideEndpoint}");
     Console.WriteLine($"forged-eip-endpoint={eipSideEndpoint}");
 
+    // 这里跑两次建连，除了 UsingEip 不同，其余条件完全一致。
     await OpenAndAssertPreferredEndpointAsync("using-eip-true", usingEip: true, eipSideEndpoint);
     await OpenAndAssertPreferredEndpointAsync("using-eip-false", usingEip: false, hostSideEndpoint);
-
-    Console.WriteLine($"metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
-    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
-
-    if (metadataProxy.RewrittenRowCount == 0)
-        throw new InvalidOperationException("Expected CN discovery to read and rewrite pgxc_node rows.");
 
     Console.WriteLine("validation-mode=using-eip-selection");
 
     async Task OpenAndAssertPreferredEndpointAsync(string label, bool usingEip, Endpoint expectedEndpoint)
     {
+        // 同一行 metadata 同时覆盖 host/eip 两列，方便直接观察分支选择结果。
+        await using var metadataProxy = PgMetadataRewriteProxy.Start(
+            seedRoute.SeedEndpoint.Host,
+            seedRoute.SeedEndpoint.Port,
+            new[]
+            {
+                new CoordinatorMetadata(
+                    seedRoute.NodeName,
+                    hostSideEndpoint,
+                    eipSideEndpoint,
+                    seedCoordinator.HostEndpoint,
+                    seedCoordinator.EipEndpoint)
+            });
+
         var connectionString = ConnectionStringUtil.BuildConnectionString(
             new[] { metadataProxy.Endpoint },
-            options.BaseExtra,
-            $"AutoBalance=roundrobin;RefreshCNIpListTime=30;UsingEip={usingEip.ToString().ToLowerInvariant()}");
+            ApplyUsingEipToBaseExtra(options.BaseExtra, usingEip),
+            "AutoBalance=roundrobin;RefreshCNIpListTime=30");
+        Console.WriteLine($"{label}-metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
         Console.WriteLine($"{label}-connection-string={connectionString}");
 
         await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
         await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
 
+        // 既校验逻辑 node_name 不变，也校验物理 endpoint 命中的是期待那一列。
         var connectedNodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
         var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
         var connectedEndpoint = new Endpoint(conn.Host!, conn.Port);
         Console.WriteLine($"{label} connected-via={connectedEndpoint} server={serverEndpoint} node-name={connectedNodeName}");
+        Console.WriteLine($"{label}-metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
+        Console.WriteLine($"{label}-metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
 
         if (connectedNodeName != seedRoute.NodeName)
             throw new InvalidOperationException(
@@ -569,11 +677,16 @@ static async Task CnDiscoveryUsingEipSelectionAsync(Options options)
 
         if (connectedEndpoint.ToString() == metadataProxy.Endpoint)
             throw new InvalidOperationException($"{label} unexpectedly stayed on the metadata rewrite proxy.");
+
+        if (metadataProxy.RewrittenRowCount == 0)
+            throw new InvalidOperationException($"{label} expected CN discovery to read and rewrite pgxc_node rows.");
     }
 }
 
 static async Task CnDiscoveryRefreshDisabledAsync(Options options)
 {
+    // 即便 metadata 里伪造了一个可达的 dynamic endpoint，只要 RefreshCNIpListTime=0，
+    // 驱动就不应触发刷新，也不应采用这个 forged endpoint。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     var seedRoute = seedRoutes[0];
 
@@ -624,8 +737,61 @@ static async Task CnDiscoveryRefreshDisabledAsync(Options options)
     Console.WriteLine("validation-mode=refresh-disabled-seed-only");
 }
 
+static async Task RefreshFailureThrottledAsync(Options options)
+{
+    // metadata proxy 会拦截并断开 pgxc_node 刷新 SQL，但 seed 正常连接本身仍可成功。
+    // 这个场景验证刷新失败后是否会在 TTL 窗口内被节流，而不是每次 Open 都重新刷一次。
+    var seedRoute = (await LoadSeedRoutesAsync(options))[0];
+    await using var metadataProxy = PgMetadataRewriteProxy.StartRejectingRefresh(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port);
+
+    var refreshSeconds = Math.Max(10, options.RefreshSecondsForScenario);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { metadataProxy.Endpoint },
+        options.BaseExtra,
+        $"AutoBalance=roundrobin;RefreshCNIpListTime={refreshSeconds}");
+
+    Console.WriteLine($"seed-target={seedRoute.Target}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    // 第一次 Open 触发一次刷新尝试，刷新失败后仍应通过 seed 建连成功。
+    await using (var firstConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(firstConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"first-open connected-via={firstConn.Host}:{firstConn.Port} server={server}");
+    }
+
+    var refreshCountAfterFirst = metadataProxy.SeenSql.Length;
+
+    // 第二次 Open 仍在刷新窗口内，不应再次触发 refresh SQL。
+    await using (var secondConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
+    {
+        var server = await ExecuteScalarTextAsync(secondConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        Console.WriteLine($"second-open connected-via={secondConn.Host}:{secondConn.Port} server={server}");
+    }
+
+    var refreshCountAfterSecond = metadataProxy.SeenSql.Length;
+    Console.WriteLine($"refresh-sql-after-first={refreshCountAfterFirst}");
+    Console.WriteLine($"refresh-sql-after-second={refreshCountAfterSecond}");
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (refreshCountAfterFirst != 1 || refreshCountAfterSecond != 1)
+    {
+        throw new InvalidOperationException(
+            $"Refresh failures should be throttled within the RefreshCNIpListTime window. observed-first={refreshCountAfterFirst} observed-second={refreshCountAfterSecond}");
+    }
+
+    Console.WriteLine("validation-mode=refresh-failure-throttled");
+}
+
 static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Options options)
 {
+    // 这是一个调试型场景：
+    // 故意把优先簇 seed 指到别的簇，先制造一次错误吸纳，
+    // 再验证真实 seed 后绑定 node_name 后，驱动是否能把污染掉的动态 endpoint 纠正出去。
     // 这个场景验证 fix rebind bug：
     // 即使优先 seed 一开始被错误配置到别的簇，后续真实 seed 一旦明确识别出 node_name -> cluster，
     // 也要把先前误吸纳到首选簇的外簇节点纠正回自己的簇，不再让伪造动态地址留在首选簇里。
@@ -642,6 +808,7 @@ static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Optio
         .Select((route, index) => new SeedProxyRoute(route, ParseEndpoint(forgedProxyGroup.GetByIndex(index).Endpoint)))
         .ToArray();
 
+    // 这里让“连接串里排第一的 seed”实际上连到 foreignClusterSeed，并把每个 node_name 都映射到本地代理。
     var misconfiguredPrioritySeed = PgMetadataRewriteProxy.Start(
         foreignClusterSeed.SeedEndpoint.Host,
         foreignClusterSeed.SeedEndpoint.Port,
@@ -666,6 +833,7 @@ static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Optio
         Console.WriteLine($"ConnectionString={discoveryConnectionString}");
 
         await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
+        // 连续两次 warm-open，目的是先把错误快照和错误归属喂进驱动内部状态。
         await using (var warmConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
         {
             var warmNodeName = await ExecuteScalarTextAsync(warmConn, "SELECT get_nodename();");
@@ -689,6 +857,7 @@ static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Optio
         await misconfiguredPrioritySeed.DisableAsync();
         Console.WriteLine($"disabled-misconfigured-priority-seed={misconfiguredPrioritySeed.Endpoint}");
 
+        // 再次建连时，如果还命中 forged endpoint，就说明簇污染没有被修正。
         await using var afterDisableConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
         var observedNodeName = await ExecuteScalarTextAsync(afterDisableConn, "SELECT get_nodename();");
         var observedServerEndpoint = await ExecuteScalarTextAsync(afterDisableConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
@@ -709,6 +878,8 @@ static async Task CnDiscoveryMisconfiguredPrioritySeedPollutesClusterAsync(Optio
 
 static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(Options options)
 {
+    // 这个调试场景故意让 fallback seed 一直无法绑定 node_name，
+    // 观察 preferred cluster 是否会错误吸纳 foreign node。
     var seedRoutes = await LoadSeedRoutesAsync(options);
     if (seedRoutes.Length < 3)
         throw new InvalidOperationException("Unbound fallback seed scenario requires at least three seed targets.");
@@ -742,6 +913,7 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
     Console.WriteLine($"ConnectionString={discoveryConnectionString}");
 
     await using var dataSource = new GaussDBDataSourceBuilder(discoveryConnectionString).BuildMultiHost();
+    // 两次 warm-open 的目的都是把错误发现结果预热进当前数据源。
     await using (var warmConn1 = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
     {
         var nodeName = await ExecuteScalarTextAsync(warmConn1, "SELECT get_nodename();");
@@ -765,6 +937,7 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
     await metadataProxy.DisableAsync();
     Console.WriteLine($"disabled-primary-metadata-proxy={metadataProxy.Endpoint}");
 
+    // 这次建连如果直接打到 foreignProxyEndpoint，就说明 foreign node 被错误吸入了 preferred cluster。
     await using var afterDisableConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
     var observedNodeName = await ExecuteScalarTextAsync(afterDisableConn, "SELECT get_nodename();");
     var observedServerEndpoint = await ExecuteScalarTextAsync(afterDisableConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
@@ -781,6 +954,8 @@ static async Task CnDiscoveryUnboundFallbackSeedAllowsForeignNodeAdoptionAsync(O
 
 static async Task CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(Options options)
 {
+    // 和上一个场景相反，这里保留了一个可被识别的 fallback seed，
+    // 用来验证：只要 fallback seed 后续能正确绑定 node_name，它就不会再被错误吸入 preferred cluster。
     // 这个场景保留了可被后续明确识别的 fallback seed，用来验证：
     // 一旦 seed 能够确认 node_name -> cluster 归属，驱动会纠正先前动态发现造成的误归簇。
     var seedRoutes = await LoadSeedRoutesAsync(options);
@@ -870,11 +1045,14 @@ static async Task CnDiscoveryBoundForeignSeedDoesNotJoinPreferredClusterAsync(Op
 
 static async Task OpenFailoverAsync(Options options)
 {
+    // 验证 Open 阶段的基础 failover：
+    // 第一个 seed 被主动掐断后，驱动应继续尝试后续节点，而不是卡死在首个 seed。
     // 验证 Open 阶段能在主节点不可达时切到备节点，而不是卡死在第一个 seed 上。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var disabled = proxyGroup.GetByIndex(0);
     await disabled.DisableAsync();
 
+    // 这里显式打开 AutoReconnect，是为了让 Open 阶段路径和正式 HA 行为一致。
     var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
 
@@ -890,6 +1068,8 @@ static async Task OpenFailoverAsync(Options options)
 
 static async Task OpenAutoReconnectTransientFailureAsync(Options options)
 {
+    // 验证 Open 阶段“瞬时失败后重试一次即可恢复”的能力。
+    // 代理只拒绝第一条 TCP 连接，后续连接恢复正常。
     var seedRoute = (await LoadSeedRoutesAsync(options))[0];
     await using var transientProxy = RealTcpFaultProxy.Start(
         seedRoute.SeedEndpoint.Host,
@@ -904,6 +1084,7 @@ static async Task OpenAutoReconnectTransientFailureAsync(Options options)
     Console.WriteLine($"transient-proxy={transientProxy.Endpoint} target={transientProxy.Target}");
     Console.WriteLine($"ConnectionString={connectionString}");
 
+    // 如果 AutoReconnect 生效，Open 应成功且代理连接次数至少为 2。
     await using var conn = new GaussDBConnection(connectionString);
     await conn.OpenAsync();
 
@@ -922,6 +1103,8 @@ static async Task OpenAutoReconnectTransientFailureAsync(Options options)
 
 static async Task PriorityAutoBalancePreferredClusterAsync(Options options)
 {
+    // 验证 PriorityServers + AutoBalance=priority1 的组合行为：
+    // 正常时优先命中主 AZ 第一个 seed；该 seed 故障后仍先留在主 AZ 内切换。
     if (options.Targets.Length < 3)
         throw new InvalidOperationException("Priority auto-balance scenario requires at least three seed targets.");
 
@@ -938,6 +1121,7 @@ static async Task PriorityAutoBalancePreferredClusterAsync(Options options)
     Console.WriteLine($"fallback-cluster={fallbackCluster.Endpoint}");
 
     await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    // 第一次先看正常命中路径。
     await using (var preferredConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))
     {
         var server = await ExecuteScalarTextAsync(preferredConn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
@@ -948,6 +1132,7 @@ static async Task PriorityAutoBalancePreferredClusterAsync(Options options)
                 $"AutoBalance=priority1 should prefer the first seed in the preferred cluster. connected-via={preferredConn.Host}:{preferredConn.Port}");
     }
 
+    // 再掐掉主 AZ 的第一个 seed，验证 failover 是否仍停留在当前优先簇。
     await preferredPrimary.DisableAsync();
     Console.WriteLine($"disabled-preferred-primary={preferredPrimary.Endpoint}");
 
@@ -963,8 +1148,420 @@ static async Task PriorityAutoBalancePreferredClusterAsync(Options options)
         throw new InvalidOperationException("Failover unexpectedly jumped to the fallback cluster before exhausting the preferred cluster.");
 }
 
+static async Task PriorityLoadBalanceFalseSticksFirstSeedAsync(Options options)
+{
+    // 验证未显式设置 AutoBalance 时，LoadBalanceHosts=false 会保持当前簇内的候选顺序。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(seedRoutes, options);
+    var fallbackRoutes = GetFallbackRoutesForPriorityScenario(seedRoutes, options);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"PriorityServers={options.PriorityServersForScenario};LoadBalanceHosts=false");
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"preferred-seeds={string.Join(",", preferredRoutes.Select(static route => route.Target))}");
+    Console.WriteLine($"fallback-seeds={string.Join(",", fallbackRoutes.Select(static route => route.Target))}");
+
+    // 连续多次 Open，观察是否始终钉在第一个 preferred seed。
+    var observations = await SampleOpenObservationsAsync(connectionString, Math.Max(6, preferredRoutes.Length * 2));
+    DumpObservations(observations);
+
+    var expectedEndpoint = preferredRoutes[0].SeedEndpoint.ToString();
+    if (observations.Any(observation => observation.ConnectedEndpoint != expectedEndpoint))
+    {
+        throw new InvalidOperationException(
+            $"LoadBalanceHosts=false and AutoBalance=false should stay on the first preferred seed. expected={expectedEndpoint} observed=[{string.Join(",", observations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    Console.WriteLine("validation-mode=priority-loadbalance-false-first-seed");
+}
+
+static async Task PriorityLoadBalanceTrueShufflesWithinClusterAsync(Options options)
+{
+    // 验证 JDBC 风格 legacy shuffle：
+    // LoadBalanceHosts=true 只在当前优先簇内打散，不应越级跑到 fallback cluster。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(seedRoutes, options);
+    var fallbackRoutes = GetFallbackRoutesForPriorityScenario(seedRoutes, options);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"PriorityServers={options.PriorityServersForScenario};LoadBalanceHosts=true");
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"preferred-seeds={string.Join(",", preferredRoutes.Select(static route => route.Target))}");
+    Console.WriteLine($"fallback-seeds={string.Join(",", fallbackRoutes.Select(static route => route.Target))}");
+
+    var observations = await SampleOpenObservationsAsync(connectionString, Math.Max(16, preferredRoutes.Length * 6));
+    DumpObservations(observations);
+
+    var preferredEndpoints = preferredRoutes.Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+    var fallbackEndpoints = fallbackRoutes.Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+    var observedEndpoints = observations.Select(static observation => observation.ConnectedEndpoint).Distinct(StringComparer.Ordinal).OrderBy(static x => x, StringComparer.Ordinal).ToArray();
+
+    if (observations.Any(observation => !preferredEndpoints.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"LoadBalanceHosts=true should only shuffle inside the preferred cluster. preferred=[{string.Join(",", preferredEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}] observed=[{string.Join(",", observedEndpoints)}]");
+    }
+
+    if (observations.Any(observation => fallbackEndpoints.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"LoadBalanceHosts=true unexpectedly used a fallback seed. fallback=[{string.Join(",", fallbackEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}] observed=[{string.Join(",", observedEndpoints)}]");
+    }
+
+    if (preferredRoutes.Length > 1 && observedEndpoints.Length < 2)
+    {
+        throw new InvalidOperationException(
+            $"LoadBalanceHosts=true should distribute opens across multiple preferred seeds over repeated attempts. observed=[{string.Join(",", observedEndpoints)}]");
+    }
+
+    Console.WriteLine("validation-mode=priority-loadbalance-true-preferred-cluster-shuffle");
+}
+
+static async Task PriorityAutoBalanceTrueIgnoresLoadBalanceHostsAsync(Options options)
+{
+    // 验证显式 AutoBalance=true 时，LoadBalanceHosts 不再参与决策。
+    // 两组观测序列应该完全一致。
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(await LoadSeedRoutesAsync(options), options);
+    var preferredEndpoints = preferredRoutes.Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+
+    var observedWithLoadBalanceFalse = await ObservePriorityAutoBalanceTrueAsync(options, loadBalanceHosts: false);
+    var observedWithLoadBalanceTrue = await ObservePriorityAutoBalanceTrueAsync(options, loadBalanceHosts: true);
+
+    var falseSequence = observedWithLoadBalanceFalse.Select(static observation => observation.ConnectedEndpoint).ToArray();
+    var trueSequence = observedWithLoadBalanceTrue.Select(static observation => observation.ConnectedEndpoint).ToArray();
+
+    if (!falseSequence.SequenceEqual(trueSequence, StringComparer.Ordinal))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=true should ignore LoadBalanceHosts and produce the same observed connection sequence. loadBalanceHosts=false=[{string.Join(",", falseSequence)}] loadBalanceHosts=true=[{string.Join(",", trueSequence)}]");
+    }
+
+    if (observedWithLoadBalanceFalse.Any(observation => !preferredEndpoints.Contains(observation.ConnectedEndpoint)) ||
+        observedWithLoadBalanceTrue.Any(observation => !preferredEndpoints.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=true should stay inside the preferred cluster regardless of LoadBalanceHosts. preferred=[{string.Join(",", preferredEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}] false=[{string.Join(",", falseSequence)}] true=[{string.Join(",", trueSequence)}]");
+    }
+
+    if (preferredEndpoints.Count > 1 &&
+        (falseSequence.Distinct(StringComparer.Ordinal).Count() < 2 || trueSequence.Distinct(StringComparer.Ordinal).Count() < 2))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=true should rotate across multiple preferred seeds over repeated opens. false=[{string.Join(",", falseSequence)}] true=[{string.Join(",", trueSequence)}]");
+    }
+
+    Console.WriteLine("validation-mode=priority-autobalance-true-ignores-loadbalancehosts");
+}
+
+static async Task AutoBalanceBalanceAliasMatchesRoundRobinAsync(Options options)
+{
+    // 验证 roundrobin / true / balance 三个别名在真实库上的行为完全一致。
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(await LoadSeedRoutesAsync(options), options);
+    var preferredEndpoints = preferredRoutes.Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+
+    var roundRobin = await ObserveAutoBalanceModeAsync(options, "roundrobin", attempts: preferredRoutes.Length * 2);
+    var autoTrue = await ObserveAutoBalanceModeAsync(options, "true", attempts: preferredRoutes.Length * 2);
+    var balance = await ObserveAutoBalanceModeAsync(options, "balance", attempts: preferredRoutes.Length * 2);
+
+    var roundRobinSequence = roundRobin.Select(static observation => observation.ConnectedEndpoint).ToArray();
+    var autoTrueSequence = autoTrue.Select(static observation => observation.ConnectedEndpoint).ToArray();
+    var balanceSequence = balance.Select(static observation => observation.ConnectedEndpoint).ToArray();
+
+    if (!roundRobinSequence.SequenceEqual(autoTrueSequence, StringComparer.Ordinal) ||
+        !roundRobinSequence.SequenceEqual(balanceSequence, StringComparer.Ordinal))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=roundrobin/true/balance should behave identically. roundrobin=[{string.Join(",", roundRobinSequence)}] true=[{string.Join(",", autoTrueSequence)}] balance=[{string.Join(",", balanceSequence)}]");
+    }
+
+    if (roundRobin.Any(observation => !preferredEndpoints.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"Round-robin aliases should stay inside the preferred cluster. preferred=[{string.Join(",", preferredEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}] observed=[{string.Join(",", roundRobinSequence)}]");
+    }
+
+    if (preferredEndpoints.Count > 1 && roundRobinSequence.Distinct(StringComparer.Ordinal).Count() < 2)
+    {
+        throw new InvalidOperationException(
+            $"Round-robin aliases should rotate across multiple preferred seeds. observed=[{string.Join(",", roundRobinSequence)}]");
+    }
+
+    Console.WriteLine("validation-mode=autobalance-balance-alias-roundrobin");
+}
+
+static async Task AutoBalancePrioritySubsetRoutingAsync(Options options)
+{
+    // 验证 priorityN：
+    // 正常时只打优先子集；优先子集里的首节点故障后，仍先留在同簇内切到其他节点。
+    if (options.Targets.Length < 3)
+        throw new InvalidOperationException("Priority subset routing scenario requires at least three seed targets.");
+
+    await using var proxyGroup = new ProxyGroup(options.Targets);
+    var firstPreferred = proxyGroup.GetByIndex(0);
+    var secondPreferred = proxyGroup.GetByIndex(1);
+    var fallbackSeed = proxyGroup.GetByIndex(2);
+    var connectionString = proxyGroup.ConnectionString(
+        options.BaseExtra,
+        "PriorityServers=2;AutoBalance=priority1;RefreshCNIpListTime=0");
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"first-preferred={firstPreferred.Endpoint}");
+    Console.WriteLine($"second-preferred={secondPreferred.Endpoint}");
+    Console.WriteLine($"fallback-seed={fallbackSeed.Endpoint}");
+
+    var preferredObservations = await SampleOpenObservationsAsync(connectionString, 4);
+    DumpObservations(preferredObservations);
+    if (preferredObservations.Any(observation => observation.ConnectedEndpoint != firstPreferred.Endpoint))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=priority1 should keep using the priority subset while it stays healthy. expected={firstPreferred.Endpoint} observed=[{string.Join(",", preferredObservations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    await firstPreferred.DisableAsync();
+    Console.WriteLine($"disabled-first-preferred={firstPreferred.Endpoint}");
+
+    var failoverObservations = await SampleOpenObservationsAsync(connectionString, 3);
+    DumpObservations(failoverObservations);
+    if (failoverObservations.Any(observation => observation.ConnectedEndpoint != secondPreferred.Endpoint))
+    {
+        throw new InvalidOperationException(
+            $"After the priority subset fails, AutoBalance=priority1 should stay inside the preferred cluster and use {secondPreferred.Endpoint}. observed=[{string.Join(",", failoverObservations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    if (failoverObservations.Any(observation => observation.ConnectedEndpoint == fallbackSeed.Endpoint))
+        throw new InvalidOperationException("Priority subset routing unexpectedly jumped to the fallback cluster before exhausting the preferred cluster.");
+
+    Console.WriteLine("validation-mode=autobalance-priority-subset-routing");
+}
+
+static async Task AutoBalanceShuffleSubsetRoutingAsync(Options options)
+{
+    // 验证 shuffleN：
+    // 只在优先子集内 shuffle，健康状态下不应触达非优先子集。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    if (seedRoutes.Length < 3)
+        throw new InvalidOperationException("Shuffle subset routing scenario requires at least three seed targets.");
+
+    var prioritySubset = seedRoutes.Take(2).Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+    var nonPrioritySubset = seedRoutes.Skip(2).Select(static route => route.SeedEndpoint.ToString()).ToHashSet(StringComparer.Ordinal);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        "AutoBalance=shuffle2;RefreshCNIpListTime=0");
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"priority-subset={string.Join(",", prioritySubset.OrderBy(static x => x, StringComparer.Ordinal))}");
+    Console.WriteLine($"non-priority-subset={string.Join(",", nonPrioritySubset.OrderBy(static x => x, StringComparer.Ordinal))}");
+
+    var observations = await SampleOpenObservationsAsync(connectionString, 16);
+    DumpObservations(observations);
+
+    if (observations.Any(observation => !prioritySubset.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=shuffle2 should keep first-attempt opens inside the priority subset while it is healthy. observed=[{string.Join(",", observations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    if (observations.Any(observation => nonPrioritySubset.Contains(observation.ConnectedEndpoint)))
+        throw new InvalidOperationException("AutoBalance=shuffle2 unexpectedly used a non-priority seed while the priority subset stayed healthy.");
+
+    if (prioritySubset.Count > 1 && observations.Select(static observation => observation.ConnectedEndpoint).Distinct(StringComparer.Ordinal).Count() < 2)
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=shuffle2 should shuffle within the priority subset over repeated opens. observed=[{string.Join(",", observations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    Console.WriteLine("validation-mode=autobalance-shuffle-subset-routing");
+}
+
+static async Task AutoBalanceSpecifiedSeedOnlyAsync(Options options)
+{
+    // 验证 specified：
+    // 即使刷新结果里注入了 forged dynamic endpoint，排序时也只能在 seed hosts 范围内轮转。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    if (seedRoutes.Length < 2)
+        throw new InvalidOperationException("Specified routing scenario requires at least two seed targets.");
+
+    await using var forgedProxyGroup = new ProxyGroup(options.Targets);
+    var overrideCoordinators = new List<CoordinatorMetadata>(seedRoutes.Length);
+    foreach (var seedRoute in seedRoutes)
+    {
+        var originalEndpoint = seedRoute.SeedEndpoint;
+        var forgedEndpoint = ParseEndpoint(forgedProxyGroup.GetByIndex(seedRoute.TargetIndex).Endpoint);
+        overrideCoordinators.Add(new CoordinatorMetadata(
+            seedRoute.NodeName,
+            forgedEndpoint,
+            forgedEndpoint,
+            originalEndpoint,
+            originalEndpoint));
+    }
+
+    var primarySeed = seedRoutes[0];
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        primarySeed.SeedEndpoint.Host,
+        primarySeed.SeedEndpoint.Port,
+        overrideCoordinators);
+
+    var seedTargets = options.Targets.ToArray();
+    seedTargets[0] = metadataProxy.Endpoint;
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        seedTargets,
+        options.BaseExtra,
+        "AutoBalance=specified;RefreshCNIpListTime=30");
+    var expectedSeedEndpoints = seedTargets.ToHashSet(StringComparer.Ordinal);
+    var forgedEndpoints = Enumerable.Range(0, seedRoutes.Length)
+        .Select(index => forgedProxyGroup.GetByIndex(index).Endpoint)
+        .ToHashSet(StringComparer.Ordinal);
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"expected-seeds={string.Join(",", expectedSeedEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}");
+    Console.WriteLine($"forged-dynamic-endpoints={string.Join(",", forgedEndpoints.OrderBy(static x => x, StringComparer.Ordinal))}");
+
+    var observations = await SampleOpenObservationsAsync(connectionString, Math.Max(6, seedTargets.Length * 2));
+    DumpObservations(observations);
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (metadataProxy.SeenSql.Length == 0)
+        throw new InvalidOperationException("AutoBalance=specified scenario expected to hit pgxc_node refresh, but no refresh SQL was observed.");
+
+    if (observations.Any(observation => !expectedSeedEndpoints.Contains(observation.ConnectedEndpoint)))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=specified should stay on seed hosts only. observed=[{string.Join(",", observations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    if (observations.Any(observation => forgedEndpoints.Contains(observation.ConnectedEndpoint)))
+        throw new InvalidOperationException("AutoBalance=specified unexpectedly connected to a forged dynamic endpoint.");
+
+    Console.WriteLine("validation-mode=autobalance-specified-seed-only");
+}
+
+static async Task AutoBalanceLeastConnPreservesOrderAsync(Options options)
+{
+    // 当前 leastconn 还没有真正按活动连接数做挑选，因此现阶段语义是“保留当前候选顺序”。
+    // 这个场景就是把这个现状固化为测试。
+    if (options.Targets.Length < 2)
+        throw new InvalidOperationException("Least-connection scenario requires at least two seed targets.");
+
+    await using var proxyGroup = new ProxyGroup(options.Targets);
+    var firstSeed = proxyGroup.GetByIndex(0);
+    var secondSeed = proxyGroup.GetByIndex(1);
+    var connectionString = proxyGroup.ConnectionString(
+        options.BaseExtra,
+        "AutoBalance=leastconn;RefreshCNIpListTime=0");
+
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"first-seed={firstSeed.Endpoint}");
+    Console.WriteLine($"second-seed={secondSeed.Endpoint}");
+
+    // 健康时应始终命中第一个 seed。
+    var baselineObservations = await SampleOpenObservationsAsync(connectionString, 4);
+    DumpObservations(baselineObservations);
+    if (baselineObservations.Any(observation => observation.ConnectedEndpoint != firstSeed.Endpoint))
+    {
+        throw new InvalidOperationException(
+            $"AutoBalance=leastconn should preserve candidate order in the current implementation. expected={firstSeed.Endpoint} observed=[{string.Join(",", baselineObservations.Select(static observation => observation.ConnectedEndpoint))}]");
+    }
+
+    // 第一个 seed 故障后，再验证是否按顺序切到第二个 seed。
+    await firstSeed.DisableAsync();
+    Console.WriteLine($"disabled-first-seed={firstSeed.Endpoint}");
+
+    var failoverObservation = (await SampleOpenObservationsAsync(connectionString, 1)).Single();
+    Console.WriteLine($"failover connected-via={failoverObservation.ConnectedEndpoint} node-name={failoverObservation.NodeName} server={failoverObservation.ServerEndpoint}");
+    if (failoverObservation.ConnectedEndpoint != secondSeed.Endpoint)
+    {
+        throw new InvalidOperationException(
+            $"After the first seed fails, AutoBalance=leastconn should move to the next seed in order. expected={secondSeed.Endpoint} observed={failoverObservation.ConnectedEndpoint}");
+    }
+
+    Console.WriteLine("validation-mode=autobalance-leastconn-preserves-order");
+}
+
+static async Task<OpenObservation[]> ObservePriorityAutoBalanceTrueAsync(Options options, bool loadBalanceHosts)
+{
+    // 同一个 AutoBalance=true 场景，只切换 LoadBalanceHosts 开关，方便直接比较两组观测序列。
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(await LoadSeedRoutesAsync(options), options);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"PriorityServers={options.PriorityServersForScenario};AutoBalance=true;LoadBalanceHosts={loadBalanceHosts.ToString().ToLowerInvariant()};RefreshCNIpListTime=0");
+
+    Console.WriteLine($"label=autobalance-true-loadbalance-{loadBalanceHosts.ToString().ToLowerInvariant()}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"preferred-seeds={string.Join(",", preferredRoutes.Select(static route => route.Target))}");
+
+    var observations = await SampleOpenObservationsAsync(connectionString, preferredRoutes.Length * 2);
+    DumpObservations(observations);
+
+    return observations;
+}
+
+static async Task<OpenObservation[]> ObserveAutoBalanceModeAsync(Options options, string autoBalance, int attempts)
+{
+    // 通用观测辅助：给定一个 AutoBalance 值，多次 Open 后返回实际命中的 endpoint 序列。
+    var preferredRoutes = GetPreferredRoutesForPriorityScenario(await LoadSeedRoutesAsync(options), options);
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"PriorityServers={options.PriorityServersForScenario};AutoBalance={autoBalance};LoadBalanceHosts=false;RefreshCNIpListTime=0");
+
+    Console.WriteLine($"label=autobalance-{autoBalance}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"preferred-seeds={string.Join(",", preferredRoutes.Select(static route => route.Target))}");
+
+    var observations = await SampleOpenObservationsAsync(connectionString, attempts);
+    DumpObservations(observations);
+    return observations;
+}
+
+static SeedRoute[] GetPreferredRoutesForPriorityScenario(SeedRoute[] seedRoutes, Options options)
+{
+    if (options.PriorityServersForScenario <= 0 || options.PriorityServersForScenario >= seedRoutes.Length)
+    {
+        throw new InvalidOperationException(
+            $"Priority routing scenarios require 0 < PriorityServers < host count. priorityServers={options.PriorityServersForScenario} hosts={seedRoutes.Length}");
+    }
+
+    return seedRoutes.Take(options.PriorityServersForScenario).ToArray();
+}
+
+static SeedRoute[] GetFallbackRoutesForPriorityScenario(SeedRoute[] seedRoutes, Options options)
+    => seedRoutes.Skip(options.PriorityServersForScenario).ToArray();
+
+static async Task<OpenObservation[]> SampleOpenObservationsAsync(string connectionString, int attempts)
+{
+    // 每次都新建一次物理连接，采样“这次 Open 最终命中了哪个 endpoint / node_name”。
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    var observations = new List<OpenObservation>(attempts);
+    for (var i = 0; i < attempts; i++)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+        var nodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+        var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+        observations.Add(new(i + 1, $"{conn.Host}:{conn.Port}", nodeName, serverEndpoint));
+    }
+
+    return observations.ToArray();
+}
+
+static void DumpObservations(IReadOnlyList<OpenObservation> observations)
+{
+    foreach (var observation in observations)
+        Console.WriteLine($"open[{observation.Attempt}] connected-via={observation.ConnectedEndpoint} server={observation.ServerEndpoint} node-name={observation.NodeName}");
+
+    Console.WriteLine($"observed-endpoints={string.Join(",", observations.Select(static observation => observation.ConnectedEndpoint).Distinct(StringComparer.Ordinal).OrderBy(static x => x, StringComparer.Ordinal))}");
+    Console.WriteLine($"observed-nodes={string.Join(",", observations.Select(static observation => observation.NodeName).Distinct(StringComparer.Ordinal).OrderBy(static x => x, StringComparer.Ordinal))}");
+}
+
 static Task InvalidAutoBalanceRejectedAsync(Options options)
 {
+    // 验证裸数字 AutoBalance 在连接串阶段就会被拒绝。
     var connectionString = ConnectionStringUtil.BuildConnectionString(
         new[] { options.Targets[0] },
         options.BaseExtra,
@@ -1003,8 +1600,86 @@ static Task InvalidAutoBalanceRejectedAsync(Options options)
     return Task.CompletedTask;
 }
 
+static Task InvalidAutoBalancePriorityBoundRejectedAsync(Options options)
+{
+    // priorityN 的 N 必须严格小于 seedHostCount。
+    var invalidPriority = options.Targets.Length;
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"AutoBalance=priority{invalidPriority}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    Exception? captured = null;
+    try
+    {
+        _ = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+        throw new InvalidOperationException($"AutoBalance=priority{invalidPriority} unexpectedly succeeded.");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith($"AutoBalance=priority{invalidPriority} unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+
+    if (captured is not ArgumentException ||
+        !captured.Message.Contains("AutoBalance priority modes must end with a numeric suffix smaller than the number of seed hosts.", StringComparison.Ordinal))
+    {
+        throw new InvalidOperationException(
+            $"Expected AutoBalance priority bound validation error, but captured {captured.GetType().Name}: {captured.Message}",
+            captured);
+    }
+
+    return Task.CompletedTask;
+}
+
+static Task InvalidAutoBalanceShuffleBoundRejectedAsync(Options options)
+{
+    // shuffleN 的 N 允许等于 seedHostCount，但不允许超过它。
+    var invalidPriority = options.Targets.Length + 1;
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        options.Targets,
+        options.BaseExtra,
+        $"AutoBalance=shuffle{invalidPriority}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    Exception? captured = null;
+    try
+    {
+        _ = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+        throw new InvalidOperationException($"AutoBalance=shuffle{invalidPriority} unexpectedly succeeded.");
+    }
+    catch (Exception ex)
+    {
+        captured = ex;
+    }
+
+    if (captured is InvalidOperationException invalidOperationException &&
+        invalidOperationException.Message.StartsWith($"AutoBalance=shuffle{invalidPriority} unexpectedly succeeded", StringComparison.Ordinal))
+        throw captured;
+
+    Console.WriteLine($"captured={captured!.GetType().Name}: {captured.Message}");
+
+    if (captured is not ArgumentException ||
+        !captured.Message.Contains("AutoBalance shuffle modes must end with a numeric suffix smaller than or equal to the number of seed hosts.", StringComparison.Ordinal))
+    {
+        throw new InvalidOperationException(
+            $"Expected AutoBalance shuffle bound validation error, but captured {captured.GetType().Name}: {captured.Message}",
+            captured);
+    }
+
+    return Task.CompletedTask;
+}
+
 static async Task HostRecheckExpiryReprobesAsync(Options options)
 {
+    // 第一个代理只拒绝第一次连接，随后恢复；
+    // 验证 Offline 冷却到期后，驱动会重新探测并切回这个节点。
     if (options.Targets.Length < 2)
         throw new InvalidOperationException("Host recheck expiry scenario requires at least two seed targets.");
 
@@ -1036,6 +1711,7 @@ static async Task HostRecheckExpiryReprobesAsync(Options options)
                 $"Expected the first open to fall back to {fallbackProxy.Endpoint}, but connected via {firstConn.Host}:{firstConn.Port}.");
     }
 
+    // 等待 HostRecheckSeconds 到期，再发起第二次 Open。
     await Task.Delay(TimeSpan.FromSeconds(1.2));
 
     await using var secondConn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
@@ -1050,6 +1726,7 @@ static async Task HostRecheckExpiryReprobesAsync(Options options)
 
 static async Task OfflineCacheSkipsImmediateReprobeAsync(Options options)
 {
+    // 第一个 endpoint 永远立即拒绝，验证在 HostRecheckSeconds 窗口内它会被跳过，不会反复探测。
     var fallbackTarget = ParseEndpoint(options.Targets[0]);
     await using var rejectingProbe = RejectingEndpointProbe.Start();
     await using var fallbackProxy = RealTcpFaultProxy.Start(fallbackTarget.Host, fallbackTarget.Port);
@@ -1085,6 +1762,7 @@ static async Task OfflineCacheSkipsImmediateReprobeAsync(Options options)
 
 static async Task HostRecheckZeroImmediateReprobeAsync(Options options)
 {
+    // HostRecheckSeconds=0 时，Offline 应立即过期，因此第二次 Open 应再次探测失败节点。
     var fallbackTarget = ParseEndpoint(options.Targets[0]);
     await using var rejectingProbe = RejectingEndpointProbe.Start();
     await using var fallbackProxy = RealTcpFaultProxy.Start(fallbackTarget.Host, fallbackTarget.Port);
@@ -1120,6 +1798,8 @@ static async Task HostRecheckZeroImmediateReprobeAsync(Options options)
 
 static async Task AllOfflineFallbackRecoveredAsync(Options options)
 {
+    // 两个 endpoint 的第一次连接都失败，模拟“整轮都被标记为 Offline”。
+    // 随后第一个 endpoint 立即恢复，验证同一轮 Open 内的 allowOffline 兜底重扫能把它重新捞回来。
     if (options.Targets.Length < 2)
         throw new InvalidOperationException("All-offline fallback scenario requires at least two seed targets.");
 
@@ -1160,6 +1840,7 @@ static async Task AllOfflineFallbackRecoveredAsync(Options options)
 
 static async Task ProxyDisconnectNoReplayAsync(Options options)
 {
+    // 验证命令执行阶段如果链路被代理强行断开，驱动不会透明重放当前命令。
     // 验证代理断开时命令不会被透明重放，调用方应收到失败而不是悄悄成功。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3;RefreshCNIpListTime=1;AutoBalance=Shuffle");
@@ -1172,6 +1853,7 @@ static async Task ProxyDisconnectNoReplayAsync(Options options)
                       ?? throw new InvalidOperationException($"No proxy found for port {conn.Port}");
     Console.WriteLine($"initial-proxy={currentProxy.Endpoint} target={currentProxy.Target}");
 
+    // 先发一个长时间命令，让连接保持在“执行中”状态，再中途掐断代理。
     var queryTask = ExecuteScalarTextAsync(
         conn,
         "SELECT inet_server_addr()::text || ':' || inet_server_port()::text FROM pg_sleep(8);");
@@ -1200,6 +1882,7 @@ static async Task ProxyDisconnectNoReplayAsync(Options options)
 
 static async Task ExplicitTransactionNoReplayAsync(Options options)
 {
+    // 验证显式事务内发生 AdminShutdown 时，驱动不会重放命令或偷偷换 backend。
     // 显式事务内不允许自动重放，否则会破坏事务语义。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -1212,6 +1895,7 @@ static async Task ExplicitTransactionNoReplayAsync(Options options)
     var initialPid = await ExecuteScalarLongAsync(conn, "SELECT pg_backend_pid();", tx);
     Console.WriteLine($"initial-host={initialHost} initial-pid={initialPid}");
 
+    // 保持事务内命令执行中，然后用控制连接显式 pg_terminate_backend。
     var queryTask = ExecuteScalarTextAsync(
         conn,
         "SELECT inet_server_addr()::text || ':' || inet_server_port()::text || '|pid=' || pg_backend_pid()::text FROM pg_sleep(8);",
@@ -1241,6 +1925,7 @@ static async Task ExplicitTransactionNoReplayAsync(Options options)
 
 static async Task CopyExportDisconnectNoReplayAsync(Options options)
 {
+    // 验证 COPY 导出过程中断链时，不会透明重放 COPY。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -1256,6 +1941,7 @@ static async Task CopyExportDisconnectNoReplayAsync(Options options)
     Exception? captured = null;
     try
     {
+        // 先把 COPY 流拉起并读到第一块数据，确保后续断链发生在 COPY 执行过程中。
         reader = await conn.BeginTextExportAsync(
             "COPY (SELECT repeat('x', 8192) FROM generate_series(1, 100000)) TO STDOUT");
         var buffer = new char[8192];
@@ -1307,6 +1993,7 @@ static async Task CopyExportDisconnectNoReplayAsync(Options options)
 
 static async Task ActiveReaderNoReplayAsync(Options options)
 {
+    // 验证活跃 reader 正在消费大字段时断链，不会被透明重连后继续读。
     // 活动 reader 期间也不能自动重连重放，否则读到的流状态会失真。
     await using var proxyGroup = new ProxyGroup(options.Targets);
     var connectionString = proxyGroup.ConnectionString(options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
@@ -1324,6 +2011,7 @@ static async Task ActiveReaderNoReplayAsync(Options options)
     Exception? captured = null;
     try
     {
+        // 先读到第一块大字段，确保 reader 已进入流式消费阶段。
         reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
         if (!await reader.ReadAsync())
             throw new InvalidOperationException("Reader did not return the large text row.");
@@ -1379,6 +2067,7 @@ static async Task ActiveReaderNoReplayAsync(Options options)
 
 static async Task ActiveReaderSecondCommandInProgressAsync(Options options)
 {
+    // 验证第一个 reader 仍在活动期间，第二个命令必须被拒绝，不能通过重连绕过去。
     // 保持第一个 reader 打开时，第二个命令必须被拒绝，不能通过重连绕过去。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -1405,6 +2094,7 @@ FROM generate_series(1, 100000) AS s(i);
         if (firstRow != 1 || firstRead <= 0)
             throw new InvalidOperationException("Active reader scenario did not keep the first reader alive as expected.");
 
+        // 保持第一个 reader 仍然未结束，再尝试发第二条命令。
         await using var secondCommand = conn.CreateCommand();
         secondCommand.CommandText = "SELECT 1;";
 
@@ -1439,6 +2129,7 @@ FROM generate_series(1, 100000) AS s(i);
 
 static async Task CommandTimeoutNoReplayAsync(Options options)
 {
+    // 验证命令超时不是故障转移信号，不应触发重连或偷偷换 backend。
     // 超时不应触发重连或换 backend，避免把普通慢 SQL 当成故障转移。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3;Command Timeout=1");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -1474,114 +2165,162 @@ static async Task CommandTimeoutNoReplayAsync(Options options)
 
 static async Task SeedBindingRebindScenarioAsync(Options options, bool usingEip)
 {
-    var result = await ExecuteSeedBindingRebindFlowAsync(options, usingEip, emitStateDump: true);
-
-    Console.WriteLine($"target-node={result.TargetNodeName} blocked-seed={result.BlockedSeedEndpoint}");
-    Console.WriteLine($"wrong-owner-before={result.WrongOwnerBefore} corrected-owner-after={result.CorrectedOwnerAfter}");
-
-    if (!result.WrongOwnerBefore)
-        throw new InvalidOperationException("Did not observe initial wrong-cluster adoption before seed recovery; scenario did not reach the target branch.");
-
-    if (!result.CorrectedOwnerAfter)
-        throw new InvalidOperationException("Seed recovery did not correct logical node ownership back to the seed cluster.");
-
-    if (!result.HasRecoveredSeedBinding)
-        throw new InvalidOperationException("Recovered seed still has no seed binding after rebind.");
+    // 基础 rebind 场景：
+    // dynamic endpoint 可用时优先用 dynamic；失效后回退 seed；恢复后再切回 dynamic。
+    await ExecuteDynamicEndpointRebindAsync(options, usingEip, verifyRepeatedPostRecoveryOpen: false);
 }
 
 static async Task SeedBindingRebindStateCheckAsync(Options options)
 {
-    var result = await ExecuteSeedBindingRebindFlowAsync(options, usingEip: true, emitStateDump: true);
-
-    if (!result.WrongOwnerBefore)
-        throw new InvalidOperationException("Did not observe initial wrong-cluster adoption before correction.");
-
-    if (!result.CorrectedOwnerAfter)
-        throw new InvalidOperationException("Logical node owner is still wrong after recovered seed rebinding.");
-
-    if (!result.HasRecoveredSeedBinding)
-        throw new InvalidOperationException("Recovered seed binding missing after correction.");
-
-    if (result.TargetNodeBindingsAfter.Count != 1)
-        throw new InvalidOperationException($"Expected exactly 1 seed binding for {result.TargetNodeName} after correction, actual={result.TargetNodeBindingsAfter.Count}.");
-
-    var binding = result.TargetNodeBindingsAfter[0];
-    if (!string.Equals(binding.SeedEndpoint, result.BlockedSeedEndpoint, StringComparison.OrdinalIgnoreCase))
-        throw new InvalidOperationException($"Recovered binding points to {binding.SeedEndpoint}, expected {result.BlockedSeedEndpoint}.");
-
-    if (!string.Equals(binding.ClusterKey, result.SecondaryClusterKey, StringComparison.Ordinal))
-        throw new InvalidOperationException($"Recovered binding cluster is {binding.ClusterKey}, expected {result.SecondaryClusterKey}.");
-
-    if (result.TargetNodeOwnersAfter.Any(owner => !string.Equals(owner.ClusterKey, result.SecondaryClusterKey, StringComparison.Ordinal)))
-        throw new InvalidOperationException("Found stale logical owner in another cluster after correction.");
+    // 在基础 rebind 场景上再多做一次 Open，
+    // 确认动态地址恢复后，后续连接会稳定维持在恢复后的 dynamic endpoint。
+    await ExecuteDynamicEndpointRebindAsync(options, usingEip: true, verifyRepeatedPostRecoveryOpen: true);
 }
 
-static async Task<SeedBindingRebindResult> ExecuteSeedBindingRebindFlowAsync(Options options, bool usingEip, bool emitStateDump)
+static async Task SingleClusterEnhancedHaWithoutPriorityServersAsync(Options options)
 {
-    if (options.Targets.Length < 3)
-        throw new InvalidOperationException("Seed binding rebind scenarios require at least 3 CN targets.");
+    // 验证未配置 PriorityServers 时，只要显式打开 AutoBalance + Refresh，
+    // 驱动仍会走单簇增强 HA 路径，而不是退回纯 seed 静态建连。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var seedRoute = seedRoutes[0];
+    var coordinatorMetadata = await LoadCoordinatorMetadataByNodeNameAsync(options, seedRoute.Target);
+    var seedCoordinator = coordinatorMetadata[seedRoute.NodeName];
 
-    await using var proxyGroup = new ProxyGroup(options.Targets);
-    var blockedProxy = proxyGroup.GetByIndex(options.BindBlockTargetIndex);
-    var primaryClusterKey = string.Join(",", new[] { proxyGroup.GetByIndex(0).Endpoint, proxyGroup.GetByIndex(1).Endpoint }.OrderBy(static x => x, StringComparer.Ordinal));
-    var secondaryClusterKey = blockedProxy.Endpoint;
-    var targetEndpoint = ParseEndpoint(options.Targets[options.BindBlockTargetIndex]);
-    var targetNodeName = await FetchNodeNameDirectlyAsync(targetEndpoint.Host, targetEndpoint.Port, options.BaseExtra);
+    await using var forgedPreferredProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
+    var forgedPreferredEndpoint = ParseEndpoint(forgedPreferredProxy.Endpoint);
+    var overrideCoordinator = new CoordinatorMetadata(
+        seedRoute.NodeName,
+        forgedPreferredEndpoint,
+        forgedPreferredEndpoint,
+        seedCoordinator.HostEndpoint,
+        seedCoordinator.EipEndpoint);
+
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port,
+        new[] { overrideCoordinator });
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { metadataProxy.Endpoint },
+        options.BaseExtra,
+        "AutoBalance=roundrobin;RefreshCNIpListTime=30");
+
+    Console.WriteLine($"seed-target={seedRoute.Target}");
+    Console.WriteLine($"seed-node-name={seedRoute.NodeName}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"forged-preferred-endpoint={forgedPreferredEndpoint}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
+    await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+
+    // 这里的正确结果是：仍然通过 seed proxy 建连，并且 metadata proxy 看不到任何刷新 SQL。
+    var connectedNodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+    var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    var connectedEndpoint = new Endpoint(conn.Host!, conn.Port);
+    Console.WriteLine($"connected-via={connectedEndpoint} server={serverEndpoint} node-name={connectedNodeName}");
+    Console.WriteLine($"metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+
+    if (connectedNodeName != seedRoute.NodeName)
+        throw new InvalidOperationException(
+            $"Expected single-cluster enhanced HA to stay bound to node '{seedRoute.NodeName}', but connected to '{connectedNodeName}'.");
+
+    if (connectedEndpoint.ToString() != forgedPreferredEndpoint.ToString())
+    {
+        throw new InvalidOperationException(
+            $"Expected single-cluster enhanced HA without PriorityServers to use forged dynamic endpoint {forgedPreferredEndpoint}, but connected via {connectedEndpoint}.");
+    }
+
+    if (connectedEndpoint.ToString() == metadataProxy.Endpoint)
+        throw new InvalidOperationException("Single-cluster enhanced HA unexpectedly stayed on the seed endpoint instead of using the discovered endpoint.");
+
+    Console.WriteLine("validation-mode=single-cluster-enhanced-ha-without-priorityservers");
+}
+
+static async Task ExecuteDynamicEndpointRebindAsync(Options options, bool usingEip, bool verifyRepeatedPostRecoveryOpen)
+{
+    // 这个辅助函数统一覆盖两类场景：
+    // 1. UsingEip=true/false 时 dynamic endpoint 的首选列是否正确；
+    // 2. dynamic 失效 -> 回退 seed -> dynamic 恢复后的回切路径是否正确。
+    var seedRoutes = await LoadSeedRoutesAsync(options);
+    var seedRoute = seedRoutes[0];
+    var coordinatorMetadata = await LoadCoordinatorMetadataByNodeNameAsync(options, seedRoute.Target);
+    var seedCoordinator = coordinatorMetadata[seedRoute.NodeName];
+
+    await using var dynamicProxy = RealTcpFaultProxy.Start(seedRoute.SeedEndpoint.Host, seedRoute.SeedEndpoint.Port);
+    var dynamicEndpoint = ParseEndpoint(dynamicProxy.Endpoint);
+    var rewrittenCoordinator = usingEip
+        ? new CoordinatorMetadata(
+            seedRoute.NodeName,
+            seedCoordinator.HostEndpoint,
+            dynamicEndpoint,
+            seedCoordinator.HostEndpoint,
+            seedCoordinator.EipEndpoint)
+        : new CoordinatorMetadata(
+            seedRoute.NodeName,
+            dynamicEndpoint,
+            seedCoordinator.EipEndpoint,
+            seedCoordinator.HostEndpoint,
+            seedCoordinator.EipEndpoint);
+
+    await using var metadataProxy = PgMetadataRewriteProxy.Start(
+        seedRoute.SeedEndpoint.Host,
+        seedRoute.SeedEndpoint.Port,
+        new[] { rewrittenCoordinator });
 
     var scenarioExtra =
-        $"PriorityServers={options.PriorityServersForScenario};AutoBalance=priority2;Refresh CN IP List Time={options.RefreshSecondsForScenario};UsingEip={(usingEip ? "true" : "false")};AutoReconnect=false;Application Name=seed-binding-rebind-{(usingEip ? "eip" : "inner")}-{Guid.NewGuid():N}";
-    var connectionString = proxyGroup.ConnectionString(options.BaseExtra, scenarioExtra);
+        $"AutoBalance=roundrobin;RefreshCNIpListTime={options.RefreshSecondsForScenario};HostRecheckSeconds=1;AutoReconnect=false;Application Name=seed-binding-rebind-{(usingEip ? "eip" : "inner")}-{Guid.NewGuid():N}";
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { metadataProxy.Endpoint },
+        ApplyUsingEipToBaseExtra(options.BaseExtra, usingEip),
+        scenarioExtra);
+
     Console.WriteLine($"ConnectionString={connectionString}");
-    Console.WriteLine($"blocked-seed-proxy={blockedProxy.Endpoint} target={blockedProxy.Target} target-node={targetNodeName}");
+    Console.WriteLine($"metadata-proxy={metadataProxy.Endpoint} target={metadataProxy.Target}");
+    Console.WriteLine($"dynamic-endpoint={dynamicEndpoint} target-node={seedRoute.NodeName} using-eip={usingEip}");
 
-    await using (var conn = new GaussDBConnection(connectionString))
-    {
-        await conn.OpenAsync();
-        Console.WriteLine($"step-1 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
-    }
+    await using var dataSource = new GaussDBDataSourceBuilder(connectionString).BuildMultiHost();
 
-    await blockedProxy.RejectConnectionsAsync();
-    Console.WriteLine($"step-2 paused blocked seed={blockedProxy.Endpoint}");
+    // step-1: dynamic endpoint 可达，第一次 Open 应优先命中 dynamic。
+    var step1 = await OpenObservationFromDataSourceAsync(dataSource, attempt: 1);
+    Console.WriteLine($"step-1 connected={step1.ConnectedEndpoint} node={step1.NodeName} server={step1.ServerEndpoint}");
+    Console.WriteLine($"step-1 metadata-proxy-rewritten-rows={metadataProxy.RewrittenRowCount}");
+    Console.WriteLine($"step-1 metadata-proxy-seen-sql={string.Join(" || ", metadataProxy.SeenSql)}");
+    if (step1.ConnectedEndpoint != dynamicEndpoint.ToString())
+        throw new InvalidOperationException($"Expected step-1 to prefer dynamic endpoint {dynamicEndpoint}, actual={step1.ConnectedEndpoint}.");
+
+    // step-2: 把 dynamic endpoint 暂停掉，等待刷新窗口过期后再次 Open，应回退到 seed。
+    await dynamicProxy.RejectConnectionsAsync();
+    Console.WriteLine($"step-2 paused dynamic endpoint={dynamicEndpoint}");
     await Task.Delay(TimeSpan.FromSeconds(options.RefreshSecondsForScenario + 1));
 
-    RoutingSnapshot beforeState;
-    await using (var conn = new GaussDBConnection(connectionString))
-    {
-        await conn.OpenAsync();
-        Console.WriteLine($"step-2 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
-        beforeState = CaptureRoutingSnapshot(conn, proxyGroup);
-        if (emitStateDump)
-            Console.WriteLine(FormatRoutingSnapshot(beforeState));
-    }
+    var step2 = await OpenObservationFromDataSourceAsync(dataSource, attempt: 2);
+    Console.WriteLine($"step-2 connected={step2.ConnectedEndpoint} node={step2.NodeName} server={step2.ServerEndpoint}");
+    if (step2.ConnectedEndpoint != metadataProxy.Endpoint)
+        throw new InvalidOperationException($"Expected step-2 to fall back to metadata seed {metadataProxy.Endpoint}, actual={step2.ConnectedEndpoint}.");
 
-    await blockedProxy.ResumeAsync();
-    Console.WriteLine($"step-3 resumed blocked seed={blockedProxy.Endpoint}");
+    // step-3: 恢复 dynamic endpoint，再等一个刷新窗口，新的 Open 应重新切回 dynamic。
+    await dynamicProxy.ResumeAsync();
+    Console.WriteLine($"step-3 resumed dynamic endpoint={dynamicEndpoint}");
     await Task.Delay(TimeSpan.FromSeconds(options.RefreshSecondsForScenario + 1));
 
-    RoutingSnapshot afterState;
-    await using (var conn = new GaussDBConnection(connectionString))
-    {
-        await conn.OpenAsync();
-        Console.WriteLine($"step-3 connected={conn.Host}:{conn.Port} node={await ExecuteScalarTextAsync(conn, "SELECT get_nodename();")}");
-        afterState = CaptureRoutingSnapshot(conn, proxyGroup);
-        if (emitStateDump)
-            Console.WriteLine(FormatRoutingSnapshot(afterState));
-    }
+    var step3 = await OpenObservationFromDataSourceAsync(dataSource, attempt: 3);
+    Console.WriteLine($"step-3 connected={step3.ConnectedEndpoint} node={step3.NodeName} server={step3.ServerEndpoint}");
+    if (step3.ConnectedEndpoint != dynamicEndpoint.ToString())
+        throw new InvalidOperationException($"Expected step-3 to switch back to dynamic endpoint {dynamicEndpoint}, actual={step3.ConnectedEndpoint}.");
 
-    return new SeedBindingRebindResult(
-        targetNodeName,
-        blockedProxy.Endpoint,
-        primaryClusterKey,
-        secondaryClusterKey,
-        beforeState.LogicalNodes.Any(node => node.NodeName == targetNodeName && node.ClusterKey == primaryClusterKey),
-        afterState.LogicalNodes.Any(node => node.NodeName == targetNodeName && node.ClusterKey == secondaryClusterKey),
-        afterState.SeedBindings.Any(binding => binding.NodeName == targetNodeName && string.Equals(binding.SeedEndpoint, blockedProxy.Endpoint, StringComparison.OrdinalIgnoreCase)),
-        afterState.SeedBindings.Where(binding => binding.NodeName == targetNodeName).ToList(),
-        afterState.LogicalNodes.Where(node => node.NodeName == targetNodeName).ToList());
+    if (verifyRepeatedPostRecoveryOpen)
+    {
+        // step-4: 再补一次 Open，验证恢复后的命中结果不是偶发，而是可持续稳定复用。
+        var step4 = await OpenObservationFromDataSourceAsync(dataSource, attempt: 4);
+        Console.WriteLine($"step-4 connected={step4.ConnectedEndpoint} node={step4.NodeName} server={step4.ServerEndpoint}");
+        if (step4.ConnectedEndpoint != dynamicEndpoint.ToString())
+            throw new InvalidOperationException($"Expected step-4 to remain on recovered dynamic endpoint {dynamicEndpoint}, actual={step4.ConnectedEndpoint}.");
+    }
 }
 
 static async Task SqlErrorNoReconnectAsync(Options options)
 {
+    // 验证普通 SQL 语义错误不是连接级故障，不应触发重连或切换 endpoint。
     // 普通 SQL 语义错误不是连接级故障，不应触发自动重连或更换 backend。
     var connectionString = ConnectionStringUtil.BuildConnectionString(options.Targets, options.BaseExtra, "PriorityServers=2;AutoReconnect=true;MaxReconnects=3");
     Console.WriteLine($"ConnectionString={connectionString}");
@@ -1644,101 +2383,31 @@ static async Task<object?> ExecuteScalarAsync(GaussDBConnection conn, string sql
     return await cmd.ExecuteScalarAsync();
 }
 
-static async Task<string> FetchNodeNameDirectlyAsync(string host, int port, string baseExtra)
+static async Task<OpenObservation> OpenObservationFromDataSourceAsync(GaussDBMultiHostDataSource dataSource, int attempt)
 {
-    var connectionString = ConnectionStringUtil.BuildConnectionString(new[] { $"{host}:{port}" }, baseExtra, string.Empty);
+    await using var conn = await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any);
+    var nodeName = await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+    var serverEndpoint = await ExecuteScalarTextAsync(conn, "SELECT inet_server_addr()::text || ':' || inet_server_port()::text;");
+    return new(attempt, $"{conn.Host}:{conn.Port}", nodeName, serverEndpoint);
+}
+
+static async Task<Dictionary<string, CoordinatorMetadata>> LoadCoordinatorMetadataByNodeNameAsync(Options options, string target)
+{
+    var connectionString = ConnectionStringUtil.BuildConnectionString(new[] { target }, options.BaseExtra, string.Empty);
     await using var conn = new GaussDBConnection(connectionString);
     await conn.OpenAsync();
-    return await ExecuteScalarTextAsync(conn, "SELECT get_nodename();");
+    return (await LoadActiveCoordinatorsAsync(conn))
+        .ToDictionary(static coordinator => coordinator.NodeName, StringComparer.Ordinal);
 }
 
-static RoutingSnapshot CaptureRoutingSnapshot(GaussDBConnection conn, ProxyGroup proxyGroup)
+static string ApplyUsingEipToBaseExtra(string baseExtra, bool usingEip)
 {
-    var dataSourceField = typeof(GaussDBConnection).GetField("_dataSource", BindingFlags.Instance | BindingFlags.NonPublic)
-                          ?? throw new InvalidOperationException("Could not find GaussDBConnection._dataSource.");
-    var dataSource = dataSourceField.GetValue(conn)
-                    ?? throw new InvalidOperationException("Connection _dataSource was null.");
-    var dataSourceType = dataSource.GetType();
-
-    var seedClustersField = dataSourceType.GetField("_seedClusters", BindingFlags.Instance | BindingFlags.NonPublic)
-                            ?? throw new InvalidOperationException("Could not find _seedClusters.");
-    var seedClustersArray = (Array?)seedClustersField.GetValue(dataSource) ?? Array.Empty<object>();
-    var seedClusters = new List<SeedClusterView>();
-    foreach (var cluster in seedClustersArray)
-    {
-        var clusterType = cluster!.GetType();
-        var clusterKey = Convert.ToString(clusterType.GetProperty("Key")!.GetValue(cluster)) ?? "<null>";
-        var endpoints = (Array?)clusterType.GetProperty("SeedEndpoints")!.GetValue(cluster) ?? Array.Empty<object>();
-        seedClusters.Add(new(
-            clusterKey,
-            endpoints.Cast<object?>().Select(FormatInternalEndpoint).ToList()));
-    }
-
-    var seedBindingsField = dataSourceType.GetField("_seedBindings", BindingFlags.Instance | BindingFlags.NonPublic)
-                             ?? throw new InvalidOperationException("Could not find _seedBindings.");
-    var seedBindingsDict = (System.Collections.IDictionary?)seedBindingsField.GetValue(dataSource)
-                           ?? throw new InvalidOperationException("_seedBindings was null.");
-    var seedBindings = new List<SeedBindingView>();
-    foreach (System.Collections.DictionaryEntry entry in seedBindingsDict)
-    {
-        var binding = entry.Value!;
-        var bindingType = binding.GetType();
-        var seedEndpoint = FormatInternalEndpoint(bindingType.GetProperty("SeedEndpoint")!.GetValue(binding));
-        seedBindings.Add(new(
-            seedEndpoint,
-            Convert.ToString(bindingType.GetProperty("NodeName")!.GetValue(binding)) ?? "<null>",
-            Convert.ToString(bindingType.GetProperty("ClusterKey")!.GetValue(binding)) ?? "<null>",
-            proxyGroup.DescribeEndpoint(seedEndpoint)));
-    }
-
-    var logicalNodesField = dataSourceType.GetField("_logicalNodes", BindingFlags.Instance | BindingFlags.NonPublic)
-                             ?? throw new InvalidOperationException("Could not find _logicalNodes.");
-    var logicalNodesDict = (System.Collections.IDictionary?)logicalNodesField.GetValue(dataSource)
-                           ?? throw new InvalidOperationException("_logicalNodes was null.");
-    var logicalNodes = new List<LogicalNodeView>();
-    foreach (System.Collections.DictionaryEntry entry in logicalNodesDict)
-    {
-        var node = entry.Value!;
-        var nodeType = node.GetType();
-        logicalNodes.Add(new(
-            Convert.ToString(nodeType.GetProperty("NodeName", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)) ?? "<null>",
-            Convert.ToString(nodeType.GetProperty("ClusterKey", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)) ?? "<null>",
-            FormatInternalEndpoint(nodeType.GetProperty("SeedEndpoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(node)),
-            FormatInternalEndpoint(nodeType.GetMethod("GetDynamicEndpoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.Invoke(node, null))));
-    }
-
-    return new(seedClusters, seedBindings, logicalNodes);
-}
-
-static string FormatRoutingSnapshot(RoutingSnapshot snapshot)
-{
-    var builder = new StringBuilder();
-    builder.AppendLine("[routing-state]");
-    builder.AppendLine("seed-clusters:");
-    foreach (var cluster in snapshot.SeedClusters)
-        builder.AppendLine($"  cluster={cluster.Key} seeds=[{string.Join(", ", cluster.SeedEndpoints)}]");
-
-    builder.AppendLine("seed-bindings:");
-    foreach (var binding in snapshot.SeedBindings.OrderBy(static x => x.SeedEndpoint, StringComparer.Ordinal))
-        builder.AppendLine($"  seed={binding.SeedEndpoint} ({binding.ProxyLabel}) -> node={binding.NodeName} cluster={binding.ClusterKey}");
-
-    builder.AppendLine("logical-nodes:");
-    foreach (var node in snapshot.LogicalNodes.OrderBy(static x => x.NodeName, StringComparer.Ordinal))
-        builder.AppendLine($"  logical node={node.NodeName} cluster={node.ClusterKey} seed={node.SeedEndpoint} dynamic={node.DynamicEndpoint}");
-
-    return builder.ToString();
-}
-
-static string FormatInternalEndpoint(object? endpoint)
-{
-    if (endpoint is null)
-        return "<null>";
-
-    var type = endpoint.GetType();
-    var host = Convert.ToString(type.GetProperty("Host", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(endpoint));
-    var portObject = type.GetProperty("Port", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(endpoint);
-    var port = portObject is null ? "<null>" : Convert.ToString(portObject);
-    return $"{host}:{port}";
+    var parts = baseExtra
+        .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        .Where(static part => !part.StartsWith("UsingEip=", StringComparison.OrdinalIgnoreCase))
+        .ToList();
+    parts.Add($"UsingEip={(usingEip ? "true" : "false")}");
+    return string.Join(';', parts);
 }
 
 static async Task<List<CoordinatorMetadata>> LoadActiveCoordinatorsAsync(GaussDBConnection conn)
@@ -1834,15 +2503,27 @@ sealed class ConnectionStringUtil
     }
 }
 
-sealed record CoordinatorMetadata(string NodeName, Endpoint HostEndpoint, Endpoint EipEndpoint)
+sealed record CoordinatorMetadata(
+    string NodeName,
+    Endpoint HostEndpoint,
+    Endpoint EipEndpoint,
+    Endpoint? OriginalHostEndpoint = null,
+    Endpoint? OriginalEipEndpoint = null)
 {
     internal Endpoint GetPreferredEndpoint(bool usingEip)
         => usingEip ? EipEndpoint : HostEndpoint;
+
+    internal Endpoint GetMatchEndpoint(bool usingEip)
+        => usingEip
+            ? OriginalEipEndpoint ?? EipEndpoint
+            : OriginalHostEndpoint ?? HostEndpoint;
 }
 
 sealed record SeedRoute(int TargetIndex, string Target, Endpoint SeedEndpoint, string NodeName);
 
 sealed record SeedProxyRoute(SeedRoute SeedRoute, Endpoint ProxyEndpoint);
+
+sealed record OpenObservation(int Attempt, string ConnectedEndpoint, string NodeName, string ServerEndpoint);
 
 readonly record struct Endpoint(string Host, int Port)
 {
@@ -1857,6 +2538,10 @@ static class SqlText
     internal const string PgxcNodeRefresh =
         "select node_name,node_host,node_port,node_host1,node_port1 " +
         "from pgxc_node where node_type='C' and nodeis_active = true order by node_name;";
+    internal const string PgxcNodeRefreshCompactHost =
+        "select node_host,node_port from pgxc_node where node_type='C' and nodeis_active = true order by node_host;";
+    internal const string PgxcNodeRefreshCompactEip =
+        "select node_host1,node_port1 from pgxc_node where node_type='C' and nodeis_active = true order by node_host1;";
 }
 
 sealed record Options(
@@ -1958,6 +2643,14 @@ sealed class ProxyGroup : IAsyncDisposable
 
 sealed class PgMetadataRewriteProxy : IAsyncDisposable
 {
+    enum RewriteMode
+    {
+        None,
+        FullMetadata,
+        CompactHost,
+        CompactEip
+    }
+
     readonly TcpListener _listener;
     readonly CancellationTokenSource _shutdownCts = new();
     readonly ConcurrentDictionary<int, RewriteConnectionPair> _connections = new();
@@ -1966,6 +2659,7 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
     readonly string _targetHost;
     readonly int _targetPort;
     readonly IReadOnlyDictionary<string, CoordinatorMetadata> _overrides;
+    readonly Func<string, bool>? _shouldAbortSql;
     int _nextConnectionId;
     bool _disabled;
     int _rewrittenRowCount;
@@ -1976,11 +2670,16 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
     internal string[] SeenSql => _seenSql.ToArray();
     internal int RewrittenRowCount => _rewrittenRowCount;
 
-    PgMetadataRewriteProxy(string targetHost, int targetPort, IReadOnlyDictionary<string, CoordinatorMetadata> overrides)
+    PgMetadataRewriteProxy(
+        string targetHost,
+        int targetPort,
+        IReadOnlyDictionary<string, CoordinatorMetadata> overrides,
+        Func<string, bool>? shouldAbortSql = null)
     {
         _targetHost = targetHost;
         _targetPort = targetPort;
         _overrides = overrides;
+        _shouldAbortSql = shouldAbortSql;
         _listener = new TcpListener(IPAddress.Loopback, 0);
         _listener.Start();
         Port = ((IPEndPoint)_listener.LocalEndpoint).Port;
@@ -1992,6 +2691,13 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
             targetHost,
             targetPort,
             overrides.ToDictionary(static coordinator => coordinator.NodeName, StringComparer.Ordinal));
+
+    internal static PgMetadataRewriteProxy StartRejectingRefresh(string targetHost, int targetPort)
+        => new(
+            targetHost,
+            targetPort,
+            new Dictionary<string, CoordinatorMetadata>(StringComparer.Ordinal),
+            static sql => IsRefreshSql(sql));
 
     async Task RunAcceptLoopAsync()
     {
@@ -2033,6 +2739,7 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
                 client,
                 server,
                 _overrides,
+                _shouldAbortSql,
                 sql => _seenSql.Enqueue(sql),
                 () => Interlocked.Increment(ref _rewrittenRowCount));
             _connections[connectionId] = pair;
@@ -2098,19 +2805,35 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
         }
     }
 
+    static bool IsRefreshSql(string sql)
+    {
+        var normalized = NormalizeSql(sql);
+        return string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefresh), StringComparison.Ordinal) ||
+               string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefreshCompactHost), StringComparison.Ordinal) ||
+               string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefreshCompactEip), StringComparison.Ordinal);
+
+        static string NormalizeSql(string value)
+            => string.Join(" ", value
+                .Trim()
+                .TrimEnd(';')
+                .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
     sealed class RewriteConnectionPair(
         TcpClient client,
         TcpClient server,
         IReadOnlyDictionary<string, CoordinatorMetadata> overrides,
+        Func<string, bool>? shouldAbortSql,
         Action<string> recordSql,
         Action recordRewrite)
     {
         readonly TcpClient _client = client;
         readonly TcpClient _server = server;
         readonly IReadOnlyDictionary<string, CoordinatorMetadata> _overrides = overrides;
+        readonly Func<string, bool>? _shouldAbortSql = shouldAbortSql;
         readonly Action<string> _recordSql = recordSql;
         readonly Action _recordRewrite = recordRewrite;
-        volatile bool _rewritePgxcNodeRows;
+        volatile RewriteMode _rewriteMode;
 
         internal async Task RunAsync(CancellationToken cancellationToken)
         {
@@ -2153,11 +2876,20 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
 
             while (await TryReadTypedMessageAsync(source, cancellationToken).ConfigureAwait(false) is { } message)
             {
-                if (TryGetFrontendSql(message, out var sql) &&
-                    string.Equals(NormalizeSql(sql), NormalizeSql(SqlText.PgxcNodeRefresh), StringComparison.Ordinal))
+                if (TryGetFrontendSql(message, out var sql))
                 {
-                    _recordSql(sql);
-                    _rewritePgxcNodeRows = true;
+                    if (_shouldAbortSql is not null && _shouldAbortSql(sql))
+                    {
+                        _recordSql(sql);
+                        Close();
+                        return;
+                    }
+
+                    if (TryGetRewriteMode(sql, out var rewriteMode))
+                    {
+                        _recordSql(sql);
+                        _rewriteMode = rewriteMode;
+                    }
                 }
 
                 await destination.WriteAsync(message, cancellationToken).ConfigureAwait(false);
@@ -2169,17 +2901,21 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
         {
             while (await TryReadTypedMessageAsync(source, cancellationToken).ConfigureAwait(false) is { } message)
             {
-                if (_rewritePgxcNodeRows && message[0] == (byte)'D')
+                if (_rewriteMode != RewriteMode.None && message[0] == (byte)'D')
                 {
-                    message = RewritePgxcNodeDataRow(message, _overrides);
-                    _recordRewrite();
+                    var rewritten = RewritePgxcNodeDataRow(message, _overrides, _rewriteMode);
+                    if (rewritten.Changed)
+                    {
+                        message = rewritten.Message;
+                        _recordRewrite();
+                    }
                 }
 
                 await destination.WriteAsync(message, cancellationToken).ConfigureAwait(false);
                 await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-                if (_rewritePgxcNodeRows && message[0] == (byte)'Z')
-                    _rewritePgxcNodeRows = false;
+                if (_rewriteMode != RewriteMode.None && message[0] == (byte)'Z')
+                    _rewriteMode = RewriteMode.None;
             }
         }
 
@@ -2223,12 +2959,38 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
                 .TrimEnd(';')
                 .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
-        static byte[] RewritePgxcNodeDataRow(byte[] message, IReadOnlyDictionary<string, CoordinatorMetadata> overrides)
+        static bool TryGetRewriteMode(string sql, out RewriteMode rewriteMode)
+        {
+            var normalized = NormalizeSql(sql);
+            if (string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefresh), StringComparison.Ordinal))
+            {
+                rewriteMode = RewriteMode.FullMetadata;
+                return true;
+            }
+
+            if (string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefreshCompactHost), StringComparison.Ordinal))
+            {
+                rewriteMode = RewriteMode.CompactHost;
+                return true;
+            }
+
+            if (string.Equals(normalized, NormalizeSql(SqlText.PgxcNodeRefreshCompactEip), StringComparison.Ordinal))
+            {
+                rewriteMode = RewriteMode.CompactEip;
+                return true;
+            }
+
+            rewriteMode = RewriteMode.None;
+            return false;
+        }
+
+        static (byte[] Message, bool Changed) RewritePgxcNodeDataRow(
+            byte[] message,
+            IReadOnlyDictionary<string, CoordinatorMetadata> overrides,
+            RewriteMode rewriteMode)
         {
             var payload = message.AsSpan(5);
             var fieldCount = BinaryPrimitives.ReadInt16BigEndian(payload[..2]);
-            if (fieldCount != 5)
-                return message;
 
             var originalValues = new byte[fieldCount][];
             var offset = 2;
@@ -2237,23 +2999,75 @@ sealed class PgMetadataRewriteProxy : IAsyncDisposable
                 var fieldLength = BinaryPrimitives.ReadInt32BigEndian(payload.Slice(offset, 4));
                 offset += 4;
                 if (fieldLength < 0)
-                    return message;
+                    return (message, false);
 
                 originalValues[i] = payload.Slice(offset, fieldLength).ToArray();
                 offset += fieldLength;
             }
 
+            return rewriteMode switch
+            {
+                RewriteMode.FullMetadata => RewriteFullMetadataRow(message, originalValues, overrides),
+                RewriteMode.CompactHost => RewriteCompactMetadataRow(message, originalValues, overrides, usingEip: false),
+                RewriteMode.CompactEip => RewriteCompactMetadataRow(message, originalValues, overrides, usingEip: true),
+                _ => (message, false)
+            };
+        }
+
+        static (byte[] Message, bool Changed) RewriteFullMetadataRow(
+            byte[] originalMessage,
+            byte[][] originalValues,
+            IReadOnlyDictionary<string, CoordinatorMetadata> overrides)
+        {
+            if (originalValues.Length != 5)
+                return (originalMessage, false);
+
             var nodeName = Encoding.UTF8.GetString(originalValues[0]);
             if (!overrides.TryGetValue(nodeName, out var replacement))
-                return message;
+                return (originalMessage, false);
 
-            var rewrittenValues = new byte[fieldCount][];
+            var rewrittenValues = new byte[5][];
             rewrittenValues[0] = originalValues[0];
             rewrittenValues[1] = Encoding.ASCII.GetBytes(replacement.HostEndpoint.Host);
             rewrittenValues[2] = BuildPortBytes(replacement.HostEndpoint.Port, originalValues[2]);
             rewrittenValues[3] = Encoding.ASCII.GetBytes(replacement.EipEndpoint.Host);
             rewrittenValues[4] = BuildPortBytes(replacement.EipEndpoint.Port, originalValues[4]);
-            return BuildDataRowMessage(rewrittenValues);
+            return (BuildDataRowMessage(rewrittenValues), true);
+        }
+
+        static (byte[] Message, bool Changed) RewriteCompactMetadataRow(
+            byte[] originalMessage,
+            byte[][] originalValues,
+            IReadOnlyDictionary<string, CoordinatorMetadata> overrides,
+            bool usingEip)
+        {
+            if (originalValues.Length != 2)
+                return (originalMessage, false);
+
+            var originalEndpoint = new Endpoint(
+                Encoding.UTF8.GetString(originalValues[0]),
+                ParsePortBytes(originalValues[1]));
+            var replacement = overrides.Values.FirstOrDefault(candidate =>
+                EndpointEquals(candidate.GetMatchEndpoint(usingEip), originalEndpoint));
+            if (replacement is null)
+                return (originalMessage, false);
+
+            var rewrittenEndpoint = replacement.GetPreferredEndpoint(usingEip);
+            var rewrittenValues = new byte[2][];
+            rewrittenValues[0] = Encoding.ASCII.GetBytes(rewrittenEndpoint.Host);
+            rewrittenValues[1] = BuildPortBytes(rewrittenEndpoint.Port, originalValues[1]);
+            return (BuildDataRowMessage(rewrittenValues), true);
+        }
+
+        static bool EndpointEquals(Endpoint x, Endpoint y)
+            => string.Equals(x.Host, y.Host, StringComparison.OrdinalIgnoreCase) && x.Port == y.Port;
+
+        static int ParsePortBytes(byte[] value)
+        {
+            if (value.Length == 4)
+                return BinaryPrimitives.ReadInt32BigEndian(value);
+
+            return int.Parse(Encoding.ASCII.GetString(value), CultureInfo.InvariantCulture);
         }
 
         static byte[] BuildPortBytes(int port, byte[] originalValue)
@@ -2571,20 +3385,6 @@ sealed class RealTcpFaultProxy : IAsyncDisposable
     }
 }
 
-sealed record SeedClusterView(string Key, IReadOnlyList<string> SeedEndpoints);
-sealed record SeedBindingView(string SeedEndpoint, string NodeName, string ClusterKey, string ProxyLabel);
-sealed record LogicalNodeView(string NodeName, string ClusterKey, string SeedEndpoint, string DynamicEndpoint);
-sealed record RoutingSnapshot(IReadOnlyList<SeedClusterView> SeedClusters, IReadOnlyList<SeedBindingView> SeedBindings, IReadOnlyList<LogicalNodeView> LogicalNodes);
-sealed record SeedBindingRebindResult(
-    string TargetNodeName,
-    string BlockedSeedEndpoint,
-    string PrimaryClusterKey,
-    string SecondaryClusterKey,
-    bool WrongOwnerBefore,
-    bool CorrectedOwnerAfter,
-    bool HasRecoveredSeedBinding,
-    IReadOnlyList<SeedBindingView> TargetNodeBindingsAfter,
-    IReadOnlyList<LogicalNodeView> TargetNodeOwnersAfter);
 
 sealed class RejectingEndpointProbe : IAsyncDisposable
 {
