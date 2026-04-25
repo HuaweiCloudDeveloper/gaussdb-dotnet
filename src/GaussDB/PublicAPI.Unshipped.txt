@@ -13,6 +13,8 @@ HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.PriorityServers.get -> int
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.PriorityServers.set -> void
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RefreshCNIpListTime.get -> int
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RefreshCNIpListTime.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.DisasterToleranceCluster.get -> bool
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.DisasterToleranceCluster.set -> void
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RequireAuth.get -> string?
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RequireAuth.set -> void
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.SslNegotiation.get -> HuaweiCloud.GaussDB.SslNegotiation

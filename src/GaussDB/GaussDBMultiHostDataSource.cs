@@ -21,6 +21,10 @@ namespace HuaweiCloud.GaussDB;
 /// </remarks>
 public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 {
+    internal const string CoordinatorMetadataSource = "pgxc_node";
+    internal const string DisasterCoordinatorMetadataSource = "pgxc_disaster_read_node()";
+    internal const string DisasterClusterRunModeSql = "select disaster_cluster_run_mode();";
+
     internal override bool OwnsConnectors => false;
 
     readonly GaussDBDataSource[] _pools;
@@ -543,10 +547,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 var connection = await pool.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
                 await using (connection.ConfigureAwait(false))
                 {
+                    var refreshSql = await ResolveCoordinatorRefreshSqlAsync(connection, cancellationToken).ConfigureAwait(false);
                     using var command = connection.CreateCommand();
-                    command.CommandText =
-                        "select node_name,node_host,node_port,node_host1,node_port1 " +
-                        "from pgxc_node where node_type='C' and nodeis_active = true order by node_name;";
+                    command.CommandText = refreshSql;
 
                     var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
                     await using (reader.ConfigureAwait(false))
@@ -571,6 +574,34 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
         return null;
     }
+
+    async ValueTask<string> ResolveCoordinatorRefreshSqlAsync(GaussDBConnection connection, CancellationToken cancellationToken)
+    {
+        var dataSource = CoordinatorMetadataSource;
+        if (Settings.DisasterToleranceCluster)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = DisasterClusterRunModeSql;
+
+            var runMode = ParseDisasterClusterRunMode(
+                await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false));
+            dataSource = SelectCoordinatorMetadataSource(Settings.DisasterToleranceCluster, runMode);
+        }
+
+        return BuildCoordinatorRefreshSql(dataSource);
+    }
+
+    internal static string SelectCoordinatorMetadataSource(bool disasterToleranceCluster, int disasterClusterRunMode)
+        => disasterToleranceCluster && disasterClusterRunMode == 1
+            ? DisasterCoordinatorMetadataSource
+            : CoordinatorMetadataSource;
+
+    internal static int ParseDisasterClusterRunMode(object? value)
+        => value is null or DBNull ? int.MinValue : Convert.ToInt32(value);
+
+    internal static string BuildCoordinatorRefreshSql(string dataSource)
+        => "select node_name,node_host,node_port,node_host1,node_port1 " +
+           $"from {dataSource} where node_type='C' and nodeis_active = true order by node_name;";
 
     async ValueTask EnsureSeedBindingsAsync(IReadOnlyList<HaCoordinatorNode> snapshot, CancellationToken cancellationToken)
     {
@@ -607,6 +638,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.PriorityServers));
         probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.AutoBalance));
         probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.RefreshCNIpListTime));
+        probeSettings.Remove(nameof(GaussDBConnectionStringBuilder.DisasterToleranceCluster));
         probeSettings.Timeout = probeSettings.Timeout == 0 ? 2 : Math.Min(probeSettings.Timeout, 2);
         probeSettings.CommandTimeout = probeSettings.CommandTimeout == 0 ? 2 : Math.Min(probeSettings.CommandTimeout, 2);
 

@@ -32,8 +32,9 @@ The driver also supports JDBC-aligned distributed GaussDB HA routing options on 
 
 - `PriorityServers`: splits the seed host list into preferred and fallback AZ clusters.
 - `AutoBalance`: reorders coordinator nodes only inside the selected cluster. Supported values include `shuffle`, `roundrobin`, `priorityN`, and `shufflePriorityN`.
-- `RefreshCNIpListTime`: throttles coordinator discovery from `pgxc_node`, including repeated refresh failures.
+- `RefreshCNIpListTime`: throttles coordinator discovery from metadata (`pgxc_node` or `pgxc_disaster_read_node()`), including repeated refresh failures.
 - `UsingEip`: selects `node_host1/node_port1` instead of `node_host/node_port` during coordinator refresh.
+- `DisasterToleranceCluster`: when enabled on a disaster cluster, refreshes coordinators from `pgxc_disaster_read_node()` instead of `pgxc_node`, matching JDBC.
 - `AutoReconnect`: enables bounded reconnect for eligible disconnect and failover errors during `Open/OpenAsync()` and safe command execution windows.
 - `MaxReconnects`: caps the reconnect attempt count.
 - `HostRecheckSeconds`: controls how long failed hosts/CNs stay offline before they can be probed again.
@@ -48,6 +49,7 @@ var csb = new GaussDBConnectionStringBuilder
     AutoBalance = "priority2",
     RefreshCNIpListTime = 10,
     UsingEip = true,
+    DisasterToleranceCluster = true,
     AutoReconnect = true,
     MaxReconnects = 3,
     HostRecheckSeconds = 10

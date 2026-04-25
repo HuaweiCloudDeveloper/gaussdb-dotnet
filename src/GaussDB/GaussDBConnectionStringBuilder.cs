@@ -1131,6 +1131,25 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     bool _usingEip;
 
     /// <summary>
+    /// Enables JDBC-aligned disaster cluster metadata discovery for coordinator refresh.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Enables JDBC-aligned disaster cluster metadata discovery for coordinator refresh.")]
+    [DisplayName("Disaster Tolerance Cluster")]
+    [DefaultValue(false)]
+    [GaussDBConnectionStringProperty]
+    public bool DisasterToleranceCluster
+    {
+        get => _disasterToleranceCluster;
+        set
+        {
+            _disasterToleranceCluster = value;
+            SetValue(nameof(DisasterToleranceCluster), value);
+        }
+    }
+    bool _disasterToleranceCluster;
+
+    /// <summary>
     /// Enables bounded reconnect attempts after eligible disconnects.
     /// </summary>
     [Category("Failover and load balancing")]

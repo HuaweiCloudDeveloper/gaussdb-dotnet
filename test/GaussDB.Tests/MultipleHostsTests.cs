@@ -2048,6 +2048,31 @@ public class MultipleHostsTests : TestBase
     }
 
     [Test]
+    public void Coordinator_refresh_data_source_matches_jdbc_rules()
+    {
+        Assert.That(
+            GaussDBMultiHostDataSource.SelectCoordinatorMetadataSource(disasterToleranceCluster: false, disasterClusterRunMode: 1),
+            Is.EqualTo(GaussDBMultiHostDataSource.CoordinatorMetadataSource));
+        Assert.That(
+            GaussDBMultiHostDataSource.SelectCoordinatorMetadataSource(disasterToleranceCluster: true, disasterClusterRunMode: 0),
+            Is.EqualTo(GaussDBMultiHostDataSource.CoordinatorMetadataSource));
+        Assert.That(
+            GaussDBMultiHostDataSource.SelectCoordinatorMetadataSource(disasterToleranceCluster: true, disasterClusterRunMode: 1),
+            Is.EqualTo(GaussDBMultiHostDataSource.DisasterCoordinatorMetadataSource));
+    }
+
+    [Test]
+    public void Coordinator_refresh_sql_uses_selected_data_source()
+    {
+        Assert.That(
+            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.CoordinatorMetadataSource),
+            Does.Contain("from pgxc_node where node_type='C' and nodeis_active = true order by node_name;"));
+        Assert.That(
+            GaussDBMultiHostDataSource.BuildCoordinatorRefreshSql(GaussDBMultiHostDataSource.DisasterCoordinatorMetadataSource),
+            Does.Contain("from pgxc_disaster_read_node() where node_type='C' and nodeis_active = true order by node_name;"));
+    }
+
+    [Test]
     public async Task Coordinator_snapshot_refresh_failure_is_throttled_by_refresh_interval()
     {
         // 刷新失败同样要被节流，避免并发建连持续打 pgxc_node。

@@ -128,6 +128,7 @@ class ConnectionStringBuilderTests
         Assert.That(builder.AutoBalance, Is.Null);
         Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(0));
         Assert.That(builder.UsingEip, Is.True);
+        Assert.That(builder.DisasterToleranceCluster, Is.False);
         Assert.That(builder.AutoReconnect, Is.False);
         Assert.That(builder.MaxReconnects, Is.EqualTo(3));
     }
@@ -137,12 +138,13 @@ class ConnectionStringBuilderTests
     {
         // 验证主备 AZ、动态 CN 刷新和自动重连参数都能从连接串正确解析出来。
         var builder = new GaussDBConnectionStringBuilder(
-            "Host=a,b,c,d;priorityServers=2;autoBalance=shufflePriority4;refreshCNIpListTime=30;usingEip=false;autoReconnect=true;maxReconnects=5");
+            "Host=a,b,c,d;priorityServers=2;autoBalance=shufflePriority4;refreshCNIpListTime=30;usingEip=false;disasterToleranceCluster=true;autoReconnect=true;maxReconnects=5");
 
         Assert.That(builder.PriorityServers, Is.EqualTo(2));
         Assert.That(builder.AutoBalance, Is.EqualTo("shufflePriority4"));
         Assert.That(builder.RefreshCNIpListTime, Is.EqualTo(30));
         Assert.That(builder.UsingEip, Is.False);
+        Assert.That(builder.DisasterToleranceCluster, Is.True);
         Assert.That(builder.AutoReconnect, Is.True);
         Assert.That(builder.MaxReconnects, Is.EqualTo(5));
     }
@@ -217,6 +219,7 @@ class ConnectionStringBuilderTests
             PriorityServers = 2,
             AutoBalance = "priority2",
             RefreshCNIpListTime = 30,
+            DisasterToleranceCluster = true,
             Username = "user",
             Password = "password",
             Database = "postgres"
@@ -226,6 +229,7 @@ class ConnectionStringBuilderTests
         probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.PriorityServers));
         probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.AutoBalance));
         probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.RefreshCNIpListTime));
+        probeBuilder.Remove(nameof(GaussDBConnectionStringBuilder.DisasterToleranceCluster));
 
         Assert.DoesNotThrow(() => new GaussDBConnectionStringBuilder(probeBuilder.ConnectionString).PostProcessAndValidate());
     }
