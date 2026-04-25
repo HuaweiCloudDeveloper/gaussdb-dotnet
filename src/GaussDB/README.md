@@ -31,7 +31,9 @@ await using (var reader = await cmd.ExecuteReaderAsync())
 The driver also supports JDBC-aligned distributed GaussDB HA routing options on top of the existing multi-host support:
 
 - `PriorityServers`: splits the seed host list into preferred and fallback AZ clusters.
-- `AutoBalance`: reorders coordinator nodes only inside the selected cluster. Supported values include `shuffle`, `roundrobin`, `priorityN`, and `shufflePriorityN`.
+- `LoadBalanceHosts`: keeps the legacy JDBC-compatible shuffle behavior when `AutoBalance` isn't explicitly set.
+- `AutoBalance`: reorders coordinator nodes only inside the selected cluster. Supported values include `false`, `shuffle`, `roundrobin`, `true`, `balance`, `priorityN`, `shuffleN`, `specified`, and `leastconn`.
+  The parser also keeps backward compatibility with the older `.NET`-only `shufflePriorityN` spelling and normalizes it to `shuffleN`.
 - `RefreshCNIpListTime`: throttles coordinator discovery from metadata (`pgxc_node` or `pgxc_disaster_read_node()`), including repeated refresh failures.
 - `UsingEip`: selects `node_host1/node_port1` instead of `node_host/node_port` during coordinator refresh.
 - `DisasterToleranceCluster`: when enabled on a disaster cluster, refreshes coordinators from `pgxc_disaster_read_node()` instead of `pgxc_node`, matching JDBC.

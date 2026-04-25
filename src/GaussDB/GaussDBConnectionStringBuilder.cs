@@ -1004,10 +1004,10 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         };
 
     /// <summary>
-    /// Enables balancing between multiple hosts by round-robin.
+    /// Enables balancing between multiple hosts by shuffle.
     /// </summary>
     [Category("Failover and load balancing")]
-    [Description("Enables balancing between multiple hosts by round-robin.")]
+    [Description("Enables balancing between multiple hosts by shuffle.")]
     [DisplayName("Load Balance Hosts")]
     [GaussDBConnectionStringProperty]
     public bool LoadBalanceHosts
@@ -1636,12 +1636,13 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         if (IsConfigured(nameof(PriorityServers)) && (PriorityServers <= 0 || PriorityServers >= seedHostCount))
             throw new ArgumentException("PriorityServers must be greater than 0 and smaller than the number of seed hosts.");
 
-        // priorityN / shufflePriorityN 是簇内优先 CN 数量，不能在当前簇里退化成 0。
-        if (AutoBalanceModeParsed is HaAutoBalanceMode.Priority or HaAutoBalanceMode.ShufflePriority &&
-            GetEffectivePriorityHostCount(PriorityServers > 0 && PriorityServers < seedHostCount ? PriorityServers : seedHostCount) <= 0)
-        {
-            throw new ArgumentException("AutoBalance priority modes must end with a positive numeric suffix.");
-        }
+        if (AutoBalanceModeParsed == HaAutoBalanceMode.PriorityRoundRobin &&
+            _autoBalancePriorityCount >= seedHostCount)
+            throw new ArgumentException("AutoBalance priority modes must end with a numeric suffix smaller than the number of seed hosts.");
+
+        if (AutoBalanceModeParsed == HaAutoBalanceMode.PriorityShuffle &&
+            _autoBalancePriorityCount > seedHostCount)
+            throw new ArgumentException("AutoBalance shuffle modes must end with a numeric suffix smaller than or equal to the number of seed hosts.");
     }
 
     internal string ToStringWithoutPassword()
@@ -1675,7 +1676,7 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
 
     // AutoBalance 的优先子集始终限定在“当前选中的簇”内部，避免跨 AZ 混用优先级语义。
     internal int GetEffectivePriorityHostCount(int selectedClusterSeedCount)
-        => AutoBalanceModeParsed is HaAutoBalanceMode.Priority or HaAutoBalanceMode.ShufflePriority
+        => AutoBalanceModeParsed is HaAutoBalanceMode.PriorityRoundRobin or HaAutoBalanceMode.PriorityShuffle
             ? Math.Min(_autoBalancePriorityCount, selectedClusterSeedCount)
             : 0;
 
@@ -1688,7 +1689,7 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
 
         // JDBC 风格要求使用命名模式，而不是裸数字；裸数字既无法表达策略，也容易和 PriorityServers 混淆。
         if (int.TryParse(value, out _))
-            throw new ArgumentException("AutoBalance must use a named routing mode such as shuffle, roundrobin, priorityN, or shufflePriorityN.");
+            throw new ArgumentException("AutoBalance must use a named routing mode such as shuffle, roundrobin, priorityN, or shuffleN.");
 
         if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
             return (HaAutoBalanceMode.Disabled, 0, "false");
@@ -1699,22 +1700,43 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         if (value.Equals("roundrobin", StringComparison.OrdinalIgnoreCase))
             return (HaAutoBalanceMode.RoundRobin, 0, "roundrobin");
 
+        if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.RoundRobin, 0, "true");
+
+        if (value.Equals("balance", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.RoundRobin, 0, "balance");
+
+        if (value.Equals("specified", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.Specified, 0, "specified");
+
+        if (value.Equals("leastconn", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.LeastConnection, 0, "leastconn");
+
         if (value.StartsWith("shufflePriority", StringComparison.OrdinalIgnoreCase))
         {
             var suffix = value["shufflePriority".Length..];
-            if (int.TryParse(suffix, out var priorityCount) && priorityCount > 0)
-                return (HaAutoBalanceMode.ShufflePriority, priorityCount, $"shufflePriority{priorityCount}");
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityShuffle, priorityCount, $"shuffle{priorityCount}");
 
-            throw new ArgumentException("AutoBalance shufflePriority mode must end with a positive numeric suffix.");
+            throw new ArgumentException("AutoBalance shufflePriority mode must end with a non-negative numeric suffix.");
+        }
+
+        if (value.StartsWith("shuffle", StringComparison.OrdinalIgnoreCase))
+        {
+            var suffix = value["shuffle".Length..];
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityShuffle, priorityCount, $"shuffle{priorityCount}");
+
+            throw new ArgumentException("AutoBalance shuffle mode must end with a non-negative numeric suffix.");
         }
 
         if (value.StartsWith("priority", StringComparison.OrdinalIgnoreCase))
         {
             var suffix = value["priority".Length..];
-            if (int.TryParse(suffix, out var priorityCount) && priorityCount > 0)
-                return (HaAutoBalanceMode.Priority, priorityCount, $"priority{priorityCount}");
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityRoundRobin, priorityCount, $"priority{priorityCount}");
 
-            throw new ArgumentException("AutoBalance priority mode must end with a positive numeric suffix.");
+            throw new ArgumentException("AutoBalance priority mode must end with a non-negative numeric suffix.");
         }
 
         throw new ArgumentException($"AutoBalance contains an invalid value '{value}'");
@@ -2020,8 +2042,10 @@ enum HaAutoBalanceMode
     Disabled,
     Shuffle,
     RoundRobin,
-    Priority,
-    ShufflePriority
+    PriorityRoundRobin,
+    PriorityShuffle,
+    Specified,
+    LeastConnection
 }
 
 /// <summary>

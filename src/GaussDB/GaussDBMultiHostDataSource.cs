@@ -405,11 +405,9 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         if (!loadBalanceHosts || _pools.Length <= 1)
             return _pools;
 
-        var startIndex = GetRoundRobinIndex() % _pools.Length;
         var candidatePools = new GaussDBDataSource[_pools.Length];
-        for (var i = 0; i < _pools.Length; i++)
-            candidatePools[i] = _pools[(startIndex + i) % _pools.Length];
-
+        Array.Copy(_pools, candidatePools, _pools.Length);
+        Shuffle(candidatePools);
         return candidatePools;
     }
 
@@ -422,13 +420,14 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     {
         // 先确定簇顺序，再在每个簇内决定 CN 顺序；这样 PriorityServers 和 AutoBalance 的职责是分层的。
         var orderedClusters = OrderClusters();
+        var clusterOrder = OrderClusters();
         var preferredClusterKey = Settings.PriorityServers > 0
             ? GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(_urlKey)
             : null;
-        var filteredPlans = new List<ClusterRoutingPlan>(orderedClusters.Length * 2);
-        var fallbackPlans = new List<ClusterRoutingPlan>(orderedClusters.Length * 2);
+        var filteredPlans = new List<ClusterRoutingPlan>(clusterOrder.Length * 2);
+        var fallbackPlans = new List<ClusterRoutingPlan>(clusterOrder.Length * 2);
         var hasFilteredCandidate = false;
-        foreach (var cluster in orderedClusters)
+        foreach (var cluster in clusterOrder)
         {
             var endpoints = await ResolveClusterEndpoints(cluster, preferredClusterKey, cancellationToken).ConfigureAwait(false);
             // 一份计划保留在线节点，另一份保留所有节点，供“整轮都被 Offline 裁空”时兜底。
@@ -645,18 +644,18 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             Shuffle(nonPriorityEndpoints);
             return nonPriorityEndpoints.ToArray();
         case HaAutoBalanceMode.RoundRobin:
-            return Rotate(nonPriorityEndpoints).ToArray();
-        case HaAutoBalanceMode.Priority:
+            return RoundRobin(nonPriorityEndpoints).ToArray();
+        case HaAutoBalanceMode.PriorityRoundRobin:
             if (priorityEndpoints.Count > 0)
             {
-                var orderedPriorityEndpoints = Rotate(priorityEndpoints);
+                var orderedPriorityEndpoints = RoundRobin(priorityEndpoints);
                 Shuffle(nonPriorityEndpoints);
                 orderedPriorityEndpoints.AddRange(nonPriorityEndpoints);
                 return orderedPriorityEndpoints.ToArray();
             }
 
-            return Rotate(allEndpoints).ToArray();
-        case HaAutoBalanceMode.ShufflePriority:
+            return RoundRobin(allEndpoints).ToArray();
+        case HaAutoBalanceMode.PriorityShuffle:
             if (priorityEndpoints.Count > 0)
             {
                 Shuffle(priorityEndpoints);
@@ -665,10 +664,15 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 return priorityEndpoints.ToArray();
             }
 
-            return Rotate(allEndpoints).ToArray();
+            Shuffle(allEndpoints);
+            return allEndpoints.ToArray();
+        case HaAutoBalanceMode.Specified:
+            return RoundRobin(cluster.SeedEndpoints).ToArray();
+        case HaAutoBalanceMode.LeastConnection:
+            return allEndpoints.ToArray();
         default:
             return settings.LoadBalanceHosts
-                ? Rotate(allEndpoints).ToArray()
+                ? ShuffleCopy(allEndpoints).ToArray()
                 : allEndpoints.ToArray();
         }
     }
@@ -684,7 +688,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                 : new UnpooledDataSource(poolSettings, Configuration);
         });
 
-    List<T> Rotate<T>(IReadOnlyList<T> source)
+    List<T> RoundRobin<T>(IReadOnlyList<T> source)
     {
         if (source.Count <= 1)
             return source.ToList();
@@ -693,14 +697,30 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         var rotated = new List<T>(source.Count);
         for (var i = 0; i < source.Count; i++)
             rotated.Add(source[(startIndex + i) % source.Count]);
+        if (rotated.Count > 2)
+            Shuffle(rotated, startIndex: 1);
         return rotated;
     }
 
+    static List<T> ShuffleCopy<T>(IReadOnlyList<T> source)
+    {
+        var copy = source.ToList();
+        Shuffle(copy);
+        return copy;
+    }
+
     static void Shuffle<T>(IList<T> values)
+        => Shuffle(values, startIndex: 0);
+
+    static void Shuffle<T>(IList<T> values, int startIndex)
     {
         for (var i = values.Count - 1; i > 0; i--)
         {
+            if (i < startIndex)
+                break;
             var swapIndex = Random.Shared.Next(i + 1);
+            if (swapIndex < startIndex)
+                swapIndex = startIndex + Random.Shared.Next(i - startIndex + 1);
             (values[i], values[swapIndex]) = (values[swapIndex], values[i]);
         }
     }
