@@ -749,7 +749,7 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
         {
             var index = Interlocked.Increment(ref _roundRobinIndex);
             if (index >= 0)
-                return index % _pools.Length;
+                return index;
 
             // Worst case scenario - we've wrapped around integer counter
             if (index == int.MinValue)
