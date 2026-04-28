@@ -1174,7 +1174,7 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     [Category("Failover and load balancing")]
     [Description("Controls how many reconnect attempts are allowed when open-time auto reconnect is enabled.")]
     [DisplayName("Max Reconnects")]
-    [DefaultValue(3)]
+    [DefaultValue(1)]
     [GaussDBConnectionStringProperty]
     public int MaxReconnects
     {
