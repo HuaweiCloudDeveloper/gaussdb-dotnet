@@ -35,8 +35,12 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     internal GaussDBDataSource[] Pools => _pools;
 
     readonly MultiHostDataSourceWrapper[] _wrappers;
+    static readonly ConcurrentDictionary<string, RoundRobinCounter> RoundRobinCounters = new(StringComparer.Ordinal);
 
-    volatile int _roundRobinIndex = -1;
+    sealed class RoundRobinCounter
+    {
+        internal int Value = -1;
+    }
 
     internal GaussDBMultiHostDataSource(GaussDBConnectionStringBuilder settings, GaussDBDataSourceConfiguration dataSourceConfig)
         : base(settings, dataSourceConfig)
@@ -745,9 +749,10 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
 
     int GetRoundRobinIndex()
     {
+        var counter = RoundRobinCounters.GetOrAdd(_urlKey, static _ => new RoundRobinCounter());
         while (true)
         {
-            var index = Interlocked.Increment(ref _roundRobinIndex);
+            var index = Interlocked.Increment(ref counter.Value);
             if (index >= 0)
                 return index;
 
@@ -755,13 +760,13 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             if (index == int.MinValue)
             {
                 // This is the thread which wrapped around the counter - reset it to 0
-                _roundRobinIndex = 0;
+                counter.Value = 0;
                 return 0;
             }
 
             // This is not the thread which wrapped around the counter - just wait until it's 0 or more
             var sw = new SpinWait();
-            while (_roundRobinIndex < 0)
+            while (counter.Value < 0)
                 sw.SpinOnce();
         }
     }
