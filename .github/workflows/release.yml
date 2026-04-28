@@ -12,14 +12,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: |
-          8.0.x
-          9.0.x          
+        dotnet-version: 8.0.x
 
     - name: Set Package
       if: startsWith(github.ref, 'refs/tags/')

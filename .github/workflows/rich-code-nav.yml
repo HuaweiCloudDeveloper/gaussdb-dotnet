@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: NuGet Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Build.targets') }}
@@ -23,7 +23,9 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
 
       - name: Build
         run: dotnet build --configuration Debug

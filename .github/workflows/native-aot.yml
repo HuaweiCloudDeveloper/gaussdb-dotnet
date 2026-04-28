@@ -89,17 +89,17 @@ jobs:
       matrix:
         os: [ ubuntu-24.04 ]
         pg_major: [ 15 ]
-        tfm: [ net9.0 ]
+        tfm: [ net8.0 ]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       #      - name: Setup nuget config
       #        run: echo "$nuget_config" > NuGet.config
   
       - name: NuGet Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Build.targets') }}
@@ -107,7 +107,9 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
 
       - name: Write script
         run: echo "$AOT_Compat" > test-aot-compatibility.ps1
@@ -117,23 +119,39 @@ jobs:
         shell: pwsh
   trimmed:
     runs-on: ${{ matrix.os }}
+    env:
+      NPGSQL_TEST_DB: "Host=localhost;Port=5432;Username=gaussdb;Password=Password@1234;Database=gaussdb_tests;Timeout=0;Command Timeout=0"
 
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04]
-        pg_major: [15]
-        tfm: [ net9.0 ]
+        tfm: [ net8.0 ]
+
+    services:
+      opengauss:
+        image: opengauss/opengauss:5.0.0
+        env:
+          GS_PASSWORD: Password@1234
+          GS_DB: gaussdb_tests
+        ports:
+          - 5432:5432
+        options: >-
+          --name opengauss
+          --health-cmd "bash -lc 'export LD_LIBRARY_PATH=/usr/local/opengauss/lib:$LD_LIBRARY_PATH; /usr/local/opengauss/bin/gsql -h 127.0.0.1 -U gaussdb -d gaussdb_tests -W Password@1234 -c \"SELECT 1\" >/dev/null'"
+          --health-interval 10s
+          --health-timeout 30s
+          --health-retries 10
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       #      - name: Setup nuget config
       #        run: echo "$nuget_config" > NuGet.config
 
       - name: NuGet Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Build.targets') }}
@@ -141,13 +159,20 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
 
-      - name: Start PostgreSQL
+      - name: Start openGauss
         run: |
-          sudo systemctl start postgresql.service
-          sudo -u postgres psql -c "CREATE USER gaussdb_tests SUPERUSER PASSWORD 'gaussdb_tests'"
-          sudo -u postgres psql -c "CREATE DATABASE gaussdb_tests OWNER gaussdb_tests"
+          docker exec opengauss bash -c "cat /var/lib/opengauss/data/postgresql.conf"
+          for i in {1..30}; do
+            if docker exec opengauss bash -lc 'export LD_LIBRARY_PATH=/usr/local/opengauss/lib:$LD_LIBRARY_PATH; /usr/local/opengauss/bin/gsql -h 127.0.0.1 -U gaussdb -d gaussdb_tests -W Password@1234 -c "SELECT 1" >/dev/null'; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec opengauss bash -lc 'export LD_LIBRARY_PATH=/usr/local/opengauss/lib:$LD_LIBRARY_PATH; /usr/local/opengauss/bin/gsql -h 127.0.0.1 -U gaussdb -d gaussdb_tests -W Password@1234 -c "SELECT 1"'
           
       - name: Build
         run: dotnet publish test/GaussDB.NativeAotTests/GaussDB.NativeAotTests.csproj -r linux-x64 -c Release -f ${{ matrix.tfm }} -p:OptimizationPreference=Size
@@ -163,28 +188,28 @@ jobs:
 
       - name: Write binary size to summary
         run: |
-          size="$(ls -l test/GaussDB.NativeAotTests/bin/Release/net9.0/linux-x64/native/GaussDB.NativeAotTests | cut -d ' ' -f 5)"
+          size="$(ls -l test/GaussDB.NativeAotTests/bin/Release/${{ matrix.tfm }}/linux-x64/native/GaussDB.NativeAotTests | cut -d ' ' -f 5)"
           echo "Binary size is $size bytes ($((size / (1024 * 1024))) mb)" >> $GITHUB_STEP_SUMMARY
 
       - name: Dump mstat
-        run: dotnet run --project test/MStatDumper/MStatDumper.csproj -c release -f ${{ matrix.tfm }} -- "test/GaussDB.NativeAotTests/obj/Release/net9.0/linux-x64/native/GaussDB.NativeAotTests.mstat" md >> $GITHUB_STEP_SUMMARY
+        run: dotnet run --project test/MStatDumper/MStatDumper.csproj -c release -f ${{ matrix.tfm }} -- "test/GaussDB.NativeAotTests/obj/Release/${{ matrix.tfm }}/linux-x64/native/GaussDB.NativeAotTests.mstat" md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload mstat
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: gaussdb.mstat
           path: "test/GaussDB.NativeAotTests/obj/Release/${{ matrix.tfm }}/linux-x64/native/GaussDB.NativeAotTests.mstat"
           retention-days: 3
 
       - name: Upload codedgen dgml
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: gaussdb.codegen.dgml.xml
           path: "test/GaussDB.NativeAotTests/obj/Release/${{ matrix.tfm }}/linux-x64/native/GaussDB.NativeAotTests.codegen.dgml.xml"
           retention-days: 3
 
       - name: Upload scan dgml
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: gaussdb.scan.dgml.xml
           path: "test/GaussDB.NativeAotTests/obj/Release/${{ matrix.tfm }}/linux-x64/native/GaussDB.NativeAotTests.scan.dgml.xml"

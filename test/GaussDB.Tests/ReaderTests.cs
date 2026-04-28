@@ -609,6 +609,8 @@ LANGUAGE 'plpgsql';
             return;
 
         using var conn = await OpenConnectionAsync();
+        if (prepare == PrepareOrNot.Prepared)
+            await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: prepared NextResult exception handling can crash the backend.");
         var function = await GetTempFunctionName(conn);
 
         await conn.ExecuteNonQueryAsync($@"
@@ -825,6 +827,8 @@ LANGUAGE 'plpgsql'");
             return;
 
         using var conn = await OpenConnectionAsync();
+        if (prepare == PrepareOrNot.Prepared)
+            await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: prepared HasRows multi-statement paths can crash the backend.");
         var table = await CreateTempTable(conn, "name TEXT");
 
         var command = new GaussDBCommand($"SELECT 1; SELECT * FROM {table} WHERE name='does_not_exist'", conn);

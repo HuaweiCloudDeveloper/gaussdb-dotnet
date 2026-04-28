@@ -32,6 +32,7 @@ public class CommandTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
     public async Task Multiple_statements(bool[] queries)
     {
         await using var conn = await OpenConnectionAsync();
+        await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: this test includes prepared legacy batching paths that can crash the backend.");
         var table = await CreateTempTable(conn, "name TEXT");
         var sb = new StringBuilder();
         foreach (var query in queries)
@@ -61,6 +62,8 @@ public class CommandTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
             return;
 
         await using var conn = await OpenConnectionAsync();
+        if (prepare == PrepareOrNot.Prepared)
+            await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: prepared multi-statement parameter tests can crash the backend.");
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT @p1; SELECT @p2";
         var p1 = new GaussDBParameter("p1", GaussDBDbType.Integer);
@@ -87,6 +90,8 @@ public class CommandTests(MultiplexingMode multiplexingMode) : MultiplexingTestB
             return;
 
         using var conn = await OpenConnectionAsync();
+        if (prepare == PrepareOrNot.Prepared)
+            await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: prepared single-row legacy batching can crash the backend.");
         using var cmd = new GaussDBCommand("SELECT 1; SELECT 2", conn);
         if (prepare == PrepareOrNot.Prepared)
             cmd.Prepare();

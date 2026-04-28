@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTelemetry.API" />
+        <PackageReference Include="OpenTelemetry.Api" />
     </ItemGroup>
 
     <ItemGroup>
