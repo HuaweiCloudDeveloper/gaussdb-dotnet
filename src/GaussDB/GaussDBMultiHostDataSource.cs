@@ -423,7 +423,6 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
     async ValueTask<ClusterRoutingPlan[]> BuildClusterRoutingPlansAsync(GaussDBConnection conn, CancellationToken cancellationToken)
     {
         // 先确定簇顺序，再在每个簇内决定 CN 顺序；这样 PriorityServers 和 AutoBalance 的职责是分层的。
-        var orderedClusters = OrderClusters();
         var clusterOrder = OrderClusters();
         var preferredClusterKey = Settings.PriorityServers > 0
             ? GaussDBGlobalClusterStatusTracker.GetPreferredClusterKey(_urlKey)
@@ -550,6 +549,10 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
                         return refreshedEndpoints.Count == 0 ? null : refreshedEndpoints.ToArray();
                     }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch
             {
@@ -760,13 +763,13 @@ public sealed class GaussDBMultiHostDataSource : GaussDBDataSource
             if (index == int.MinValue)
             {
                 // This is the thread which wrapped around the counter - reset it to 0
-                counter.Value = 0;
+                Volatile.Write(ref counter.Value, 0);
                 return 0;
             }
 
             // This is not the thread which wrapped around the counter - just wait until it's 0 or more
             var sw = new SpinWait();
-            while (counter.Value < 0)
+            while (Volatile.Read(ref counter.Value) < 0)
                 sw.SpinOnce();
         }
     }

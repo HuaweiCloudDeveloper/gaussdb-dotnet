@@ -1632,9 +1632,9 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         }
 
         var seedHostCount = GetSeedHostCount();
-        // PriorityServers 负责把 seed host 列表切成“优先簇 / 兜底簇”，因此必须严格小于总 host 数。
-        if (IsConfigured(nameof(PriorityServers)) && (PriorityServers <= 0 || PriorityServers >= seedHostCount))
-            throw new ArgumentException("PriorityServers must be greater than 0 and smaller than the number of seed hosts.");
+        // PriorityServers 负责把 seed host 列表切成“优先簇 / 兜底簇”；0 表示禁用，启用时必须严格小于总 host 数。
+        if (IsConfigured(nameof(PriorityServers)) && PriorityServers > 0 && PriorityServers >= seedHostCount)
+            throw new ArgumentException("PriorityServers must be 0 (disabled) or a positive value smaller than the number of seed hosts.");
 
         if (AutoBalanceModeParsed == HaAutoBalanceMode.PriorityRoundRobin &&
             _autoBalancePriorityCount >= seedHostCount)
