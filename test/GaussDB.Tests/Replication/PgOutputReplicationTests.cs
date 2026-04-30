@@ -10,8 +10,8 @@ using NUnit.Framework;
 using HuaweiCloud.GaussDB.Replication;
 using HuaweiCloud.GaussDB.Replication.PgOutput;
 using HuaweiCloud.GaussDB.Replication.PgOutput.Messages;
-using TruncateOptions = GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions;
-using ReplicaIdentitySetting = GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting;
+using TruncateOptions = HuaweiCloud.GaussDB.Replication.PgOutput.Messages.TruncateMessage.TruncateOptions;
+using ReplicaIdentitySetting = HuaweiCloud.GaussDB.Replication.PgOutput.Messages.RelationMessage.ReplicaIdentitySetting;
 using static HuaweiCloud.GaussDB.Tests.TestUtil;
 
 namespace HuaweiCloud.GaussDB.Tests.Replication;

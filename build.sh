@@ -1,7 +1,8 @@
 #!/bin/sh
 
-dotnet tool update -g dotnet-execute
-export PATH="$PATH:$HOME/.dotnet/tools"
+set -eu
 
-echo "dotnet-exec ./build.cs --args $@"
-dotnet-exec ./build.cs --args "$@"
+dotnet tool restore
+
+echo "dotnet tool run dotnet-exec ./build.cs --args $*"
+dotnet tool run dotnet-exec ./build.cs --args "$@"

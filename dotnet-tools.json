@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-execute": {
+      "version": "0.34.0",
+      "commands": [
+        "dotnet-exec"
+      ],
+      "rollForward": false
+    }
+  }
+}

@@ -186,6 +186,8 @@ CREATE OR REPLACE VIEW {view} (id, int2) AS SELECT id, int2 + int2 AS int2 FROM 
         //     return;
 
         using var conn = await OpenConnectionAsync();
+        if (prepare == PrepareOrNot.Prepared)
+            await IgnoreOnOpenGaussAsync(conn, "Skipped on openGauss: prepared schema-only legacy batching can crash the backend.");
         var table = await CreateTempTable(conn, "name TEXT");
 
         var query = $@"

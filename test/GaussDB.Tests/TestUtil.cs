@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +15,8 @@ namespace HuaweiCloud.GaussDB.Tests;
 
 public static class TestUtil
 {
+    static readonly ConcurrentDictionary<string, bool> IsOpenGaussCache = new();
+
     /// <summary>
     /// Unless the NPGSQL_TEST_DB environment variable is defined, this is used as the connection string for the
     /// test database.
@@ -102,6 +105,35 @@ public static class TestUtil
 
     public static async Task<bool> IsPgPrerelease(GaussDBConnection conn)
         => ((string) (await conn.ExecuteScalarAsync("SELECT version()"))!).Contains("beta");
+
+    public static bool IsOpenGauss(GaussDBConnection conn)
+        => IsOpenGaussCache.GetOrAdd(conn.ConnectionString, _ => IsOpenGaussVersion((string)conn.ExecuteScalar("SELECT version()")!));
+
+    public static async Task<bool> IsOpenGaussAsync(GaussDBConnection conn)
+    {
+        if (IsOpenGaussCache.TryGetValue(conn.ConnectionString, out var cached))
+            return cached;
+
+        var isOpenGauss = IsOpenGaussVersion((string)(await conn.ExecuteScalarAsync("SELECT version()"))!);
+        IsOpenGaussCache[conn.ConnectionString] = isOpenGauss;
+        return isOpenGauss;
+    }
+
+    public static void IgnoreOnOpenGauss(GaussDBConnection conn, string message)
+    {
+        if (IsOpenGauss(conn))
+            Assert.Ignore(message);
+    }
+
+    public static async Task IgnoreOnOpenGaussAsync(GaussDBConnection conn, string message)
+    {
+        if (await IsOpenGaussAsync(conn))
+            Assert.Ignore(message);
+    }
+
+    static bool IsOpenGaussVersion(string version)
+        => version.Contains("gaussdb", StringComparison.OrdinalIgnoreCase) ||
+           version.Contains("opengauss", StringComparison.OrdinalIgnoreCase);
 
     public static void EnsureExtension(GaussDBConnection conn, string extension, string? minVersion = null)
         => EnsureExtension(conn, extension, minVersion, async: false).GetAwaiter().GetResult();

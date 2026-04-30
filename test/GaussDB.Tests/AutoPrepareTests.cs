@@ -361,6 +361,7 @@ public class AutoPrepareTests : TestBase
 
         await using var dataSource = CreateDataSource(csb => csb.MaxAutoPrepare = maxAutoPrepare);
         await using var connection = await dataSource.OpenConnectionAsync();
+        await IgnoreOnOpenGaussAsync(connection, "Skipped on openGauss: large multi-statement auto-prepare batches can crash the backend.");
         for (var i = 0; i < 100; i++)
         {
             await using var command = connection.CreateCommand();
@@ -378,6 +379,7 @@ public class AutoPrepareTests : TestBase
 
         await using var dataSource = CreateDataSource(csb => csb.MaxAutoPrepare = maxAutoPrepare);
         await using var connection = await dataSource.OpenConnectionAsync();
+        await IgnoreOnOpenGaussAsync(connection, "Skipped on openGauss: randomized multi-statement auto-prepare batches can crash the backend.");
         var random = new Random(1);
         for (var i = 0; i < 100; i++)
         {

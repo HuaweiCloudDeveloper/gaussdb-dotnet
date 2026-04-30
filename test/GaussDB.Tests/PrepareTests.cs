@@ -286,6 +286,7 @@ public class PrepareTests: TestBase
     public void Legacy_batching()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: prepared legacy batching can crash the backend.");
         using (var cmd = new GaussDBCommand("SELECT 1; SELECT 2", conn))
         {
             cmd.Prepare();
@@ -322,6 +323,7 @@ public class PrepareTests: TestBase
     public void Batch()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: prepared batch execution can crash the backend.");
         using (var batch = new GaussDBBatch(conn) { BatchCommands = { new("SELECT 1"), new("SELECT 2") } })
         {
             batch.Prepare();
@@ -371,6 +373,7 @@ public class PrepareTests: TestBase
     public void One_command_same_sql_twice()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: preparing one multi-statement command twice can crash the backend.");
         using var cmd = new GaussDBCommand("SELECT 1; SELECT 1", conn);
         cmd.Prepare();
         AssertNumPreparedStatements(conn, 1);
@@ -387,6 +390,7 @@ public class PrepareTests: TestBase
             csb.AutoPrepareMinUsages = 2;
         });
         using var conn = dataSource.OpenConnection();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: auto-preparing repeated multi-statement commands can crash the backend.");
         var sql = new StringBuilder();
         for (var i = 0; i < 2 + 1; i++)
             sql.Append("SELECT 1;");
@@ -399,6 +403,7 @@ public class PrepareTests: TestBase
     public void One_command_same_sql_twice_with_params()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: preparing multi-statement commands with parameters can crash the backend.");
         using var cmd = new GaussDBCommand("SELECT @p1; SELECT @p2", conn);
         cmd.Parameters.Add("p1", GaussDBDbType.Integer);
         cmd.Parameters.Add("p2", GaussDBDbType.Integer);
@@ -424,6 +429,7 @@ public class PrepareTests: TestBase
     public void Unprepare_via_different_command()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: unpreparing overlapping prepared multi-statement commands can crash the backend.");
         using var cmd1 = new GaussDBCommand("SELECT 1; SELECT 2", conn);
         using var cmd2 = new GaussDBCommand("SELECT 2; SELECT 3", conn);
         cmd1.Prepare();
@@ -471,6 +477,7 @@ public class PrepareTests: TestBase
     public void Many_statements_on_unprepare()
     {
         using var conn = OpenConnectionAndUnprepare();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: preparing and unpreparing very large multi-statement commands can crash the backend.");
         using var cmd = new GaussDBCommand();
         cmd.Connection = conn;
         var sb = new StringBuilder();
@@ -697,6 +704,7 @@ public class PrepareTests: TestBase
     public void Prepare_multiple_commands_with_parameters()
     {
         using var conn = OpenConnection();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: preparing multiple parameterized multi-statement commands can crash the backend.");
         using var cmd1 = new GaussDBCommand("SELECT @p1;", conn);
         using var cmd2 = new GaussDBCommand("SELECT @p1; SELECT @p2;", conn);
         var p1 = new GaussDBParameter("p1", GaussDBDbType.Integer);

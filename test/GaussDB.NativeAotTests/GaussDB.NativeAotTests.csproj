@@ -13,7 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/GaussDB/GaussDB.csproj" />
-    <TrimmerRootAssembly Include="../../src/GaussDB/GaussDB.csproj" Condition="'$(RootGaussDB)' == 'True'" />
+    <TrimmerRootAssembly Include="HuaweiCloud.Driver.GaussDB" Condition="'$(RootGaussDB)' == 'True'" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Remove="GitHubActionsTestLogger" />

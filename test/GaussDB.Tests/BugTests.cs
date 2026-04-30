@@ -162,6 +162,7 @@ public class BugTests : TestBase
             csb.AutoPrepareMinUsages = 1;
         });
         using var conn = dataSource.OpenConnection();
+        IgnoreOnOpenGauss(conn, "Skipped on openGauss: this auto-prepare multi-statement regression can crash the backend.");
         using (var cmd = new GaussDBCommand("SELECT 1; SELECT 2", conn))
         using (var reader = cmd.ExecuteReader())
         {
