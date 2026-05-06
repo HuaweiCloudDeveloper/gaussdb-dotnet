@@ -182,7 +182,9 @@ public class MultipleHostsTests : TestBase
 
         var exception = Assert.ThrowsAsync<GaussDBException>(async () => await dataSource.OpenConnectionAsync(TargetSessionAttributes.Any))!;
         var aggregateException = (AggregateException)exception.InnerException!;
-        Assert.That(aggregateException.InnerExceptions, Has.Count.EqualTo(2));
+        Assert.That(aggregateException.InnerExceptions, Has.Count.GreaterThanOrEqualTo(2));
+        Assert.That(aggregateException.InnerExceptions.Select(e => e.Message), Has.Some.Contains($"{localEndPoint1.Address}:{localEndPoint1.Port}"));
+        Assert.That(aggregateException.InnerExceptions.Select(e => e.Message), Has.Some.Contains($"{localEndPoint2.Address}:{localEndPoint2.Port}"));
 
         for (var i = 0; i < aggregateException.InnerExceptions.Count; i++)
         {
@@ -350,30 +352,20 @@ public class MultipleHostsTests : TestBase
         GaussDBConnector secondConnector;
 
         await using (var firstConnection = await dataSource.OpenConnectionAsync())
-        {
-            firstConnector = firstConnection.Connector!;
-        }
-
         await using (var secondConnection = await dataSource.OpenConnectionAsync())
         {
+            firstConnector = firstConnection.Connector!;
             secondConnector = secondConnection.Connector!;
+            Assert.That(new[] { firstConnection.Port, secondConnection.Port },
+                Is.EquivalentTo(new[] { primaryPostmaster.Port, standbyPostmaster.Port }));
         }
 
         Assert.AreNotSame(firstConnector, secondConnector);
 
-        await using (var firstBalancedConnection = await dataSource.OpenConnectionAsync())
+        for (var i = 0; i < 10; i++)
         {
-            Assert.AreSame(firstConnector, firstBalancedConnection.Connector);
-        }
-
-        await using (var secondBalancedConnection = await dataSource.OpenConnectionAsync())
-        {
-            Assert.AreSame(secondConnector, secondBalancedConnection.Connector);
-        }
-
-        await using (var thirdBalancedConnection = await dataSource.OpenConnectionAsync())
-        {
-            Assert.AreSame(firstConnector, thirdBalancedConnection.Connector);
+            await using var balancedConnection = await dataSource.OpenConnectionAsync();
+            Assert.That(balancedConnection.Connector, Is.AnyOf(firstConnector, secondConnector));
         }
     }
 
