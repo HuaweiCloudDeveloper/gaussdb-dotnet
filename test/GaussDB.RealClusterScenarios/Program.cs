@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using HuaweiCloud.GaussDB;
+using HuaweiCloud.GaussDB.Internal;
+using HuaweiCloud.GaussDB.Util;
 
 var options = Options.Parse(args);
 
@@ -27,6 +29,12 @@ case "open-auto-reconnect-default-maxreconnects-one":
     return;
 case "open-auto-reconnect-postgres-sqlstate":
     await RunScenarioAsync("open-auto-reconnect-postgres-sqlstate", () => OpenAutoReconnectPostgresSqlStateAsync(options));
+    return;
+case "open-connectioninitializer-no-retry":
+    await RunScenarioAsync("open-connectioninitializer-no-retry", () => OpenConnectionInitializerNoRetryAsync(options));
+    return;
+case "open-bootstrap-no-retry":
+    await RunScenarioAsync("open-bootstrap-no-retry", () => OpenBootstrapNoRetryAsync(options));
     return;
 case "priority-autobalance-preferred-cluster":
     await RunScenarioAsync("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options));
@@ -184,6 +192,8 @@ static void PrintScenarioList()
     Console.WriteLine("open-auto-reconnect-transient-failure");
     Console.WriteLine("open-auto-reconnect-default-maxreconnects-one");
     Console.WriteLine("open-auto-reconnect-postgres-sqlstate");
+    Console.WriteLine("open-connectioninitializer-no-retry");
+    Console.WriteLine("open-bootstrap-no-retry");
     Console.WriteLine("priority-autobalance-preferred-cluster");
     Console.WriteLine("priorityservers1-failover-to-fallback-cluster");
     Console.WriteLine("priorityservers1-fallback-cluster-roundrobin");
@@ -243,6 +253,8 @@ static async Task RunMatrixAsync(Options options)
         ("open-auto-reconnect-transient-failure", () => OpenAutoReconnectTransientFailureAsync(options)),
         ("open-auto-reconnect-default-maxreconnects-one", () => OpenAutoReconnectDefaultMaxReconnectsOneAsync(options)),
         ("open-auto-reconnect-postgres-sqlstate", () => OpenAutoReconnectPostgresSqlStateAsync(options)),
+        ("open-connectioninitializer-no-retry", () => OpenConnectionInitializerNoRetryAsync(options)),
+        ("open-bootstrap-no-retry", () => OpenBootstrapNoRetryAsync(options)),
         ("priority-autobalance-preferred-cluster", () => PriorityAutoBalancePreferredClusterAsync(options)),
         ("priorityservers1-failover-to-fallback-cluster", () => PriorityServersOneFailoverToFallbackClusterAsync(options)),
         ("priorityservers1-fallback-cluster-roundrobin", () => PriorityServersOneFallbackClusterRoundRobinAsync(options)),
@@ -1477,9 +1489,151 @@ static async Task OpenAutoReconnectPostgresSqlStateAsync(Options options)
         }
     }
 
-    static bool InvokeCanAutoReconnectOnOpen(MethodInfo method, GaussDBConnection conn, Exception exception)
-        => (bool)(method.Invoke(conn, new object[] { exception })
-                  ?? throw new InvalidOperationException("CanAutoReconnectOnOpen returned null."));
+static bool InvokeCanAutoReconnectOnOpen(MethodInfo method, GaussDBConnection conn, Exception exception)
+    => (bool)(method.Invoke(conn, new object[] { exception })
+              ?? throw new InvalidOperationException("CanAutoReconnectOnOpen returned null."));
+}
+
+#pragma warning disable NPG9001, NPG9002
+static IGaussDBDatabaseInfoFactory[] SnapshotDatabaseInfoFactories()
+{
+    var field = typeof(GaussDBDatabaseInfo).GetField("Factories", BindingFlags.Static | BindingFlags.NonPublic)
+               ?? throw new InvalidOperationException("Unable to resolve GaussDBDatabaseInfo.Factories.");
+    return ((IGaussDBDatabaseInfoFactory[])field.GetValue(null)!).ToArray();
+}
+
+static void RestoreDatabaseInfoFactories(IGaussDBDatabaseInfoFactory[] factories)
+{
+    var field = typeof(GaussDBDatabaseInfo).GetField("Factories", BindingFlags.Static | BindingFlags.NonPublic)
+               ?? throw new InvalidOperationException("Unable to resolve GaussDBDatabaseInfo.Factories.");
+    field.SetValue(null, factories.ToArray());
+}
+
+static void RegisterTemporaryBootstrapFailureFactory(Action callback)
+{
+    GaussDBDatabaseInfo.RegisterFactory(new BootstrapFailureDatabaseInfoFactory(callback));
+}
+#pragma warning restore NPG9001, NPG9002
+
+static async Task OpenConnectionInitializerNoRetryAsync(Options options)
+{
+    if (options.Targets.Length == 0)
+        throw new InvalidOperationException("open-connectioninitializer-no-retry requires at least one real CN target.");
+
+    var tableName = $"gaussdb_initializer_no_retry_{Guid.NewGuid():N}";
+    var target = options.Targets[0];
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { target },
+        options.BaseExtra,
+        "AutoReconnect=true;MaxReconnects=1;Application Name=open-connectioninitializer-no-retry");
+
+    Console.WriteLine($"target={target}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+    Console.WriteLine($"table={tableName}");
+
+    await using (var setup = new GaussDBConnection(connectionString))
+    {
+        await setup.OpenAsync();
+        await using var dropCmd = setup.CreateCommand();
+        dropCmd.CommandText = $"DROP TABLE IF EXISTS {tableName};";
+        await dropCmd.ExecuteNonQueryAsync();
+
+        await using var createCmd = setup.CreateCommand();
+        createCmd.CommandText = $"CREATE TABLE {tableName} (id INT PRIMARY KEY, note TEXT);";
+        await createCmd.ExecuteNonQueryAsync();
+    }
+
+    var initializerRuns = 0;
+    try
+    {
+        await using var dataSource = new GaussDBDataSourceBuilder(connectionString)
+            .UsePhysicalConnectionInitializer(
+                connection =>
+                {
+                    var run = ++initializerRuns;
+                    using var cmd = connection.CreateCommand();
+                    cmd.CommandText = $"INSERT INTO {tableName} (id, note) VALUES ({run}, 'initializer-run-{run}');";
+                    cmd.ExecuteNonQuery();
+                    throw new TimeoutException("intentional initializer failure for open retry regression test");
+                },
+                async connection =>
+                {
+                    var run = ++initializerRuns;
+                    await using var cmd = connection.CreateCommand();
+                    cmd.CommandText = $"INSERT INTO {tableName} (id, note) VALUES ({run}, 'initializer-run-{run}');";
+                    await cmd.ExecuteNonQueryAsync();
+                    throw new TimeoutException("intentional initializer failure for open retry regression test");
+                })
+            .Build();
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+        throw new InvalidOperationException($"Expected OpenConnectionAsync to fail, but it succeeded on {conn.Host}:{conn.Port}.");
+    }
+    catch (TimeoutException ex) when (ex.Message.Contains("intentional initializer failure", StringComparison.Ordinal))
+    {
+        Console.WriteLine($"initializer-runs={initializerRuns}");
+        Console.WriteLine($"initializer-failure={ex.Message}");
+    }
+
+    await using (var verify = new GaussDBConnection(connectionString))
+    {
+        await verify.OpenAsync();
+        await using var cmd = verify.CreateCommand();
+        cmd.CommandText = $"SELECT count(*) FROM {tableName};";
+        var rowCount = Convert.ToInt64(await cmd.ExecuteScalarAsync());
+        Console.WriteLine($"row-count={rowCount}");
+        if (rowCount != 1)
+            throw new InvalidOperationException($"Initializer side effect was repeated. expected=1 actual={rowCount}");
+    }
+
+    await using (var cleanup = new GaussDBConnection(connectionString))
+    {
+        await cleanup.OpenAsync();
+        await using var cmd = cleanup.CreateCommand();
+        cmd.CommandText = $"DROP TABLE IF EXISTS {tableName};";
+        await cmd.ExecuteNonQueryAsync();
+    }
+}
+
+static async Task OpenBootstrapNoRetryAsync(Options options)
+{
+    if (options.Targets.Length == 0)
+        throw new InvalidOperationException("open-bootstrap-no-retry requires at least one real CN target.");
+
+    var target = options.Targets[0];
+    var connectionString = ConnectionStringUtil.BuildConnectionString(
+        new[] { target },
+        options.BaseExtra,
+        "AutoReconnect=true;MaxReconnects=1;Application Name=open-bootstrap-no-retry");
+
+    Console.WriteLine($"target={target}");
+    Console.WriteLine($"ConnectionString={connectionString}");
+
+    var bootstrapRuns = 0;
+    var originalFactories = SnapshotDatabaseInfoFactories();
+    try
+    {
+        RegisterTemporaryBootstrapFailureFactory(() =>
+        {
+            bootstrapRuns++;
+            throw new TimeoutException("intentional bootstrap failure for open retry regression test");
+        });
+
+        await using var dataSource = new GaussDBDataSourceBuilder(connectionString).Build();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        throw new InvalidOperationException($"Expected OpenConnectionAsync to fail, but it succeeded on {conn.Host}:{conn.Port}.");
+    }
+    catch (TimeoutException ex) when (ex.Message.Contains("intentional bootstrap failure", StringComparison.Ordinal))
+    {
+        Console.WriteLine($"bootstrap-runs={bootstrapRuns}");
+        Console.WriteLine($"bootstrap-failure={ex.Message}");
+        if (bootstrapRuns != 1)
+            throw new InvalidOperationException($"Bootstrap failure was retried unexpectedly. expected=1 actual={bootstrapRuns}");
+    }
+    finally
+    {
+        RestoreDatabaseInfoFactories(originalFactories);
+    }
 }
 
 #if false
@@ -3568,6 +3722,17 @@ sealed record SeedRoute(int TargetIndex, string Target, Endpoint SeedEndpoint, s
 sealed record SeedProxyRoute(SeedRoute SeedRoute, Endpoint ProxyEndpoint);
 
 sealed record OpenObservation(int Attempt, string ConnectedEndpoint, string NodeName, string ServerEndpoint);
+
+#pragma warning disable NPG9001, NPG9002
+sealed class BootstrapFailureDatabaseInfoFactory(Action callback) : IGaussDBDatabaseInfoFactory
+{
+    public Task<GaussDBDatabaseInfo?> Load(GaussDBConnector conn, GaussDBTimeout timeout, bool async)
+    {
+        callback();
+        return Task.FromResult<GaussDBDatabaseInfo?>(null);
+    }
+}
+#pragma warning restore NPG9001, NPG9002
 
 readonly record struct Endpoint(string Host, int Port)
 {
