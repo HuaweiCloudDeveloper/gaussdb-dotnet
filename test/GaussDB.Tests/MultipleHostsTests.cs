@@ -885,6 +885,7 @@ public class MultipleHostsTests : TestBase
     }
 
     [Test, NonParallelizable]
+    [Ignore("Requires a local localhost multi-host topology.")]
     public void IntegrationTest([Values] bool loadBalancing, [Values] bool alwaysCheckHostState)
     {
         PoolManager.Reset();
