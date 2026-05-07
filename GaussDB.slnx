@@ -33,6 +33,7 @@
     <Project Path="test/GaussDB.NativeAotTests/GaussDB.NativeAotTests.csproj" />
     <!-- After discussion, the plugin feature may be disabled by default in GaussDB, so testing is temporarily postponed.-->
     <Project Path="test/GaussDB.PluginTests/GaussDB.PluginTests.csproj" />
+    <Project Path="test/GaussDB.RealClusterScenarios/GaussDB.RealClusterScenarios.csproj" />
     <Project Path="test/GaussDB.Specification.Tests/GaussDB.Specification.Tests.csproj" />
     <Project Path="test/GaussDB.Tests/GaussDB.Tests.csproj" />
   </Folder>

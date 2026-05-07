@@ -1372,7 +1372,15 @@ GROUP BY pg_proc.proargnames, pg_proc.proargtypes, pg_proc.proallargtypes, pg_pr
     {
         var conn = CheckAndGetConnection();
         _behavior = behavior;
+        return await ExecuteReaderCore(async, behavior, cancellationToken, conn).ConfigureAwait(false);
+    }
 
+    async ValueTask<GaussDBDataReader> ExecuteReaderCore(
+        bool async,
+        CommandBehavior behavior,
+        CancellationToken cancellationToken,
+        GaussDBConnection? conn)
+    {
         GaussDBConnector? connector;
         if (_connector is not null)
         {

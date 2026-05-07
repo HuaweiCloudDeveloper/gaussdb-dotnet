@@ -3,10 +3,24 @@ abstract HuaweiCloud.GaussDB.GaussDBDataSource.Clear() -> void
 HuaweiCloud.GaussDB.GaussDBConnection.CloneWithAsync(string! connectionString, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<HuaweiCloud.GaussDB.GaussDBConnection!>
 HuaweiCloud.GaussDB.GaussDBConnection.SslClientAuthenticationOptionsCallback.get -> System.Action<System.Net.Security.SslClientAuthenticationOptions!>?
 HuaweiCloud.GaussDB.GaussDBConnection.SslClientAuthenticationOptionsCallback.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.AutoBalance.get -> string?
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.AutoBalance.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.AutoReconnect.get -> bool
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.AutoReconnect.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.MaxReconnects.get -> int
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.MaxReconnects.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.PriorityServers.get -> int
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.PriorityServers.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RefreshCNIpListTime.get -> int
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RefreshCNIpListTime.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.DisasterToleranceCluster.get -> bool
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.DisasterToleranceCluster.set -> void
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RequireAuth.get -> string?
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.RequireAuth.set -> void
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.SslNegotiation.get -> HuaweiCloud.GaussDB.SslNegotiation
 HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.SslNegotiation.set -> void
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.UsingEip.get -> bool
+HuaweiCloud.GaussDB.GaussDBConnectionStringBuilder.UsingEip.set -> void
 HuaweiCloud.GaussDB.GaussDBDataSourceBuilder.ConfigureTypeLoading(System.Action<HuaweiCloud.GaussDB.GaussDBTypeLoadingOptionsBuilder!>! configureAction) -> HuaweiCloud.GaussDB.GaussDBDataSourceBuilder!
 HuaweiCloud.GaussDB.GaussDBDataSourceBuilder.MapComposite(System.Type! clrType, string? pgName = null, HuaweiCloud.GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> HuaweiCloud.GaussDB.GaussDBDataSourceBuilder!
 HuaweiCloud.GaussDB.GaussDBDataSourceBuilder.MapComposite<T>(string? pgName = null, HuaweiCloud.GaussDB.IGaussDBNameTranslator? nameTranslator = null) -> HuaweiCloud.GaussDB.GaussDBDataSourceBuilder!

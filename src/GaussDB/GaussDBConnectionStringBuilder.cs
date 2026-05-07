@@ -1004,10 +1004,10 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         };
 
     /// <summary>
-    /// Enables balancing between multiple hosts by round-robin.
+    /// Enables balancing between multiple hosts by shuffle.
     /// </summary>
     [Category("Failover and load balancing")]
-    [Description("Enables balancing between multiple hosts by round-robin.")]
+    [Description("Enables balancing between multiple hosts by shuffle.")]
     [DisplayName("Load Balance Hosts")]
     [GaussDBConnectionStringProperty]
     public bool LoadBalanceHosts
@@ -1040,6 +1040,153 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
         }
     }
     int _hostRecheckSeconds;
+
+    /// <summary>
+    /// Splits the configured seed hosts into preferred and fallback clusters.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Splits the configured seed hosts into preferred and fallback clusters.")]
+    [DisplayName("Priority Servers")]
+    [DefaultValue(0)]
+    [GaussDBConnectionStringProperty]
+    public int PriorityServers
+    {
+        get => _priorityServers;
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            _priorityServers = value;
+            SetValue(nameof(PriorityServers), value);
+        }
+    }
+    int _priorityServers;
+
+    /// <summary>
+    /// Controls CN ordering inside the selected cluster.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Controls CN ordering inside the selected cluster.")]
+    [DisplayName("Auto Balance")]
+    [GaussDBConnectionStringProperty]
+    public string? AutoBalance
+    {
+        get => _autoBalance;
+        set
+        {
+            (_autoBalanceMode, _autoBalancePriorityCount, _autoBalance) = ParseAutoBalance(value);
+            SetValue(nameof(AutoBalance), _autoBalance);
+        }
+    }
+    string? _autoBalance;
+    internal HaAutoBalanceMode AutoBalanceModeParsed => _autoBalanceMode;
+    HaAutoBalanceMode _autoBalanceMode;
+    int _autoBalancePriorityCount;
+    // 只有显式启用 AZ 分簇或簇内 CN 重排时，才走增强 HA 路由分支。
+    internal bool UsesHaRouting => PriorityServers > 0 || AutoBalanceModeParsed != HaAutoBalanceMode.Disabled;
+
+    /// <summary>
+    /// Controls how often the driver refreshes coordinator endpoints from metadata.
+    /// </summary>
+    /// <remarks>
+    /// 取值为 `0` 时表示禁用动态 CN 刷新，只依赖连接串里的静态 seed hosts。
+    /// </remarks>
+    [Category("Failover and load balancing")]
+    [Description("Controls how often the driver refreshes coordinator endpoints from metadata.")]
+    [DisplayName("Refresh CN IP List Time")]
+    [DefaultValue(0)]
+    [GaussDBConnectionStringProperty]
+    public int RefreshCNIpListTime
+    {
+        get => _refreshCNIpListTime;
+        set
+        {
+            // 允许显式关闭刷新，但仍限制最大值，避免异常配置把快照缓存得过久。
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            if (value > 9999)
+                throw new ArgumentOutOfRangeException(nameof(value), value, "RefreshCNIpListTime must be between 0 and 9999 seconds.");
+
+            _refreshCNIpListTime = value;
+            SetValue(nameof(RefreshCNIpListTime), value);
+        }
+    }
+    int _refreshCNIpListTime;
+
+    /// <summary>
+    /// Determines whether refreshed coordinators should use EIP metadata columns.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Determines whether refreshed coordinators should use EIP metadata columns.")]
+    [DisplayName("Using EIP")]
+    [DefaultValue(true)]
+    [GaussDBConnectionStringProperty]
+    public bool UsingEip
+    {
+        get => _usingEip;
+        set
+        {
+            _usingEip = value;
+            SetValue(nameof(UsingEip), value);
+        }
+    }
+    bool _usingEip;
+
+    /// <summary>
+    /// Enables JDBC-aligned disaster cluster metadata discovery for coordinator refresh.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Enables JDBC-aligned disaster cluster metadata discovery for coordinator refresh.")]
+    [DisplayName("Disaster Tolerance Cluster")]
+    [DefaultValue(false)]
+    [GaussDBConnectionStringProperty]
+    public bool DisasterToleranceCluster
+    {
+        get => _disasterToleranceCluster;
+        set
+        {
+            _disasterToleranceCluster = value;
+            SetValue(nameof(DisasterToleranceCluster), value);
+        }
+    }
+    bool _disasterToleranceCluster;
+
+    /// <summary>
+    /// Enables bounded reconnect attempts for eligible disconnects while opening a connection.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Enables bounded reconnect attempts for eligible disconnects while opening a connection.")]
+    [DisplayName("Auto Reconnect")]
+    [DefaultValue(false)]
+    [GaussDBConnectionStringProperty]
+    public bool AutoReconnect
+    {
+        get => _autoReconnect;
+        set
+        {
+            _autoReconnect = value;
+            SetValue(nameof(AutoReconnect), value);
+        }
+    }
+    bool _autoReconnect;
+
+    /// <summary>
+    /// Controls how many reconnect attempts are allowed when open-time auto reconnect is enabled.
+    /// </summary>
+    [Category("Failover and load balancing")]
+    [Description("Controls how many reconnect attempts are allowed when open-time auto reconnect is enabled.")]
+    [DisplayName("Max Reconnects")]
+    [DefaultValue(1)]
+    [GaussDBConnectionStringProperty]
+    public int MaxReconnects
+    {
+        get => _maxReconnects;
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+            _maxReconnects = value;
+            SetValue(nameof(MaxReconnects), value);
+        }
+    }
+    int _maxReconnects;
 
     #endregion Properties - Failover and load balancing
 
@@ -1483,6 +1630,19 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
                 Port = newPort;
             }
         }
+
+        var seedHostCount = GetSeedHostCount();
+        // PriorityServers 负责把 seed host 列表切成“优先簇 / 兜底簇”；0 表示禁用，启用时必须严格小于总 host 数。
+        if (IsConfigured(nameof(PriorityServers)) && PriorityServers > 0 && PriorityServers >= seedHostCount)
+            throw new ArgumentException("PriorityServers must be 0 (disabled) or a positive value smaller than the number of seed hosts.");
+
+        if (AutoBalanceModeParsed == HaAutoBalanceMode.PriorityRoundRobin &&
+            _autoBalancePriorityCount >= seedHostCount)
+            throw new ArgumentException("AutoBalance priority modes must end with a numeric suffix smaller than the number of seed hosts.");
+
+        if (AutoBalanceModeParsed == HaAutoBalanceMode.PriorityShuffle &&
+            _autoBalancePriorityCount > seedHostCount)
+            throw new ArgumentException("AutoBalance shuffle modes must end with a numeric suffix smaller than or equal to the number of seed hosts.");
     }
 
     internal string ToStringWithoutPassword()
@@ -1503,6 +1663,84 @@ public sealed partial class GaussDBConnectionStringBuilder : DbConnectionStringB
     }
 
     internal GaussDBConnectionStringBuilder Clone() => new(ConnectionString);
+
+    bool IsConfigured(string propertyName)
+    {
+        object? canonicalKeyword = null;
+        GeneratedActions(GeneratedAction.GetCanonical, propertyName.ToUpperInvariant(), ref canonicalKeyword);
+        return base.ContainsKey((string)canonicalKeyword!);
+    }
+
+    internal int GetSeedHostCount()
+        => Host!.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Length;
+
+    // AutoBalance 的优先子集始终限定在“当前选中的簇”内部，避免跨 AZ 混用优先级语义。
+    internal int GetEffectivePriorityHostCount(int selectedClusterSeedCount)
+        => AutoBalanceModeParsed is HaAutoBalanceMode.PriorityRoundRobin or HaAutoBalanceMode.PriorityShuffle
+            ? Math.Min(_autoBalancePriorityCount, selectedClusterSeedCount)
+            : 0;
+
+    static (HaAutoBalanceMode Mode, int PriorityCount, string? NormalizedValue) ParseAutoBalance(string? value)
+    {
+        if (value is null)
+            return (HaAutoBalanceMode.Disabled, 0, null);
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+
+        // JDBC 风格要求使用命名模式，而不是裸数字；裸数字既无法表达策略，也容易和 PriorityServers 混淆。
+        if (int.TryParse(value, out _))
+            throw new ArgumentException("AutoBalance must use a named routing mode such as shuffle, roundrobin, priorityN, or shuffleN.");
+
+        if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.Disabled, 0, "false");
+
+        if (value.Equals("shuffle", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.Shuffle, 0, "shuffle");
+
+        if (value.Equals("roundrobin", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.RoundRobin, 0, "roundrobin");
+
+        if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.RoundRobin, 0, "true");
+
+        if (value.Equals("balance", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.RoundRobin, 0, "balance");
+
+        if (value.Equals("specified", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.Specified, 0, "specified");
+
+        if (value.Equals("leastconn", StringComparison.OrdinalIgnoreCase))
+            return (HaAutoBalanceMode.LeastConnection, 0, "leastconn");
+
+        if (value.StartsWith("shufflePriority", StringComparison.OrdinalIgnoreCase))
+        {
+            var suffix = value["shufflePriority".Length..];
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityShuffle, priorityCount, $"shuffle{priorityCount}");
+
+            throw new ArgumentException("AutoBalance shufflePriority mode must end with a non-negative numeric suffix.");
+        }
+
+        if (value.StartsWith("shuffle", StringComparison.OrdinalIgnoreCase))
+        {
+            var suffix = value["shuffle".Length..];
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityShuffle, priorityCount, $"shuffle{priorityCount}");
+
+            throw new ArgumentException("AutoBalance shuffle mode must end with a non-negative numeric suffix.");
+        }
+
+        if (value.StartsWith("priority", StringComparison.OrdinalIgnoreCase))
+        {
+            var suffix = value["priority".Length..];
+            if (int.TryParse(suffix, out var priorityCount) && priorityCount >= 0)
+                return (HaAutoBalanceMode.PriorityRoundRobin, priorityCount, $"priority{priorityCount}");
+
+            throw new ArgumentException("AutoBalance priority mode must end with a non-negative numeric suffix.");
+        }
+
+        throw new ArgumentException($"AutoBalance contains an invalid value '{value}'");
+    }
 
     internal static bool TrySplitHostPort(ReadOnlySpan<char> originalHost, [NotNullWhen(true)] out string? host, out int port)
     {
@@ -1797,6 +2035,17 @@ enum ReplicationMode
     /// Logical replication enabled
     /// </summary>
     Logical
+}
+
+enum HaAutoBalanceMode
+{
+    Disabled,
+    Shuffle,
+    RoundRobin,
+    PriorityRoundRobin,
+    PriorityShuffle,
+    Specified,
+    LeastConnection
 }
 
 /// <summary>

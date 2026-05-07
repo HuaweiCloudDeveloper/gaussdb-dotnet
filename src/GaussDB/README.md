@@ -25,3 +25,49 @@ await using (var reader = await cmd.ExecuteReaderAsync())
     Console.WriteLine(reader.GetString(0));
 }
 ```
+
+## Distributed HA options
+
+The driver also supports JDBC-aligned distributed GaussDB HA routing options on top of the existing multi-host support:
+
+- `PriorityServers`: splits the seed host list into preferred and fallback AZ clusters.
+- `LoadBalanceHosts`: keeps the legacy JDBC-compatible shuffle behavior when `AutoBalance` isn't explicitly set.
+- `AutoBalance`: reorders coordinator nodes only inside the selected cluster. Supported values include `false`, `shuffle`, `roundrobin`, `true`, `balance`, `priorityN`, `shuffleN`, `specified`, and `leastconn`.
+  The parser also keeps backward compatibility with the older `.NET`-only `shufflePriorityN` spelling and normalizes it to `shuffleN`.
+- `RefreshCNIpListTime`: throttles coordinator discovery from metadata (`pgxc_node` or `pgxc_disaster_read_node()`), including repeated refresh failures.
+- `UsingEip`: selects `node_host1/node_port1` instead of `node_host/node_port` during coordinator refresh.
+- `DisasterToleranceCluster`: when enabled on a disaster cluster, refreshes coordinators from `pgxc_disaster_read_node()` instead of `pgxc_node`, matching JDBC.
+- `AutoReconnect`: enables bounded reconnect for eligible disconnect and failover errors during `Open/OpenAsync()`.
+- `MaxReconnects`: caps the reconnect attempt count.
+- `HostRecheckSeconds`: controls how long failed hosts/CNs stay offline before they can be probed again.
+
+Example:
+
+```csharp
+var csb = new GaussDBConnectionStringBuilder
+{
+    Host = "cn1:8000,cn2:8000,cn3:8000,cn4:8000",
+    PriorityServers = 2,
+    AutoBalance = "priority2",
+    RefreshCNIpListTime = 10,
+    UsingEip = true,
+    DisasterToleranceCluster = true,
+    AutoReconnect = true,
+    MaxReconnects = 3,
+    HostRecheckSeconds = 10
+};
+
+await using var dataSource = new GaussDBDataSourceBuilder(csb.ConnectionString)
+    .BuildMultiHost();
+await using var conn = await dataSource
+    .WithTargetSession(TargetSessionAttributes.Primary)
+    .OpenConnectionAsync();
+```
+
+`PriorityServers` and `AutoBalance` work at different layers: `PriorityServers` picks which AZ cluster is tried first, while `AutoBalance` only changes coordinator ordering inside that selected cluster.
+
+`TargetSessionAttributes` still applies on top of HA routing: the driver first builds the HA candidate list and then filters candidates by the requested server type (`primary`, `standby`, `read-write`, `read-only`, and the `prefer-*` variants).
+
+`HostRecheckSeconds` continues to drive abnormal CN eviction and recheck timing. Failed CNs are marked offline and skipped until the recheck window expires; after that they return to `Unknown` and can be probed again by later opens or reconnects.
+
+Automatic reconnect is intentionally conservative. It only retries eligible disconnect and failover errors while opening the connection, by reopening through the latest routing state. The driver does not transparently replay commands after a connection has already been opened.

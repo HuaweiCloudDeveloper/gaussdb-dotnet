@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -285,7 +286,26 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
             return Task.CompletedTask;
         }
 
-        return OpenAsync(async, cancellationToken);
+        return OpenWithRetry(async, cancellationToken);
+
+        async Task OpenWithRetry(bool async, CancellationToken cancellationToken)
+        {
+            var remainingReconnects = GetMaxAutoReconnectAttempts();
+
+            while (true)
+            {
+                try
+                {
+                    await OpenAsync(async, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+                // Open 阶段只对连接级故障做有限次重试，不对普通 SQL 级错误兜底。
+                catch (Exception e) when (remainingReconnects > 0 && CanAutoReconnectOnOpen(e))
+                {
+                    remainingReconnects--;
+                }
+            }
+        }
 
         async Task OpenAsync(bool async, CancellationToken cancellationToken)
         {
@@ -1553,6 +1573,81 @@ public sealed class GaussDBConnection : DbConnection, ICloneable, IComponent
             return;
         }
     }
+
+    internal bool SupportsAutoReconnect
+        => !Settings.Multiplexing && Settings.AutoReconnect && _dataSource is not null;
+
+    internal int GetMaxAutoReconnectAttempts()
+        => SupportsAutoReconnect ? Settings.MaxReconnects : 0;
+
+    internal const string NonRetryableOpenExceptionDataKey = "GaussDB.NonRetryableOpenException";
+
+    internal bool CanAutoReconnectOnOpen(Exception exception)
+        => SupportsAutoReconnect && IsAutoReconnectCandidate(exception);
+
+    static bool IsAutoReconnectCandidate(Exception exception)
+    {
+        // 这里只接收“连接中断 / 故障转移”类异常，避免把业务 SQL 错误误判成可重试。
+        if (HasNonRetryableOpenMarker(exception))
+            return false;
+
+        if (exception is OperationCanceledException)
+            return false;
+
+        return exception switch
+        {
+            IOException => true,
+            SocketException => true,
+            TimeoutException => true,
+            PostgresException postgresException => IsAutoReconnectSqlState(postgresException.SqlState),
+            GaussDBException gaussDBException => gaussDBException.InnerException is not null && IsAutoReconnectCandidate(gaussDBException.InnerException),
+            AggregateException aggregateException => AreAllAutoReconnectCandidates(aggregateException),
+            _ => false
+        };
+    }
+
+    static bool HasNonRetryableOpenMarker(Exception exception)
+    {
+        if (exception.Data.Contains(NonRetryableOpenExceptionDataKey) &&
+            exception.Data[NonRetryableOpenExceptionDataKey] is true)
+            return true;
+
+        return exception switch
+        {
+            GaussDBException gaussDBException when gaussDBException.InnerException is not null
+                => HasNonRetryableOpenMarker(gaussDBException.InnerException),
+            AggregateException aggregateException => aggregateException.InnerExceptions.Any(HasNonRetryableOpenMarker),
+            _ => false
+        };
+    }
+
+    static bool AreAllAutoReconnectCandidates(AggregateException aggregateException)
+    {
+        if (aggregateException.InnerExceptions.Count == 0)
+            return false;
+
+        foreach (var innerException in aggregateException.InnerExceptions)
+        {
+            if (!IsAutoReconnectCandidate(innerException))
+                return false;
+        }
+
+        return true;
+    }
+    static bool IsAutoReconnectSqlState(string sqlState)
+        => sqlState switch
+        {
+            PostgresErrorCodes.ConnectionException => true,
+            PostgresErrorCodes.ConnectionDoesNotExist => true,
+            PostgresErrorCodes.ConnectionFailure => true,
+            PostgresErrorCodes.SqlClientUnableToEstablishSqlConnection => true,
+            PostgresErrorCodes.SqlServerRejectedEstablishmentOfSqlConnection => true,
+            PostgresErrorCodes.AdminShutdown => true,
+            PostgresErrorCodes.CrashShutdown => true,
+            PostgresErrorCodes.CannotConnectNow => true,
+            PostgresErrorCodes.IdleSessionTimeout => true,
+            _ => false
+        };
 
     #endregion State checks
 

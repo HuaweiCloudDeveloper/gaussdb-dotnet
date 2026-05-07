@@ -498,78 +498,86 @@ public sealed partial class GaussDBConnector
             if (activity is not null)
                 GaussDBActivitySource.Enrich(activity, this);
 
-            await DataSource.Bootstrap(this, timeout, forceReload: false, async, cancellationToken).ConfigureAwait(false);
-
-            Debug.Assert(DataSource.SerializerOptions is not null);
-            Debug.Assert(DataSource.DatabaseInfo is not null);
-            SerializerOptions = DataSource.SerializerOptions;
-            DatabaseInfo = DataSource.DatabaseInfo;
-
-            if (Settings.Pooling && Settings is { Multiplexing: false, NoResetOnClose: false })
+            try
             {
-                _sendResetOnClose = true;
-                GenerateResetMessage();
-            }
+                await DataSource.Bootstrap(this, timeout, forceReload: false, async, cancellationToken).ConfigureAwait(false);
 
-            OpenTimestamp = DateTime.UtcNow;
+                Debug.Assert(DataSource.SerializerOptions is not null);
+                Debug.Assert(DataSource.DatabaseInfo is not null);
+                SerializerOptions = DataSource.SerializerOptions;
+                DatabaseInfo = DataSource.DatabaseInfo;
 
-            if (Settings.Multiplexing)
-            {
-                // Start an infinite async loop, which processes incoming multiplexing traffic.
-                // It is intentionally not awaited and will run as long as the connector is alive.
-                // The CommandsInFlightWriter channel is completed in Cleanup, which should cause this task
-                // to complete.
-                // Make sure we do not flow AsyncLocals like Activity.Current
-                using var __ = ExecutionContext.SuppressFlow();
-                _ = Task.Run(MultiplexingReadLoop, CancellationToken.None)
-                    .ContinueWith(t =>
+                if (Settings.Pooling && Settings is { Multiplexing: false, NoResetOnClose: false })
+                {
+                    _sendResetOnClose = true;
+                    GenerateResetMessage();
+                }
+
+                OpenTimestamp = DateTime.UtcNow;
+
+                if (Settings.Multiplexing)
+                {
+                    // Start an infinite async loop, which processes incoming multiplexing traffic.
+                    // It is intentionally not awaited and will run as long as the connector is alive.
+                    // The CommandsInFlightWriter channel is completed in Cleanup, which should cause this task
+                    // to complete.
+                    // Make sure we do not flow AsyncLocals like Activity.Current
+                    using var __ = ExecutionContext.SuppressFlow();
+                    _ = Task.Run(MultiplexingReadLoop, CancellationToken.None)
+                        .ContinueWith(t =>
+                        {
+                            // Note that we *must* observe the exception if the task is faulted.
+                            ConnectionLogger.LogError(t.Exception!, "Exception bubbled out of multiplexing read loop", Id);
+                        }, TaskContinuationOptions.OnlyOnFaulted);
+                }
+
+                if (_isKeepAliveEnabled)
+                {
+                    // Start the keep alive mechanism to work by scheduling the timer.
+                    // Otherwise, it doesn't work for cases when no query executed during
+                    // the connection lifetime in case of a new connector.
+                    lock (SyncObj)
                     {
-                        // Note that we *must* observe the exception if the task is faulted.
-                        ConnectionLogger.LogError(t.Exception!, "Exception bubbled out of multiplexing read loop", Id);
-                    }, TaskContinuationOptions.OnlyOnFaulted);
-            }
+                        var keepAlive = Settings.KeepAlive * 1000;
+                        _keepAliveTimer!.Change(keepAlive, keepAlive);
+                    }
+                }
 
-            if (_isKeepAliveEnabled)
+                if (DataSource.ConnectionInitializerAsync is not null)
+                {
+                    Debug.Assert(DataSource.ConnectionInitializer is not null);
+
+                    var tempConnection = new GaussDBConnection(DataSource, this);
+
+                    try
+                    {
+                        if (async)
+                            await DataSource.ConnectionInitializerAsync(tempConnection).ConfigureAwait(false);
+                        else
+                            DataSource.ConnectionInitializer(tempConnection);
+                    }
+                    finally
+                    {
+                        // Note that we can't just close/dispose the GaussDBConnection, since that puts the connector back in the pool.
+                        // But we transition it to disposed immediately, in case the user decides to capture the GaussDBConnection and use it
+                        // later.
+                        Connection?.MakeDisposed();
+                        Connection = null;
+                    }
+                }
+
+                if (activity is not null)
+                    GaussDBActivitySource.CommandStop(activity);
+
+                LogMessages.OpenedPhysicalConnection(
+                    ConnectionLogger, Host, Port, Database, UserFacingConnectionString,
+                    (long)Stopwatch.GetElapsedTime(startOpenTimestamp).TotalMilliseconds, Id);
+            }
+            catch (Exception e)
             {
-                // Start the keep alive mechanism to work by scheduling the timer.
-                // Otherwise, it doesn't work for cases when no query executed during
-                // the connection lifetime in case of a new connector.
-                lock (SyncObj)
-                {
-                    var keepAlive = Settings.KeepAlive * 1000;
-                    _keepAliveTimer!.Change(keepAlive, keepAlive);
-                }
+                MarkOpenExceptionAsNonRetryable(e);
+                throw;
             }
-
-            if (DataSource.ConnectionInitializerAsync is not null)
-            {
-                Debug.Assert(DataSource.ConnectionInitializer is not null);
-
-                var tempConnection = new GaussDBConnection(DataSource, this);
-
-                try
-                {
-                    if (async)
-                        await DataSource.ConnectionInitializerAsync(tempConnection).ConfigureAwait(false);
-                    else
-                        DataSource.ConnectionInitializer(tempConnection);
-                }
-                finally
-                {
-                    // Note that we can't just close/dispose the GaussDBConnection, since that puts the connector back in the pool.
-                    // But we transition it to disposed immediately, in case the user decides to capture the GaussDBConnection and use it
-                    // later.
-                    Connection?.MakeDisposed();
-                    Connection = null;
-                }
-            }
-
-            if (activity is not null)
-                GaussDBActivitySource.CommandStop(activity);
-
-            LogMessages.OpenedPhysicalConnection(
-                ConnectionLogger, Host, Port, Database, UserFacingConnectionString,
-                (long)Stopwatch.GetElapsedTime(startOpenTimestamp).TotalMilliseconds, Id);
         }
         catch (Exception e)
         {
@@ -637,6 +645,9 @@ public sealed partial class GaussDBConnector
             conn.State = ConnectorState.Ready;
         }
     }
+
+    internal static void MarkOpenExceptionAsNonRetryable(Exception exception)
+        => exception.Data[GaussDBConnection.NonRetryableOpenExceptionDataKey] = true;
 
     internal async ValueTask<DatabaseState> QueryDatabaseState(
         GaussDBTimeout timeout, bool async, CancellationToken cancellationToken = default)
